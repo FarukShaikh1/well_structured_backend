@@ -1,0 +1,18 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/FMS_Collection.API/bin/Debug/net8.0
+/FMS_Collection.API/obj
+/FMS_Collection.Application/bin/Debug/net8.0
+/FMS_Collection.Application/obj/Debug/net8.0
+/FMS_Collection.Application/obj
+/FMS_Collection.Core/bin/Debug/net8.0
+/FMS_Collection.Core/obj
+/FMS_Collection.Infrastructure/bin/Debug/net8.0
+/FMS_Collection.Web/bin/Debug/net8.0
+/FMS_Collection.Web/obj
+/FMS_Collection.Infrastructure/obj/Debug/net8.0
+/FMS_Collection.Infrastructure/obj/Release/net8.0
+/FMS_Collection.Infrastructure/obj
