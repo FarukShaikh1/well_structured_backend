@@ -36,24 +36,21 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     users.Add(new User
                     {
-                        UserId = reader.GetGuid(reader.GetOrdinal("UserId")),
-                        FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                        LastName = reader.IsDBNull(reader.GetOrdinal("LastName")) ? null : reader.GetString(reader.GetOrdinal("LastName")),
-                        EmailAddr = reader.IsDBNull(reader.GetOrdinal("EmailAddr")) ? null : reader.GetString(reader.GetOrdinal("EmailAddr")),
-                        UserName = reader.IsDBNull(reader.GetOrdinal("UserName")) ? null : reader.GetString(reader.GetOrdinal("UserName")),
-                        Password = reader.GetString(reader.GetOrdinal("Password")),
-                        PasswordLastChangedOn = reader.IsDBNull(reader.GetOrdinal("PasswordLastChangedOn")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("PasswordLastChangedOn")),
-                        EffectiveDt = reader.IsDBNull(reader.GetOrdinal("EffectiveDt")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("EffectiveDt")),
-                        ExpirationDt = reader.IsDBNull(reader.GetOrdinal("ExpirationDt")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("ExpirationDt")),
-                        ClientGroupCountry = reader.IsDBNull(reader.GetOrdinal("ClientGroupCountry")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("ClientGroupCountry")),
-                        FailedLoginCount = reader.IsDBNull(reader.GetOrdinal("FailedLoginCount")) ? (long?)null : reader.GetInt64(reader.GetOrdinal("FailedLoginCount")),
-                        LockExpiryDate = reader.IsDBNull(reader.GetOrdinal("LockExpiryDate")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("LockExpiryDate")),
-                        SpecialOccasionId = reader.IsDBNull(reader.GetOrdinal("SpecialOccasionId")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("SpecialOccasionId")),
-                        CreatedOn = reader.IsDBNull(reader.GetOrdinal("CreatedOn")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("CreatedOn")),
-                        CreatedBy = reader.IsDBNull(reader.GetOrdinal("CreatedBy")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("CreatedBy")),
-                        ModifiedOn = reader.IsDBNull(reader.GetOrdinal("ModifiedOn")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("ModifiedOn")),
-                        ModifiedBy = reader.IsDBNull(reader.GetOrdinal("ModifiedBy")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("ModifiedBy")),
-                        IsDeleted = reader.IsDBNull(reader.GetOrdinal("IsDeleted")) ? (bool?)null : reader.GetBoolean(reader.GetOrdinal("IsDeleted"))
+                        Id = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty,
+                        FirstName = reader["FirstName"]?.ToString() ?? string.Empty,
+                        LastName = reader["LastName"]?.ToString(),
+                        EmailAddress = reader["EmailAddress"]?.ToString(),
+                        UserName = reader["UserName"]?.ToString(),
+                        Password = reader["Password"]?.ToString() ?? string.Empty,
+                        PasswordLastChangedOn = reader["PasswordLastChangedOn"] != DBNull.Value ? (DateTime?)reader["PasswordLastChangedOn"] : null,
+                        FailedLoginCount = reader["FailedLoginCount"] != DBNull.Value ? (long?)reader["FailedLoginCount"] : null,
+                        LockExpiryDate = reader["LockExpiryDate"] != DBNull.Value ? (DateTime?)reader["LockExpiryDate"] : null,
+                        CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
+                        CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
+                        ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
+                        ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
+                        IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : null,
+                        RoleId = reader["RoleId"] != DBNull.Value ? (Guid?)reader["RoleId"] : null
                     });
                 }
 
@@ -91,9 +88,10 @@ namespace FMS_Collection.Infrastructure.Repositories
                         FirstName = reader["FirstName"] as string,
                         Password = reader["Password"] as string,
                         EmailAddress = reader["EmailAddress"] as string,
-                        //MobileNumber = reader["MobileNumber"] as string,
+                        MobileNumber = reader["MobileNumber"] as string,
                         IsLocked = reader["IsLocked"] != DBNull.Value ? (bool?)reader["IsLocked"] : null,
-                        RoleName = reader["RoleName"] as string
+                        RoleName = reader["RoleName"] as string,
+                        PasswordLastChangedOn = reader["PasswordLastChangedOn"] != DBNull.Value ? (DateTime?)reader["PasswordLastChangedOn"] : null,
                     });
                 }
             }
@@ -124,17 +122,23 @@ namespace FMS_Collection.Infrastructure.Repositories
                     result = new UserDetailsResponse
                     {
                         Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
-                        FirstName = reader["FirstName"] != DBNull.Value ? reader["FirstName"].ToString() : null,
-                        LastName = reader["LastName"] != DBNull.Value ? reader["LastName"].ToString() : null,
-                        UserName = reader["UserName"] != DBNull.Value ? reader["UserName"].ToString() : null,
-                        EmailAddress = reader["EmailAddress"] != DBNull.Value ? reader["EmailAddress"].ToString() : null,
-                        Password = reader["Password"] != DBNull.Value ? reader["Password"].ToString() : null,
-                        PasswordLastChangeOn = reader["PasswordLastChangedOn"] != DBNull.Value ? (DateTime?)reader["PasswordLastChangedOn"] : null,
+                        FirstName = reader["FirstName"]?.ToString(),
+                        LastName = reader["LastName"]?.ToString(),
+                        UserName = reader["UserName"]?.ToString(),
+                        Password = reader["Password"]?.ToString(),
+                        EmailAddress = reader["EmailAddress"]?.ToString(),
                         RoleId = reader["RoleId"] != DBNull.Value ? (Guid?)reader["RoleId"] : null,
-                        specialOccasionDate = reader["specialOccasionDate"] != DBNull.Value ? (DateTime?)reader["specialOccasionDate"] : null,
-                        MobileNumber = reader["MobileNumber"] != DBNull.Value ? reader["MobileNumber"].ToString() : null,
-                        AlternateNumber = reader["AlternateNumber"] != DBNull.Value ? reader["AlternateNumber"].ToString() : null,
-                        Address = reader["Address"] != DBNull.Value ? reader["Address"].ToString() : null,
+                        Birthdate = reader["Birthdate"] != DBNull.Value ? (DateTime?)reader["Birthdate"] : null,
+                        MobileNumber = reader["MobileNumber"]?.ToString(),
+                        FailedLoginCount = reader["FailedLoginCount"] != DBNull.Value ? (int?)reader["FailedLoginCount"] : null,
+                        LockExpiryDate = reader["LockExpiryDate"] != DBNull.Value ? (DateTime?)reader["LockExpiryDate"] : null,
+                        PasswordLastChangedOn = reader["PasswordLastChangedOn"] != DBNull.Value ? (DateTime?)reader["PasswordLastChangedOn"] : null,
+                        ThumbnailPath = reader["ThumbnailPath"]?.ToString(),
+                        OriginalPath = reader["OriginalPath"]?.ToString(),
+                        Address = reader["Address"]?.ToString(),
+                        ModifiedBy = reader["ModifiedBy"]?.ToString(),
+                        ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
+                        IsLocked = reader["IsLocked"] != DBNull.Value ? (bool?)reader["IsLocked"] : null,
                         IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : null
                     };
                 }

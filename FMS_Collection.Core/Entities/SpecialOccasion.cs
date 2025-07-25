@@ -17,7 +17,6 @@ namespace FMS_Collection.Core.Entities
         public string? MobileNumber { get; set; }
         public string? ContactNumber { get; set; }
         public string? EmailId { get; set; }
-        public string? AlternateNumber { get; set; }
         public Guid? DayTypeId { get; set; }
         public Guid? AssetId { get; set; }
         public char? Gender { get; set; }

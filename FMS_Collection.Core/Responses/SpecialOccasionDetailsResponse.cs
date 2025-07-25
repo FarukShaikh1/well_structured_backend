@@ -10,7 +10,7 @@ namespace FMS_Collection.Core.Response
         public Guid? DayTypeId { get; set; }
         public Guid? RelationId { get; set; }
         public string? MobileNumber { get; set; }
-        public string? AlternateNumber { get; set; }
+        public string? ContactNumber { get; set; }
         public string? EmailId { get; set; }
         public string? Gender { get; set; }
         public string? Address { get; set; }

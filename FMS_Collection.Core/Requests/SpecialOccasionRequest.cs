@@ -8,7 +8,7 @@
         public Guid? DayTypeId { get; set; }
         public Guid? RelationId { get; set; }
         public string? MobileNumber { get; set; }
-        public string? AlternateNumber { get; set; }
+        public string? ContactNumber { get; set; }
         public string? EmailId { get; set; }
         public char? Gender { get; set; } = 'M';
         public string? Address { get; set; }

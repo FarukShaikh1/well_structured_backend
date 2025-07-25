@@ -13,6 +13,7 @@ namespace FMS_Collection.Core.Response
         public string? MobileNumber { get; set; }
         public bool? IsLocked { get; set; }
         public string? RoleName { get; set; }
+        public DateTime? PasswordLastChangedOn { get; set; }
 
     }
 }
