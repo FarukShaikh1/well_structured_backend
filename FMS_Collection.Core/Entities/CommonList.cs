@@ -10,6 +10,5 @@
         public DateTime? ModifiedOn { get; set; }
         public Guid? ModifiedBy { get; set; }
         public bool? IsDeleted { get; set; }
-        public string? DependantOn { get; set; }
     }
 }

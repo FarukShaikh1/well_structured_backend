@@ -18,9 +18,9 @@ namespace FMS_Collection.Core.Interfaces
         Task<Guid> AddAsync(UserRequest user, Guid userId);
         Task UpdateAsync(UserRequest user, Guid userId);
         Task<bool> DeleteAsync(Guid userId);
-        Task<UserPermissionResponse> GetUserPermission(Guid userId);
         Task<bool> UpdateUserPermissionAsync(UserPermissionRequest userPermission, Guid userId);
         Task<LoginResponse> GetLoginDetails(LoginRequest user);
         Task<List<ModuleListResponse>> GetModuleListAsync();
+        Task<List<UserPermissionResponse>> GetUserPermissionListAsync(Guid UserId);
     }
 }

@@ -21,7 +21,6 @@ namespace FMS_Collection.Application.Services
         public Task AddUserAsync(UserRequest User,Guid userId) => _repository.UpdateAsync(User, userId);
         public Task UpdateUserAsync(UserRequest User, Guid userId) => _repository.AddAsync(User, userId);
         public Task DeleteUserAsync(Guid userId ) => _repository.DeleteAsync(userId);
-        public Task<UserPermissionResponse> GetUserPermission(Guid userId) => _repository.GetUserPermission(userId);
         public Task<bool> UpdateUserPermissionAsync(UserPermissionRequest userPermission, Guid userId) => _repository.UpdateUserPermissionAsync(userPermission, userId);
 
         public async Task<LoginResponse> GetLoginDetails(LoginRequest user)
@@ -54,6 +53,7 @@ namespace FMS_Collection.Application.Services
             return loginResponse;
         }
         public Task<List<ModuleListResponse>> GetModuleListAsync() => _repository.GetModuleListAsync();
+        public Task<List<UserPermissionResponse>> GetUserPermissionListAsync(Guid UserId) => _repository.GetUserPermissionListAsync(UserId);
 
     }
 }

@@ -75,7 +75,7 @@ public class UserController : ControllerBase
     [Route("GetUserPermission")]
     public async Task<IActionResult> GetUserPermission(Guid userId)
     {
-        var result = await _service.GetUserPermission(userId);
+        var result = await _service.GetUserPermissionListAsync(userId);
         return Ok(result);
     }
 
@@ -86,13 +86,4 @@ public class UserController : ControllerBase
         var result = await _service.UpdateUserPermissionAsync(userPermission, userId);
         return Ok(result);
     }
-
-    [HttpGet]
-    [Route("GetModuleList")]
-    public async Task<IActionResult> GetModuleList()
-    {
-        var result = await _service.GetModuleListAsync();
-        return Ok(result);
-    }
-
 }

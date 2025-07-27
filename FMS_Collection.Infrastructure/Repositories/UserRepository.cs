@@ -186,7 +186,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
         }
 
-        public async Task UpdateAsync(UserRequest request   , Guid userId)
+        public async Task UpdateAsync(UserRequest request, Guid userId)
         {
             try
             {
@@ -233,49 +233,6 @@ namespace FMS_Collection.Infrastructure.Repositories
 
         }
 
-        public async Task<UserPermissionResponse> GetUserPermission(Guid userId)
-        {
-            var result = new UserPermissionResponse();
-            try
-            {
-                using var conn = _dbFactory.CreateConnection();
-                using var cmd = new SqlCommand("UserPermission_Get", conn)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
-                cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
-
-                conn.Open();
-                using var reader = await cmd.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
-                {
-                    result = new UserPermissionResponse
-                    {
-                        UserPermissionId = reader["UserPermissionId"] != DBNull.Value ? (Guid?)reader["UserPermissionId"] : null,
-                        ModuleId = reader["ModuleId"] != DBNull.Value ? (Guid?)reader["ModuleId"] : null,
-                        ModuleName = reader["ModuleName"] != DBNull.Value ? reader["ModuleName"].ToString() : null,
-                        View = reader["View"] != DBNull.Value ? (bool?)reader["View"] : null,
-                        Add = reader["Add"] != DBNull.Value ? (bool?)reader["Add"] : null,
-                        Edit = reader["Edit"] != DBNull.Value ? (bool?)reader["Edit"] : null,
-                        Delete = reader["Delete"] != DBNull.Value ? (bool?)reader["Delete"] : null,
-                        Download = reader["Download"] != DBNull.Value ? (bool?)reader["Download"] : null,
-                        Upload = reader["Upload"] != DBNull.Value ? (bool?)reader["Upload"] : null,
-                        CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
-                        CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
-                        ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
-                        ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
-                        IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : null
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while retrieving user details.", ex);
-            }
-
-            return result;
-        }
-
         public async Task<bool> UpdateUserPermissionAsync(UserPermissionRequest userPermission, Guid userId)
         {
             try
@@ -314,8 +271,8 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-                cmd.Parameters.Add(new SqlParameter("@in_UserName", SqlDbType.VarChar) { Value = user.UserName});
-                cmd.Parameters.Add(new SqlParameter("@in_Password", SqlDbType.VarChar) { Value = user.Password});
+                cmd.Parameters.Add(new SqlParameter("@in_UserName", SqlDbType.VarChar) { Value = user.UserName });
+                cmd.Parameters.Add(new SqlParameter("@in_Password", SqlDbType.VarChar) { Value = user.Password });
 
                 conn.Open();
                 using var reader = await cmd.ExecuteReaderAsync();
@@ -378,6 +335,52 @@ namespace FMS_Collection.Infrastructure.Repositories
                         Route = reader["Route"] as string,
                         DisplayOrder = reader["DisplayOrder"] as int?,
                         IconClass = reader["IconClass"] as string
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving users.", ex);
+            }
+
+            return users;
+        }
+
+        public async Task<List<UserPermissionResponse>> GetUserPermissionListAsync(Guid UserId)
+        {
+            var users = new List<UserPermissionResponse>();
+            try
+            {
+                using var conn = _dbFactory.CreateConnection();
+                using var cmd = new SqlCommand("UserPermission_Get", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = UserId });
+                cmd.CommandTimeout = 120;
+                conn.Open();
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    users.Add(new UserPermissionResponse
+                    {
+                        Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
+                        ModuleId = reader["ModuleId"] != DBNull.Value ? (Guid?)reader["ModuleId"] : null,
+                        ModuleName = reader["ModuleName"]?.ToString(),
+                        Route = reader["Route"]?.ToString(),
+                        Description = reader["Description"]?.ToString(),
+                        View = reader["View"] != DBNull.Value ? (bool?)reader["View"] : null,
+                        Add = reader["Add"] != DBNull.Value ? (bool?)reader["Add"] : null,
+                        Edit = reader["Edit"] != DBNull.Value ? (bool?)reader["Edit"] : null,
+                        Delete = reader["Delete"] != DBNull.Value ? (bool?)reader["Delete"] : null,
+                        Download = reader["Download"] != DBNull.Value ? (bool?)reader["Download"] : null,
+                        Upload = reader["Upload"] != DBNull.Value ? (bool?)reader["Upload"] : null,
+                        CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
+                        CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
+                        ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
+                        ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
+                        IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : null
                     });
                 }
             }

@@ -2,9 +2,11 @@
 {
     public class UserPermissionResponse
     {
-        public Guid? UserPermissionId { get; set; }
+        public Guid? Id { get; set; }
         public Guid? ModuleId { get; set; }
         public string? ModuleName { get; set; }
+        public string? Description{ get; set; }
+        public string? Route { get; set; }
         public bool? View { get; set; }
         public bool? Add { get; set; }
         public bool? Edit { get; set; }

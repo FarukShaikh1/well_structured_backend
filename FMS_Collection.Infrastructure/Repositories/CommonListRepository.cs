@@ -35,7 +35,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     Commons.Add(new CommonList
                     {
-                        CommonListId = reader.GetGuid(reader.GetOrdinal("CommonListId")),
+                        CommonListId = reader.GetGuid(reader.GetOrdinal("Id")),
                         CommonListName = reader.GetString(reader.GetOrdinal("CommonListName")),
                         Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString(reader.GetOrdinal("Description")),
                         CreatedOn = reader.IsDBNull(reader.GetOrdinal("CreatedOn")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("CreatedOn")),
@@ -43,7 +43,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                         ModifiedOn = reader.IsDBNull(reader.GetOrdinal("ModifiedOn")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("ModifiedOn")),
                         ModifiedBy = reader.IsDBNull(reader.GetOrdinal("ModifiedBy")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("ModifiedBy")),
                         IsDeleted = reader.IsDBNull(reader.GetOrdinal("IsDeleted")) ? (bool?)null : reader.GetBoolean(reader.GetOrdinal("IsDeleted")),
-                        DependantOn = reader.IsDBNull(reader.GetOrdinal("DependantOn")) ? null : reader.GetString(reader.GetOrdinal("DependantOn"))
                     });
                 }
 
@@ -124,8 +123,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                         ModifiedOn = reader.IsDBNull(reader.GetOrdinal("ModifiedOn")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("ModifiedOn")),
                         ModifiedBy = reader.IsDBNull(reader.GetOrdinal("ModifiedBy")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("ModifiedBy")),
                         IsDeleted = reader.IsDBNull(reader.GetOrdinal("IsDeleted")) ? (bool?)null : reader.GetBoolean(reader.GetOrdinal("IsDeleted")),
-                        DependantOn = reader.IsDBNull(reader.GetOrdinal("DependantOn")) ? null : reader.GetString(reader.GetOrdinal("DependantOn"))
-
                     });
                 }
             }
@@ -201,7 +198,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                         ModifiedOn = reader.IsDBNull(reader.GetOrdinal("ModifiedOn")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("ModifiedOn")),
                         ModifiedBy = reader.IsDBNull(reader.GetOrdinal("ModifiedBy")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("ModifiedBy")),
                         IsDeleted = reader.IsDBNull(reader.GetOrdinal("IsDeleted")) ? (bool?)null : reader.GetBoolean(reader.GetOrdinal("IsDeleted")),
-                        DependantOn = reader.IsDBNull(reader.GetOrdinal("DependantOn")) ? null : reader.GetString(reader.GetOrdinal("DependantOn"))
                     };
                 }
             }

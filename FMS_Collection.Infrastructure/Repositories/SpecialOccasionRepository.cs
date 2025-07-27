@@ -142,7 +142,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                         DayTypeId = reader.IsDBNull(reader.GetOrdinal("DayTypeId")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("DayTypeId")),
                         RelationId = reader.IsDBNull(reader.GetOrdinal("RelationId")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("RelationId")),
                         MobileNumber = reader.IsDBNull(reader.GetOrdinal("MobileNumber")) ? null : reader.GetString(reader.GetOrdinal("MobileNumber")),
-                        ContactNumber = reader.IsDBNull(reader.GetOrdinal("AlternateNumber")) ? null : reader.GetString(reader.GetOrdinal("AlternateNumber")),
+                        ContactNumber = reader.IsDBNull(reader.GetOrdinal("ContactNumber")) ? null : reader.GetString(reader.GetOrdinal("ContactNumber")),
                         EmailId = reader.IsDBNull(reader.GetOrdinal("EmailId")) ? null : reader.GetString(reader.GetOrdinal("EmailId")),
                         Gender = reader.IsDBNull(reader.GetOrdinal("Gender")) ? null : reader.GetString(reader.GetOrdinal("Gender")),
                         Address = reader.IsDBNull(reader.GetOrdinal("Address")) ? null : reader.GetString(reader.GetOrdinal("Address")),
@@ -245,7 +245,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             cmd.Parameters.AddWithValue("@in_specialOccasionDate", request.SpecialOccasionDate);
             cmd.Parameters.AddWithValue("@in_PersonName", request.PersonName);
             cmd.Parameters.AddWithValue("@in_Address", (object?)request.Address ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@In_AlternateNumber", (object?)request.ContactNumber ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@In_ContactNumber", (object?)request.ContactNumber ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@In_MobileNumber", (object?)request.MobileNumber ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@in_EmailId", (object?)request.EmailId ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@in_Gender", request.Gender);
