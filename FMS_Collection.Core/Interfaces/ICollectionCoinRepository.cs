@@ -18,5 +18,6 @@ namespace FMS_Collection.Core.Interfaces
         Task<Guid> AddAsync(CoinNoteCollectionRequest coinnotecollection, Guid coinNoteCollectionId);
         Task<bool> UpdateAsync(CoinNoteCollectionRequest coinnotecollection, Guid coinNoteCollectionId);
         Task<bool> DeleteAsync(Guid coinNoteCollectionId, Guid userId);
+        Task<List<CoinNoteCollectionSummaryResponse>> GetSummaryAsync();
     }
 }

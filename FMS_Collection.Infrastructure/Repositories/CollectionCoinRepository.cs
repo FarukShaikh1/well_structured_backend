@@ -119,6 +119,45 @@ namespace FMS_Collection.Infrastructure.Repositories
             return coinnotecollections;
         }
 
+        public async Task<List<CoinNoteCollectionSummaryResponse>> GetSummaryAsync()
+        {
+            var coinnotecollections = new List<CoinNoteCollectionSummaryResponse>();
+            try
+            {
+                using var conn = _dbFactory.CreateConnection();
+                using var cmd = new SqlCommand("CoinNoteCollectionSummary_Get", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.CommandTimeout = 120;
+                conn.Open();
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    coinnotecollections.Add(new CoinNoteCollectionSummaryResponse
+                    {
+                        CountryId = reader["CountryId"] != DBNull.Value ? Convert.ToInt32(reader["CountryId"]) : 0,
+                        CountryName = reader["CountryName"]?.ToString(),
+                        CurrencyCode = reader["CurrencyCode"]?.ToString(),
+                        CurrencyName = reader["CurrencyName"]?.ToString(),
+                        CurrencySymbol = reader["CurrencySymbol"]?.ToString(),
+                        NumberOfNotes = reader["NumberOfNotes"] != DBNull.Value ? Convert.ToInt32(reader["NumberOfNotes"]) : (int?)null,
+                        NumberOfCoins = reader["NumberOfCoins"] != DBNull.Value ? Convert.ToInt32(reader["NumberOfCoins"]) : (int?)null,
+                        Total = reader["Total"] != DBNull.Value ? Convert.ToInt32(reader["Total"]) : (int?)null
+                        // No need to set Total manually if it's a computed property
+                    });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving coinnotecollections.", ex);
+            }
+
+            return coinnotecollections;
+        }
+
         public async Task<CoinNoteCollectionDetailsResponse> GetCoinNoteCollectionDetailsAsync(Guid coinNoteCollectionId, Guid userId)
         {
             var result = new CoinNoteCollectionDetailsResponse();

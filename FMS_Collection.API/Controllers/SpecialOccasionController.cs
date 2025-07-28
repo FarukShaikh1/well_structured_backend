@@ -44,6 +44,7 @@ public class SpecialOccasionController : ControllerBase
     public async Task<IActionResult> Add([FromBody] SpecialOccasionRequest specialOccasionRequest, Guid userId)
     {
         var result = await _service.AddDayAsync(specialOccasionRequest, userId);
+        
         return Ok(result);
     }
 

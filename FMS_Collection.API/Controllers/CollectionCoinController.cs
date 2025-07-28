@@ -31,6 +31,15 @@ public class CoinNoteCollectionController : ControllerBase
         return Ok(result);
     }
 
+
+    [HttpPost]
+    [Route("GetSummary")]
+    public async Task<IActionResult> GetSummary()
+    {
+        var result = await _service.GetSummaryAsync();
+        return Ok(result);
+    }
+
     [HttpGet]
     [Route("GetDetails")]
     public async Task<IActionResult> GetDetails(Guid coinNoteCollectionId, Guid userId)

@@ -20,5 +20,6 @@ namespace FMS_Collection.Application.Services
         public Task<Guid> AddCoinNoteCollectionAsync(CoinNoteCollectionRequest CoinNoteCollection,Guid coinNoteCollectionId) => _repository.AddAsync(CoinNoteCollection, coinNoteCollectionId);
         public Task<bool> UpdateCoinNoteCollectionAsync(CoinNoteCollectionRequest CoinNoteCollection, Guid coinNoteCollectionId) => _repository.UpdateAsync(CoinNoteCollection, coinNoteCollectionId);
         public Task<bool> DeleteCoinNoteCollectionAsync(Guid coinNoteCollectionId, Guid userId) => _repository.DeleteAsync(coinNoteCollectionId, userId);
+        public Task<List<CoinNoteCollectionSummaryResponse>> GetSummaryAsync() => _repository.GetSummaryAsync();
     }
 }

@@ -130,7 +130,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                         RoleId = reader["RoleId"] != DBNull.Value ? (Guid?)reader["RoleId"] : null,
                         Birthdate = reader["Birthdate"] != DBNull.Value ? (DateTime?)reader["Birthdate"] : null,
                         MobileNumber = reader["MobileNumber"]?.ToString(),
-                        FailedLoginCount = reader["FailedLoginCount"] != DBNull.Value ? (int?)reader["FailedLoginCount"] : null,
+                        FailedLoginCount = reader["FailedLoginCount"] != DBNull.Value ? Convert.ToInt32(reader["FailedLoginCount"]) : null,
                         LockExpiryDate = reader["LockExpiryDate"] != DBNull.Value ? (DateTime?)reader["LockExpiryDate"] : null,
                         PasswordLastChangedOn = reader["PasswordLastChangedOn"] != DBNull.Value ? (DateTime?)reader["PasswordLastChangedOn"] : null,
                         ThumbnailPath = reader["ThumbnailPath"]?.ToString(),
