@@ -1,4 +1,4 @@
-﻿namespace FMS_Collection.Core.Entities
+﻿namespace FMS_Collection.Core.Response
 {
     public class UserPermissionResponse
     {

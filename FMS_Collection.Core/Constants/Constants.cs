@@ -80,5 +80,13 @@
             public const string SaltKey = "S@LT&KEY";
             public const string VIKey = "@1B2c3D4e5F6g7H8";
         }
+
+        public struct UserConfig
+        {
+            public const string ACCOUNT = "Account";
+            public const string RELATION = "Relation";
+            public const string OCCASION_TYPE = "OccasionType";
+        }
+
     }
 }
