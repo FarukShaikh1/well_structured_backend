@@ -4,7 +4,9 @@ using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
 using FMS_Collection.Infrastructure.Data;
 using Microsoft.Data.SqlClient;
+using System.Collections.Generic;
 using System.Data;
+//using System.Transactions;
 
 namespace FMS_Collection.Infrastructure.Repositories
 {
@@ -81,25 +83,27 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
                 conn.Open();
 
+
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
                     Transactions.Add(new TransactionListResponse
                     {
                         Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
-                        AccountId = reader["AccountId"] != DBNull.Value ? (Guid?)reader["AccountId"] : null,
+                        TransactionGroupId = reader["TransactionGroupId"] != DBNull.Value ? (Guid?)reader["TransactionGroupId"] : null,
                         TransactionDate = reader["TransactionDate"] != DBNull.Value ? (DateTime?)reader["TransactionDate"] : null,
                         SourceOrReason = reader["SourceOrReason"]?.ToString(),
                         Income = reader["Income"] != DBNull.Value ? (decimal?)reader["Income"] : null,
                         Expense = reader["Expense"] != DBNull.Value ? (decimal?)reader["Expense"] : null,
-                        Balance = reader["Balance"] != DBNull.Value ? (decimal?)reader["Balance"] : null,
                         Description = reader["Description"]?.ToString(),
-                        AssetId = reader["AssetId"] != DBNull.Value ? (Guid?)reader["AssetId"] : null,
                         Purpose = reader["Purpose"]?.ToString(),
-                        CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
-                        CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
-                        ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
-                        ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
+                        AccountName = reader["AccountName"]?.ToString(),
+                        //AssetId = reader["AssetId"] != DBNull.Value ? (Guid?)reader["AssetId"] : null,
+                        //Balance = reader["Balance"] != DBNull.Value ? (decimal?)reader["Balance"] : null,
+                        //CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
+                        //CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
+                        //ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
+                        //ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
                     });
                 }
 
@@ -135,26 +139,29 @@ namespace FMS_Collection.Infrastructure.Repositories
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    Transactions.Add(new TransactionSummaryResponse
+                    var row = new TransactionSummaryResponse
                     {
-                        Id = reader.GetGuid(reader.GetOrdinal("Id")),
+                        TransactionGroupId = reader.GetGuid(reader.GetOrdinal("TransactionGroupId")),
                         TransactionDate = reader.GetDateTime(reader.GetOrdinal("TransactionDate")),
                         SourceOrReason = reader.IsDBNull(reader.GetOrdinal("SourceOrReason")) ? null : reader.GetString(reader.GetOrdinal("SourceOrReason")),
                         Purpose = reader.IsDBNull(reader.GetOrdinal("Purpose")) ? null : reader.GetString(reader.GetOrdinal("Purpose")),
                         Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString(reader.GetOrdinal("Description")),
-                        Cash = reader.IsDBNull(reader.GetOrdinal("Cash")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("Cash")),
-                        Balance = reader.IsDBNull(reader.GetOrdinal("Balance")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("Balance")),
-
-                    });
+                    };
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        var column = reader.GetName(i);
+                        if (column != "TransactionGroupId" && column != "TransactionDate" && column != "SourceOrReason" && column != "Purpose" && column != "Description")
+                        {
+                            row.AccountData[column] = reader.IsDBNull(i) ? null : reader.GetValue(i);
+                        }
+                    }
+                    Transactions.Add(row);
                 }
-
-
             }
             catch (Exception ex)
             {
                 throw new Exception("An error occurred while retrieving Transactions.", ex);
             }
-
             return Transactions;
         }
 
@@ -203,7 +210,7 @@ namespace FMS_Collection.Infrastructure.Repositories
 
         public async Task<TransactionDetailsResponse> GetTransactionDetailsAsync(Guid TransactionId, Guid userId)
         {
-            var result = new TransactionDetailsResponse();
+            TransactionDetailsResponse? result = null;
             try
             {
                 using var conn = _dbFactory.CreateConnection();
@@ -215,20 +222,31 @@ namespace FMS_Collection.Infrastructure.Repositories
 
                 conn.Open();
                 using var reader = await cmd.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
+                while (await reader.ReadAsync())
                 {
-                    result = new TransactionDetailsResponse
+                    if (result == null)
                     {
-                        Id = reader.IsDBNull(reader.GetOrdinal("Id")) ? null : reader.GetGuid(reader.GetOrdinal("Id")),
-                        TransactionDate = reader.IsDBNull(reader.GetOrdinal("TransactionDate")) ? DateTime.MinValue : reader.GetDateTime(reader.GetOrdinal("TransactionDate")),
-                        SourceOrReason = reader.IsDBNull(reader.GetOrdinal("SourceOrReason")) ? null : reader.GetString(reader.GetOrdinal("SourceOrReason")),
-                        Purpose = reader.IsDBNull(reader.GetOrdinal("Purpose")) ? null : reader.GetString(reader.GetOrdinal("Purpose")),
-                        Cash = reader.IsDBNull(reader.GetOrdinal("Cash")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("Cash")),
-                        AssetId = reader.IsDBNull(reader.GetOrdinal("AssetId")) ? null : reader.GetGuid(reader.GetOrdinal("AssetId")),
-                        Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString(reader.GetOrdinal("Description"))
-                    };
-                }
+                        result = new TransactionDetailsResponse
+                        {
+                            Id = reader["Id"] as Guid?,
+                            TransactionGroupId = reader["TransactionGroupId"] as Guid?,
+                            TransactionDate = reader["TransactionDate"] as DateTime?,
+                            SourceOrReason = reader["SourceOrReason"]?.ToString(),
+                            Description = reader["Description"]?.ToString(),
+                            Purpose = reader["Purpose"]?.ToString(),
+                        };
+                    }
 
+                    result.AccountSplits.Add(new TransactionAccountSplit
+                    {
+                        AccountId = reader.GetGuid(reader.GetOrdinal("AccountId")),
+                        Amount = reader.GetDecimal(reader.GetOrdinal("Amount")),
+                        Category = Enum.TryParse<TransactionCategory>(
+                        reader["Category"]?.ToString(),
+                        ignoreCase: true,
+                        out var category) ? category : default
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -238,9 +256,9 @@ namespace FMS_Collection.Infrastructure.Repositories
             return result;
         }
 
-        public async Task<TransactionSuggestionList> GetTransactionSuggestionListAsync(Guid userId)
+        public async Task<List<TransactionSuggestionList>> GetTransactionSuggestionListAsync(Guid userId)
         {
-            var result = new TransactionSuggestionList();
+            var result = new List<TransactionSuggestionList>();
             try
             {
                 using var conn = _dbFactory.CreateConnection();
@@ -252,16 +270,16 @@ namespace FMS_Collection.Infrastructure.Repositories
 
                 conn.Open();
                 using var reader = await cmd.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
+                while (await reader.ReadAsync())
                 {
-                    result = new TransactionSuggestionList
+                    result.Add(new TransactionSuggestionList
                     {
                         SourceOrReason = reader.IsDBNull(reader.GetOrdinal("SourceOrReason")) ? null : reader.GetString(reader.GetOrdinal("SourceOrReason")),
                         Purpose = reader.IsDBNull(reader.GetOrdinal("Purpose")) ? null : reader.GetString(reader.GetOrdinal("Purpose")),
                         Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString(reader.GetOrdinal("Description"))
-                    };
-                }
+                    });
 
+                }
             }
             catch (Exception ex)
             {
@@ -271,43 +289,56 @@ namespace FMS_Collection.Infrastructure.Repositories
             return result;
         }
 
-        public async Task<Guid>? AddAsync(TransactionRequest request, Guid userId)
+        public async Task<Guid> AddAsync(TransactionRequest request, Guid userId)
         {
             try
             {
                 using var conn = _dbFactory.CreateConnection();
+                await conn.OpenAsync();
+
                 using var cmd = new SqlCommand("Transaction_Add", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
 
-                // Add Input Parameters (matching your class)
-                cmd.Parameters.AddWithValue("@in_AccountId", request.AccountId);
-                cmd.Parameters.AddWithValue("@in_TransactionDate", request.TransactionDate);
-                cmd.Parameters.AddWithValue("@in_SourceOrReason", request.SourceOrReason);
-                cmd.Parameters.AddWithValue("@in_Amount", request.Amount);
-                cmd.Parameters.AddWithValue("@in_Category", request.Category);
-                cmd.Parameters.AddWithValue("@in_Description", request.Description);
-                cmd.Parameters.AddWithValue("@in_Purpose", request.Purpose);
+                cmd.Parameters.AddWithValue("@in_TransactionDate", request.TransactionDate ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@in_SourceOrReason", request.SourceOrReason ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@in_Description", request.Description ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@in_Purpose", request.Purpose ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_UserId", userId);
 
-                // Add Output Parameter
-                var outIdParam = new SqlParameter("@out_TransactionId", SqlDbType.UniqueIdentifier)
+                // ✅ Add TVP parameter
+                var splitTable = new DataTable();
+                splitTable.Columns.Add("AccountId", typeof(Guid));
+                splitTable.Columns.Add("Amount", typeof(decimal));
+                splitTable.Columns.Add("Category", typeof(string));
+
+                foreach (var split in request.AccountSplits)
+                {
+                    if (split.Amount != 0 && split.Category.ToString() != "")
+                        splitTable.Rows.Add(split.AccountId, split.Amount, split.Category.ToString());
+                }
+
+                var tvpParam = new SqlParameter("@in_Splits", SqlDbType.Structured)
+                {
+                    TypeName = "dbo.TransactionAccountSplitType",
+                    Value = splitTable
+                };
+                cmd.Parameters.Add(tvpParam);
+
+                var outParam = new SqlParameter("@out_TransactionId", SqlDbType.UniqueIdentifier)
                 {
                     Direction = ParameterDirection.Output
                 };
-                cmd.Parameters.Add(outIdParam);
+                cmd.Parameters.Add(outParam);
 
-                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
 
-                // Retrieve the Output Parameter Value
-                Guid newInsertedId = (Guid)(outIdParam.Value ?? Guid.Empty);
-                return newInsertedId;
+                return (Guid)(outParam.Value ?? Guid.Empty);
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while adding the special occasion.", ex);
+                throw new Exception("An error occurred while adding the transaction.", ex);
             }
         }
 
@@ -320,15 +351,38 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-                cmd.Parameters.AddWithValue("@in_TransactionId", request.Id);
-                cmd.Parameters.AddWithValue("@in_TransactionDate", request.TransactionDate);
-                cmd.Parameters.AddWithValue("@in_SourceOrReason", request.SourceOrReason);
-                cmd.Parameters.AddWithValue("@in_Purpose", request.Purpose);
-                cmd.Parameters.AddWithValue("@in_Amount", request.Amount);
-                cmd.Parameters.AddWithValue("@in_Category", request.Category);
-                cmd.Parameters.AddWithValue("@in_Description", request.Description);
+                cmd.Parameters.AddWithValue("@in_TransactionGroupId", request.TransactionGroupId);
+                cmd.Parameters.AddWithValue("@in_TransactionDate", request.TransactionDate ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@in_SourceOrReason", request.SourceOrReason ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@in_Description", request.Description ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@in_Purpose", request.Purpose ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_UserId", userId);
-                await conn.OpenAsync();
+
+                // ✅ Add TVP parameter
+                var splitTable = new DataTable();
+                splitTable.Columns.Add("AccountId", typeof(Guid));
+                splitTable.Columns.Add("Amount", typeof(decimal));
+                splitTable.Columns.Add("Category", typeof(string));
+
+                foreach (var split in request.AccountSplits)
+                {
+                    if (split.Amount != 0 && split.Category.ToString() != "")
+                        splitTable.Rows.Add(split.AccountId, split.Amount, split.Category.ToString());
+                }
+
+                var tvpParam = new SqlParameter("@in_Splits", SqlDbType.Structured)
+                {
+                    TypeName = "dbo.TransactionAccountSplitType",
+                    Value = splitTable
+                };
+                cmd.Parameters.Add(tvpParam);
+
+                var outParam = new SqlParameter("@out_TransactionId", SqlDbType.UniqueIdentifier)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(outParam);
+
                 using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
                 {

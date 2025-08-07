@@ -17,7 +17,7 @@ namespace FMS_Collection.Core.Interfaces
         Task<List<TransactionSummaryResponse>> GetTransactionSummaryAsync(TransactionFilterRequest filter, Guid userId);
         Task<List<TransactionReportResponse>> GetTransactionReportAsync(TransactionFilterRequest filter, Guid userId);
         Task<TransactionDetailsResponse> GetTransactionDetailsAsync(Guid TransactionId, Guid userId);
-        Task<TransactionSuggestionList> GetTransactionSuggestionListAsync(Guid userId);
+        Task<List<TransactionSuggestionList>> GetTransactionSuggestionListAsync(Guid userId);
         Task<Guid> AddAsync(TransactionRequest Transaction, Guid userId);
         Task<bool> UpdateAsync(TransactionRequest Transaction, Guid userId);
         Task<bool> DeleteAsync(Guid TransactionId, Guid userId);

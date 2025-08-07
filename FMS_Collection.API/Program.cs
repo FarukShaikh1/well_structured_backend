@@ -2,6 +2,8 @@ using FMS_Collection.Application.Services;
 using FMS_Collection.Core.Interfaces;
 using FMS_Collection.Infrastructure.Data;
 using FMS_Collection.Infrastructure.Repositories;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +31,11 @@ builder.Services.AddScoped<SpecialOccasionService>();
 builder.Services.AddScoped<UserService>();
 
 builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false));
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
