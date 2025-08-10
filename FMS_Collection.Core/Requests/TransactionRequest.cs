@@ -15,7 +15,7 @@
     {
         public Guid AccountId { get; set; }
         public decimal Amount { get; set; }
-        public TransactionCategory Category { get; set; }
+        public TransactionCategory? Category { get; set; }
     }
 
     public enum TransactionCategory

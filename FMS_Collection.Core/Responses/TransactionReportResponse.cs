@@ -1,5 +1,4 @@
 ﻿using FMS_Collection.Core.Common;
-using System;
 
 namespace FMS_Collection.Core.Response
 {

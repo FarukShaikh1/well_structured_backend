@@ -289,7 +289,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             return result;
         }
 
-        public async Task<Guid> AddAsync(TransactionRequest request, Guid userId)
+        public async Task<Guid> AddAsync(TransactionRequest request, DataTable splitTable, Guid userId)
         {
             try
             {
@@ -306,18 +306,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.AddWithValue("@in_Description", request.Description ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_Purpose", request.Purpose ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_UserId", userId);
-
-                // ✅ Add TVP parameter
-                var splitTable = new DataTable();
-                splitTable.Columns.Add("AccountId", typeof(Guid));
-                splitTable.Columns.Add("Amount", typeof(decimal));
-                splitTable.Columns.Add("Category", typeof(string));
-
-                foreach (var split in request.AccountSplits)
-                {
-                    if (split.Amount != 0 && split.Category.ToString() != "")
-                        splitTable.Rows.Add(split.AccountId, split.Amount, split.Category.ToString());
-                }
 
                 var tvpParam = new SqlParameter("@in_Splits", SqlDbType.Structured)
                 {
@@ -342,15 +330,17 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> UpdateAsync(TransactionRequest request, Guid userId)
+        public async Task<bool> UpdateAsync(TransactionRequest request, DataTable splitTable, Guid userId)
         {
             try
             {
                 using var conn = _dbFactory.CreateConnection();
+                await conn.OpenAsync();
                 using var cmd = new SqlCommand("Transaction_Update", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
+                cmd.CommandTimeout = 1200;
                 cmd.Parameters.AddWithValue("@in_TransactionGroupId", request.TransactionGroupId);
                 cmd.Parameters.AddWithValue("@in_TransactionDate", request.TransactionDate ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_SourceOrReason", request.SourceOrReason ?? (object)DBNull.Value);
@@ -358,30 +348,12 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.AddWithValue("@in_Purpose", request.Purpose ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_UserId", userId);
 
-                // ✅ Add TVP parameter
-                var splitTable = new DataTable();
-                splitTable.Columns.Add("AccountId", typeof(Guid));
-                splitTable.Columns.Add("Amount", typeof(decimal));
-                splitTable.Columns.Add("Category", typeof(string));
-
-                foreach (var split in request.AccountSplits)
-                {
-                    if (split.Amount != 0 && split.Category.ToString() != "")
-                        splitTable.Rows.Add(split.AccountId, split.Amount, split.Category.ToString());
-                }
-
                 var tvpParam = new SqlParameter("@in_Splits", SqlDbType.Structured)
                 {
                     TypeName = "dbo.TransactionAccountSplitType",
                     Value = splitTable
                 };
                 cmd.Parameters.Add(tvpParam);
-
-                var outParam = new SqlParameter("@out_TransactionId", SqlDbType.UniqueIdentifier)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                cmd.Parameters.Add(outParam);
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
