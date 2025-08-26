@@ -2,8 +2,8 @@
 {
     public class ServiceResponse<T>
     {
-        public T Data { get; set; }
-        public bool Success { get; set; } = true;
+        public T Data { get; set; } = default;
+        public bool Success { get; set; } = false;
         public string Message { get; set; } = "";
 
         public ServiceResponse<T> Response(bool Success, string Message, T Data = default)

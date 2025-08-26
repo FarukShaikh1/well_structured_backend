@@ -23,6 +23,14 @@ public class SettingsController : ControllerBase
     }
 
     [HttpGet]
+    [Route("GetActiveConfigList")]
+    public async Task<IActionResult> GetActiveConfigList(Guid userId, string config)
+    {
+        var result = await _service.GetActiveConfigListAsync(userId, config);
+        return Ok(result);
+    }
+
+    [HttpGet]
     [Route("GetConfigDetails")]
     public async Task<IActionResult> GetConfigDetails(Guid id, string config)
     {
@@ -58,7 +66,7 @@ public class SettingsController : ControllerBase
     [Route("DeactiveConfig")]
     public async Task<IActionResult> DeactiveConfig(Guid id, Guid userId, string config)
     {
-        var result = await _service.DeleteConfigAsync(id, userId, config);
+        var result = await _service.DeactivateConfigAsync(id, userId, config);
         return Ok(result);
     }
 

@@ -8,6 +8,7 @@ namespace FMS_Collection.Core.Interfaces
     public interface ISettingsRepository
     {
         Task<List<ConfigurationResponse>> GetConfigListAsync(Guid userId, string config);
+        Task<List<ConfigurationResponse>> GetActiveConfigListAsync(Guid userId, string config);
         Task<ConfigurationResponse> GetConfigDetailsAsync(Guid id, string config);
         Task<Guid> AddConfigAsync(ConfigurationRequest Config, Guid userId, string config);
         Task<bool> UpdateConfigAsync(ConfigurationRequest Config, Guid userId, string config);

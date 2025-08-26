@@ -1,7 +1,9 @@
 ﻿// API/Controllers/AssetController.cs
-using Microsoft.AspNetCore.Mvc;
+using Azure;
 using FMS_Collection.Application.Services;
+using FMS_Collection.Core.Common;
 using FMS_Collection.Core.Request;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FMS_Collection.API.Controllers;
 [ApiController]
@@ -57,7 +59,7 @@ public class AssetController : ControllerBase
 
     [HttpPost]
     [Route("UploadAndSaveFile")]
-    public async Task<Guid?> UploadAndSaveFile(IFormFile file, Guid userId, Guid? assetId=null, string documentType = null)
+    public async Task<IActionResult> UploadAndSaveFile(IFormFile file, Guid userId, Guid? assetId = null, string documentType = null)
     {
         if (file != null && assetId != null)
         {
@@ -65,9 +67,11 @@ public class AssetController : ControllerBase
         }
         else if (file != null && assetId == null)
         {
-            assetId = await _service.SaveFile(file, documentType, userId, false);
+            var response = await _service.SaveFile(file, documentType, userId, false);
+            return Ok(response);
         }
-        return assetId;
+        return Ok();
+
     }
 
 }

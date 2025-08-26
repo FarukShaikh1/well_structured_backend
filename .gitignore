@@ -16,3 +16,9 @@
 /FMS_Collection.Infrastructure/obj/Debug/net8.0
 /FMS_Collection.Infrastructure/obj/Release/net8.0
 /FMS_Collection.Infrastructure/obj
+/FMS_Collection.API/bin/Release/net8.0
+/FMS_Collection.API/Properties/PublishProfiles
+/FMS_Collection.Application/bin/Release/net8.0
+/FMS_Collection.Core/bin/Release/net8.0
+/FMS_Collection.Infrastructure/bin/Release/net8.0
+/PublishedFolder

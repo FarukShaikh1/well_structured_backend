@@ -14,7 +14,6 @@ builder.Services.AddScoped<ISpecialOccasionRepository, SpecialOccasionRepository
 builder.Services.AddScoped<IAssetRepository, AssetRepository>();
 builder.Services.AddScoped<ICoinNoteCollectionRepository, CoinNoteCollectionRepository>();
 builder.Services.AddScoped<ICommonListRepository, CommonListRepository>();
-builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 builder.Services.AddScoped<ISettingsRepository, SettingsRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
@@ -23,7 +22,6 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<AssetService>();
 builder.Services.AddScoped<CoinNoteCollectionService>();
 builder.Services.AddScoped<CommonListService>();
-builder.Services.AddScoped<ExpenseService>();
 builder.Services.AddScoped<SettingsService>();
 builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<RoleService>();

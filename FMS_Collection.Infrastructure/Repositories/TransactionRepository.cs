@@ -22,97 +22,79 @@ namespace FMS_Collection.Infrastructure.Repositories
         public async Task<List<Transaction>> GetAllAsync()
         {
             var Transactions = new List<Transaction>();
-            try
+            using var conn = _dbFactory.CreateConnection();
+            using var cmd = new SqlCommand("Transaction_GetAll", conn)
             {
-                using var conn = _dbFactory.CreateConnection();
-                using var cmd = new SqlCommand("Transaction_GetAll", conn)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
-                cmd.CommandTimeout = 600;
-                conn.Open();
+                CommandType = CommandType.StoredProcedure
+            };
+            cmd.CommandTimeout = 600;
+            conn.Open();
 
-                using var reader = await cmd.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
-                {
-                    Transactions.Add(new Transaction
-                    {
-                        Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
-                        AccountId = reader["AccountId"] != DBNull.Value ? (Guid?)reader["AccountId"] : null,
-                        TransactionDate = reader["TransactionDate"] != DBNull.Value ? (DateTime?)reader["TransactionDate"] : null,
-                        SourceOrReason = reader["SourceOrReason"]?.ToString(),
-                        Amount = reader["Amount"] != DBNull.Value ? (decimal?)reader["Amount"] : null,
-                        Balance = reader["Balance"] != DBNull.Value ? (decimal?)reader["Balance"] : null,
-                        Category = reader["Category"]?.ToString(),
-                        Description = reader["Description"]?.ToString(),
-                        AssetId = reader["AssetId"] != DBNull.Value ? (Guid?)reader["AssetId"] : null,
-                        Purpose = reader["Purpose"]?.ToString(),
-                        CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
-                        CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
-                        ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
-                        ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
-                        IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : null
-                    });
-                }
-
-            }
-            catch (Exception ex)
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
-                throw new Exception("An error occurred while retrieving Transactions.", ex);
+                Transactions.Add(new Transaction
+                {
+                    Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
+                    AccountId = reader["AccountId"] != DBNull.Value ? (Guid?)reader["AccountId"] : null,
+                    TransactionDate = reader["TransactionDate"] != DBNull.Value ? (DateTime?)reader["TransactionDate"] : null,
+                    SourceOrReason = reader["SourceOrReason"]?.ToString(),
+                    Amount = reader["Amount"] != DBNull.Value ? (decimal?)reader["Amount"] : null,
+                    Balance = reader["Balance"] != DBNull.Value ? (decimal?)reader["Balance"] : null,
+                    Category = reader["Category"]?.ToString(),
+                    Description = reader["Description"]?.ToString(),
+                    AssetId = reader["AssetId"] != DBNull.Value ? (Guid?)reader["AssetId"] : null,
+                    Purpose = reader["Purpose"]?.ToString(),
+                    CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
+                    CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
+                    ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
+                    ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
+                    IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : null
+                });
             }
-
             return Transactions;
         }
 
         public async Task<List<TransactionListResponse>> GetTransactionListAsync(TransactionFilterRequest filter, Guid userId)
         {
             var Transactions = new List<TransactionListResponse>();
-            try
+            using var conn = _dbFactory.CreateConnection();
+            using var cmd = new SqlCommand("Transaction_Get", conn)
             {
-                using var conn = _dbFactory.CreateConnection();
-                using var cmd = new SqlCommand("Transaction_Get", conn)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
-                cmd.CommandTimeout = 120;
-                cmd.Parameters.Add(new SqlParameter("@in_FromDate", SqlDbType.Date) { Value = filter.FromDate });
-                cmd.Parameters.Add(new SqlParameter("@in_ToDate", SqlDbType.Date) { Value = filter.ToDate });
-                cmd.Parameters.Add(new SqlParameter("@in_SourceOrReason", SqlDbType.VarChar) { Value = filter.SourceOrReason });
-                cmd.Parameters.Add(new SqlParameter("@in_MinAmount", SqlDbType.Decimal) { Value = filter.MinAmount });
-                cmd.Parameters.Add(new SqlParameter("@in_MaxAmount", SqlDbType.Decimal) { Value = filter.MaxAmount });
-                cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
-                conn.Open();
+                CommandType = CommandType.StoredProcedure
+            };
+            cmd.CommandTimeout = 120;
+            cmd.Parameters.Add(new SqlParameter("@in_FromDate", SqlDbType.Date) { Value = filter.FromDate });
+            cmd.Parameters.Add(new SqlParameter("@in_ToDate", SqlDbType.Date) { Value = filter.ToDate });
+            cmd.Parameters.Add(new SqlParameter("@in_SourceOrReason", SqlDbType.VarChar) { Value = filter.SourceOrReason });
+            cmd.Parameters.Add(new SqlParameter("@in_MinAmount", SqlDbType.Decimal) { Value = filter.MinAmount });
+            cmd.Parameters.Add(new SqlParameter("@in_MaxAmount", SqlDbType.Decimal) { Value = filter.MaxAmount });
+            cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
+            conn.Open();
 
 
-                using var reader = await cmd.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
-                {
-                    Transactions.Add(new TransactionListResponse
-                    {
-                        Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
-                        TransactionGroupId = reader["TransactionGroupId"] != DBNull.Value ? (Guid?)reader["TransactionGroupId"] : null,
-                        TransactionDate = reader["TransactionDate"] != DBNull.Value ? (DateTime?)reader["TransactionDate"] : null,
-                        SourceOrReason = reader["SourceOrReason"]?.ToString(),
-                        Income = reader["Income"] != DBNull.Value ? (decimal?)reader["Income"] : null,
-                        Expense = reader["Expense"] != DBNull.Value ? (decimal?)reader["Expense"] : null,
-                        Description = reader["Description"]?.ToString(),
-                        Purpose = reader["Purpose"]?.ToString(),
-                        AccountName = reader["AccountName"]?.ToString(),
-                        //AssetId = reader["AssetId"] != DBNull.Value ? (Guid?)reader["AssetId"] : null,
-                        //Balance = reader["Balance"] != DBNull.Value ? (decimal?)reader["Balance"] : null,
-                        //CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
-                        //CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
-                        //ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
-                        //ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
-                    });
-                }
-
-            }
-            catch (Exception ex)
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
-                throw new Exception("An error occurred while retrieving Transactions.", ex);
+                Transactions.Add(new TransactionListResponse
+                {
+                    Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
+                    TransactionGroupId = reader["TransactionGroupId"] != DBNull.Value ? (Guid?)reader["TransactionGroupId"] : null,
+                    TransactionDate = reader["TransactionDate"] != DBNull.Value ? (DateTime?)reader["TransactionDate"] : null,
+                    SourceOrReason = reader["SourceOrReason"]?.ToString(),
+                    Income = reader["Income"] != DBNull.Value ? (decimal?)reader["Income"] : null,
+                    Expense = reader["Expense"] != DBNull.Value ? (decimal?)reader["Expense"] : null,
+                    Description = reader["Description"]?.ToString(),
+                    Purpose = reader["Purpose"]?.ToString(),
+                    AccountName = reader["AccountName"]?.ToString(),
+                    //AssetId = reader["AssetId"] != DBNull.Value ? (Guid?)reader["AssetId"] : null,
+                    //Balance = reader["Balance"] != DBNull.Value ? (decimal?)reader["Balance"] : null,
+                    //CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
+                    //CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
+                    //ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
+                    //ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
+                });
             }
-
             return Transactions;
         }
 
@@ -141,11 +123,57 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     var row = new TransactionSummaryResponse
                     {
+                        Id = reader.GetGuid(reader.GetOrdinal("TransactionGroupId")),
                         TransactionGroupId = reader.GetGuid(reader.GetOrdinal("TransactionGroupId")),
                         TransactionDate = reader.GetDateTime(reader.GetOrdinal("TransactionDate")),
                         SourceOrReason = reader.IsDBNull(reader.GetOrdinal("SourceOrReason")) ? null : reader.GetString(reader.GetOrdinal("SourceOrReason")),
                         Purpose = reader.IsDBNull(reader.GetOrdinal("Purpose")) ? null : reader.GetString(reader.GetOrdinal("Purpose")),
                         Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString(reader.GetOrdinal("Description")),
+                    };
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        var column = reader.GetName(i);
+                        if (column != "TransactionGroupId" && column != "TransactionDate" && column != "SourceOrReason" && column != "Purpose" && column != "Description")
+                        {
+                            row.AccountData[column] = reader.IsDBNull(i) ? null : reader.GetValue(i);
+                        }
+                    }
+                    Transactions.Add(row);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving Transactions.", ex);
+            }
+            return Transactions;
+        }
+
+        public async Task<List<TransactionSummaryResponse>> GetBalanceSummaryAsync(TransactionFilterRequest filter, Guid userId)
+        {
+            var Transactions = new List<TransactionSummaryResponse>();
+            try
+            {
+                using var conn = _dbFactory.CreateConnection();
+                //using var cmd = new SqlCommand("TransactionSummary_Get", conn)
+                using var cmd = new SqlCommand("TransactionDayWiseSummary_Get", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.CommandTimeout = 120;
+                cmd.Parameters.Add(new SqlParameter("@in_FromDate", SqlDbType.Date) { Value = filter.FromDate });
+                cmd.Parameters.Add(new SqlParameter("@in_ToDate", SqlDbType.Date) { Value = filter.ToDate });
+                cmd.Parameters.Add(new SqlParameter("@in_SourceOrReason", SqlDbType.VarChar) { Value = filter.SourceOrReason });
+                cmd.Parameters.Add(new SqlParameter("@in_MinAmount", SqlDbType.Decimal) { Value = filter.MinAmount });
+                cmd.Parameters.Add(new SqlParameter("@in_MaxAmount", SqlDbType.Decimal) { Value = filter.MaxAmount });
+                cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
+                conn.Open();
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    var row = new TransactionSummaryResponse
+                    {
+                        TransactionDate = reader.GetDateTime(reader.GetOrdinal("TransactionDate")),
                     };
                     for (int i = 0; i < reader.FieldCount; i++)
                     {
@@ -262,11 +290,12 @@ namespace FMS_Collection.Infrastructure.Repositories
             try
             {
                 using var conn = _dbFactory.CreateConnection();
-                using var cmd = new SqlCommand("ExpenseSuggestionList_Get", conn)
+                using var cmd = new SqlCommand("TransactionSuggestionList_Get", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
+                cmd.CommandTimeout = 600;
 
                 conn.Open();
                 using var reader = await cmd.ExecuteReaderAsync();

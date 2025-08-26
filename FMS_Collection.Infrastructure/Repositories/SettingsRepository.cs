@@ -60,6 +60,49 @@ namespace FMS_Collection.Infrastructure.Repositories
             return Configs;
         }
 
+        public async Task<List<ConfigurationResponse>> GetActiveConfigListAsync(Guid userId, string config)
+        {
+            var Configs = new List<ConfigurationResponse>();
+            try
+            {
+                using var conn = _dbFactory.CreateConnection();
+                using var cmd = new SqlCommand("Config_Get", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.CommandTimeout = 120;
+                cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
+                cmd.Parameters.Add(new SqlParameter("@in_ConfigType", SqlDbType.VarChar) { Value = config });
+                cmd.Parameters.Add(new SqlParameter("@in_ShowActiveOnly", SqlDbType.Bit) { Value = true });
+                conn.Open();
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    Configs.Add(new ConfigurationResponse
+                    {
+                        Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
+                        ConfigurationName = reader["ConfigurationName"]?.ToString(),
+                        Description = reader["Description"]?.ToString(),
+                        DisplayOrder = reader["DisplayOrder"] != DBNull.Value ? (int?)reader["DisplayOrder"] : null,
+                        IsActive = reader["IsActive"] != DBNull.Value ? (bool?)reader["IsActive"] : null,
+                        CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
+                        CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
+                        ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
+                        ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
+                        IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : null
+                    });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving Configs.", ex);
+            }
+
+            return Configs;
+        }
+
         public async Task<ConfigurationResponse> GetConfigDetailsAsync(Guid id, string config)
         {
             var result = new ConfigurationResponse();

@@ -16,11 +16,11 @@ namespace FMS_Collection.Core.Interfaces
         Task<CommonListResponse> GetCommonListDetailsAsync(Guid CommonListItemId);
         Task<CommonListItemResponse> GetCommonListItemDetailsAsync(Guid CommonListItemId);
 
-        Task AddCommonListAsync(CommonListRequest CommonList, Guid CommonId);
-        Task AddCommonListItemAsync(CommonListItemRequest CommonListItem, Guid CommonId);
+        Task<Guid> AddCommonListAsync(CommonListRequest CommonList, Guid CommonId);
+        Task<Guid> AddCommonListItemAsync(CommonListItemRequest CommonListItem, Guid CommonId);
 
-        Task UpdateCommonListAsync(CommonListRequest Common, Guid CommonId);
-        Task UpdateCommonListItemAsync(CommonListItemRequest Common, Guid CommonId);
+        Task<bool> UpdateCommonListAsync(CommonListRequest Common, Guid CommonId);
+        Task<bool> UpdateCommonListItemAsync(CommonListItemRequest Common, Guid CommonId);
 
         Task<bool> DeleteCommonListAsync(Guid CommonId, Guid userId);
         Task<bool> DeleteCommonListItemAsync(Guid CommonId, Guid userId);

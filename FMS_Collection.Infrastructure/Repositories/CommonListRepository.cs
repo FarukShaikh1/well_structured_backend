@@ -244,7 +244,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             return result;
         }
 
-        public async Task AddCommonListAsync(CommonListRequest Common, Guid CommonListId)
+        public async Task<Guid> AddCommonListAsync(CommonListRequest Common, Guid CommonListId)
         {
             try
             {
@@ -256,15 +256,16 @@ namespace FMS_Collection.Infrastructure.Repositories
 
                 AddCommonListRequestParameters(cmd, Common, CommonListId);
                 conn.Open();
-                await cmd.ExecuteNonQueryAsync();
+                var result = await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
             {
                 throw new Exception("An error occurred while adding the Common.", ex);
             }
+            return Guid.Empty;
         }
 
-        public async Task AddCommonListItemAsync(CommonListItemRequest Common, Guid CommonListId)
+        public async Task<Guid> AddCommonListItemAsync(CommonListItemRequest Common, Guid CommonListId)
         {
             try
             {
@@ -282,9 +283,10 @@ namespace FMS_Collection.Infrastructure.Repositories
             {
                 throw new Exception("An error occurred while adding the Common.", ex);
             }
+            return Guid.Empty;
         }
 
-        public async Task UpdateCommonListAsync(CommonListRequest Common, Guid CommonListId)
+        public async Task<bool> UpdateCommonListAsync(CommonListRequest Common, Guid CommonListId)
         {
             try
             {
@@ -302,9 +304,10 @@ namespace FMS_Collection.Infrastructure.Repositories
             {
                 throw new Exception("An error occurred while updating the Common.", ex);
             }
+            return true;
         }
 
-        public async Task UpdateCommonListItemAsync(CommonListItemRequest Common, Guid CommonListId)
+        public async Task<bool> UpdateCommonListItemAsync(CommonListItemRequest Common, Guid CommonListId)
         {
             try
             {
@@ -322,6 +325,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             {
                 throw new Exception("An error occurred while updating the Common.", ex);
             }
+            return true;
         }
 
         public async Task<bool> DeleteCommonListAsync(Guid CommonListId, Guid userId)

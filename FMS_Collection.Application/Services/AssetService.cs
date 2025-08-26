@@ -21,13 +21,79 @@ namespace FMS_Collection.Application.Services
             _repository = repository;
         }
         #region public methods
-        public Task<List<Asset>> GetAllAssetsAsync() => _repository.GetAllAsync();
-        public Task<AssetResponse> GetAssetDetailsAsync(Guid assetId) => _repository.GetAssetDetailsAsync(assetId);
-        public Task<Guid> AddAssetAsync(AssetRequest Asset, Guid userId) => _repository.AddAsync(Asset, userId);
-        public Task UpdateAssetAsync(AssetRequest Asset, Guid userId) => _repository.UpdateAsync(Asset, userId);
-        public Task<bool> DeleteAssetAsync(Guid assetId, Guid userId) => _repository.DeleteAsync(assetId, userId);
+        public async Task<ServiceResponse<List<Asset>>> GetAllAssetsAsync()
+        {
 
-        public async Task<Guid> SaveFile(IFormFile file, string documentType, Guid userId, bool isNonSecuredFile = true)
+            var response = new ServiceResponse<List<Asset>>();
+            try
+            {
+                var data = await _repository.GetAllAsync();
+                response.Success = true;
+                response.Data = data;
+                response.Message = "Transaction Records Fetched successfully";
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+        public async Task<ServiceResponse<AssetResponse>> GetAssetDetailsAsync(Guid assetId)
+        {
+            var response = new ServiceResponse<AssetResponse>();
+            try
+            {
+                var data = await _repository.GetAssetDetailsAsync(assetId);
+                response.Success = true;
+                response.Data = data;
+                response.Message = "Transaction Records Fetched successfully";
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+        public async Task<ServiceResponse<Guid>> AddAssetAsync(AssetRequest Asset, Guid userId)
+        {
+            var response = new ServiceResponse<Guid>();
+            try
+            {
+                var data = await _repository.AddAsync(Asset, userId);
+                response.Success = true;
+                response.Data = data;
+                response.Message = "Transaction Records Fetched successfully";
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+
+        public async Task UpdateAssetAsync(AssetRequest Asset, Guid userId)
+        {
+            _repository.UpdateAsync(Asset, userId);
+        }
+        public async Task<ServiceResponse<bool>> DeleteAssetAsync(Guid assetId, Guid userId)
+        {
+            var response = new ServiceResponse<bool>();
+            try
+            {
+                var data = await _repository.DeleteAsync(assetId, userId);
+                response.Success = true;
+                response.Data = data;
+                response.Message = "Transaction Records Fetched successfully";
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+        //=> 
+
+        public async Task<ServiceResponse<Guid>> SaveFile(IFormFile file, string documentType, Guid userId, bool isNonSecuredFile = true)
         {
             string fileName = GetFileName(file, documentType);
             AssetResponse filePathResponse = await UploadDocumentToDocStore(file, documentType, fileName);
@@ -39,7 +105,21 @@ namespace FMS_Collection.Application.Services
             assetRequest.ThumbnailPath = filePathResponse.ThumbnailPath;
             assetRequest.ContentType = file.ContentType;
             assetRequest.IsNonSecuredFile = isNonSecuredFile;
-            return await AddAssetAsync(assetRequest, userId);
+            //return await AddAssetAsync(assetRequest, userId);
+            var response = new ServiceResponse<Guid>();
+            try
+            {
+                var data = await AddAssetAsync(assetRequest, userId);
+                response.Success = true;
+                response.Data = data.Data;
+                response.Message = "Transaction Records Fetched successfully";
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+            }
+            return response;
+
         }
 
         public async Task UpdateFile(IFormFile file, Guid userId, Guid? assetId, string? documentType = "Other")
@@ -100,7 +180,7 @@ namespace FMS_Collection.Application.Services
             return filePathResponse;
         }
 
-        private async Task<string> CreateAndSaveThumbnail(string thumbFileName, byte[] fileBytes, string documentType)
+        private  async Task<string> CreateAndSaveThumbnail(string thumbFileName, byte[] fileBytes, string documentType)
         {
             string baseAssetDirectory = AppSettings.PhysicalPathDirectory;
             string relativeDirectoryPath = $"/{documentType}/thumbnails/";

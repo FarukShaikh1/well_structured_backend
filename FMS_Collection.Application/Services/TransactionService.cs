@@ -1,4 +1,5 @@
-﻿using FMS_Collection.Core.Entities;
+﻿using FMS_Collection.Core.Common;
+using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Interfaces;
 using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
@@ -14,26 +15,197 @@ namespace FMS_Collection.Application.Services
             _repository = repository;
         }
 
-        public Task<List<Transaction>> GetAllTransactionsAsync() => _repository.GetAllAsync();
-        public Task<List<TransactionListResponse>> GetTransactionListAsync(TransactionFilterRequest filter, Guid userId) => _repository.GetTransactionListAsync(filter, userId);
-        public Task<List<TransactionSummaryResponse>> GetTransactionSummaryAsync(TransactionFilterRequest filter, Guid userId) => _repository.GetTransactionSummaryAsync(filter, userId);
-        public Task<List<TransactionReportResponse>> GetTransactionReportAsync(TransactionFilterRequest filter, Guid userId) => _repository.GetTransactionReportAsync(filter, userId);
-        public Task<TransactionDetailsResponse> GetTransactionDetailsAsync(Guid TransactionId, Guid userId) => _repository.GetTransactionDetailsAsync(TransactionId, userId);
-        public Task<List<TransactionSuggestionList>> GetTransactionSuggestionListAsync(Guid userId) => _repository.GetTransactionSuggestionListAsync(userId);
-        public Task<bool> DeleteTransactionAsync(Guid TransactionId, Guid userId) => _repository.DeleteAsync(TransactionId, userId);
-
-        public async Task<Guid> AddTransactionAsync(TransactionRequest transaction, Guid userId)
+        public async Task<ServiceResponse<List<Transaction>>> GetAllTransactionsAsync()
         {
-            var (splitTable, hasValid) = BuildSplitTable(transaction);
-            return hasValid
-                ? await _repository.AddAsync(transaction, splitTable, userId)
-                : Guid.Empty;
+            var response = new ServiceResponse<List<Transaction>>();
+            try
+            {
+                var data = await _repository.GetAllAsync();
+                response.Success = true;
+                response.Data = data;
+                response.Message = "Transaction Records Fetched successfully";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Data = null;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+        public async Task<ServiceResponse<List<TransactionListResponse>>> GetTransactionListAsync(TransactionFilterRequest filter, Guid userId)
+        {
+            var response = new ServiceResponse<List<TransactionListResponse>>();
+            try
+            {
+                var data = await _repository.GetTransactionListAsync(filter, userId);
+                response.Success = true;
+                response.Data = data;
+                response.Message = "Transaction Records Fetched successfully";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Data = null;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+        public async Task<ServiceResponse<List<TransactionSummaryResponse>>> GetTransactionSummaryAsync(TransactionFilterRequest filter, Guid userId)
+        {
+            var response = new ServiceResponse<List<TransactionSummaryResponse>>();
+            try
+            {
+                var data = await _repository.GetTransactionSummaryAsync(filter, userId);
+                response.Success = true;
+                response.Data = data;
+                response.Message = "Transaction Records Fetched successfully";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Data = null;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+        public async Task<ServiceResponse<List<TransactionSummaryResponse>>> GetBalanceSummaryAsync(TransactionFilterRequest filter, Guid userId)
+        {
+            
+            var response = new ServiceResponse<List<TransactionSummaryResponse>>();
+            try
+            {
+                var data = await _repository.GetBalanceSummaryAsync(filter, userId);
+                response.Success = true;
+                response.Data = data;
+                response.Message = "Transaction Records Fetched successfully";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Data = null;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+        public async Task<ServiceResponse<List<TransactionReportResponse>>> GetTransactionReportAsync(TransactionFilterRequest filter, Guid userId)
+        {
+            var response = new ServiceResponse<List<TransactionReportResponse>>();
+            try
+            {
+                var data = await _repository.GetTransactionReportAsync(filter, userId);
+
+                response.Success = true;
+                response.Data = data;
+                response.Message = "Transaction Records Fetched successfully";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Data = null;
+                response.Message = ex.Message;
+            }
+            return response;
         }
 
-        public async Task<bool> UpdateTransactionAsync(TransactionRequest transaction, Guid userId)
+        public async Task<ServiceResponse<TransactionDetailsResponse>> GetTransactionDetailsAsync(Guid TransactionId, Guid userId)
         {
+            var response = new ServiceResponse<TransactionDetailsResponse>();
+            try
+            {
+                var data = await _repository.GetTransactionDetailsAsync(TransactionId, userId);
+                response.Success = true;
+                response.Data = data;
+                response.Message = "Transaction Records Fetched successfully";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Data = null;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+        public async Task<ServiceResponse<List<TransactionSuggestionList>>> GetTransactionSuggestionListAsync(Guid userId)
+        {
+
+            var response = new ServiceResponse<List<TransactionSuggestionList>>();
+            try
+            {
+                var data = await _repository.GetTransactionSuggestionListAsync(userId);
+                response.Success = true;
+                response.Data = data;
+                response.Message = "Transaction Records Fetched successfully";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Data = null;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+        public async Task<ServiceResponse<bool>> DeleteTransactionAsync(Guid TransactionId, Guid userId)
+        {
+
+            var response = new ServiceResponse<bool>();
+            try
+            {
+                var data = await _repository.DeleteAsync(TransactionId, userId);
+                response.Success = true;
+                response.Data = data;
+                response.Message = "Transaction Records Fetched successfully";
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+        public async Task<ServiceResponse<Guid>> AddTransactionAsync(TransactionRequest transaction, Guid userId)
+        {
+            var response = new ServiceResponse<Guid>();
             var (splitTable, hasValid) = BuildSplitTable(transaction);
-            return hasValid && await _repository.UpdateAsync(transaction, splitTable, userId);
+            if (hasValid)
+            {
+                try
+                {
+                    var data = await _repository.AddAsync(transaction, splitTable, userId);
+                    response.Success = true;
+                    response.Data = data;
+                    response.Message = "Transaction Records Fetched successfully";
+                }
+                catch (Exception ex)
+                {
+                    response.Success = false;
+                    response.Data = Guid.Empty;
+                    response.Message = ex.Message;
+                }
+            }
+            return response;
+        }
+
+        public async Task<ServiceResponse<bool>> UpdateTransactionAsync(TransactionRequest transaction, Guid userId)
+        {
+            var response = new ServiceResponse<bool>();
+            var (splitTable, hasValid) = BuildSplitTable(transaction);
+            if (hasValid)
+            { //&& await _repository.UpdateAsync(transaction, splitTable, userId);
+                try
+                {
+                    var data = await _repository.UpdateAsync(transaction, splitTable, userId);
+                    response.Success = true;
+                    response.Data = data;
+                    response.Message = "Transaction Records Fetched successfully";
+                }
+                catch (Exception ex)
+                {
+                    response.Success = false;
+                    response.Data = false;
+                    response.Message = ex.Message;
+                }
+            }
+            return response;
         }
 
         private (DataTable SplitTable, bool HasValidRecords) BuildSplitTable(TransactionRequest transaction)
