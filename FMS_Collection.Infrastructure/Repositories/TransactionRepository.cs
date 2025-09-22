@@ -143,7 +143,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving Transactions.", ex);
+                throw new Exception($"An error occurred while retrieving Transactions. actual error is :{ex}", ex);
             }
             return Transactions;
         }
@@ -188,7 +188,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving Transactions.", ex);
+                throw new Exception($"An error occurred while retrieving Transactions. actual error is :{ex}", ex);
             }
             return Transactions;
         }
@@ -230,7 +230,8 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving Transactions.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
+
             }
 
             return Transactions;
@@ -278,7 +279,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving Transaction details.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return result;
@@ -312,7 +313,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving Transaction details.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return result;
@@ -355,7 +356,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while adding the transaction.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
         }
 

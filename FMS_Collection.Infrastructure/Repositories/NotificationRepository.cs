@@ -8,23 +8,23 @@ using System.Data;
 
 namespace FMS_Collection.Infrastructure.Repositories
 {
-    public class CoinNoteCollectionRepository : ICoinNoteCollectionRepository
+    public class NotificationRepository : INotificationRepository
     {
         private readonly DbConnectionFactory _dbFactory;
 
-        public CoinNoteCollectionRepository(DbConnectionFactory dbFactory)
+        public NotificationRepository(DbConnectionFactory dbFactory)
         {
             _dbFactory = dbFactory;
         }
 
-        public async Task<List<CoinNoteCollection>> GetAllAsync()
+        public async Task<List<Notification>> GetAllAsync()
         {
 
-            var coinnotecollections = new List<CoinNoteCollection>();
+            var Notifications = new List<Notification>();
             try
             {
                 using var conn = _dbFactory.CreateConnection();
-                using var cmd = new SqlCommand("CoinNoteCollection_GetAll", conn)
+                using var cmd = new SqlCommand("Notification_GetAll", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -34,7 +34,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    coinnotecollections.Add(new CoinNoteCollection
+                    Notifications.Add(new Notification
                     {
                         Id = reader.GetGuid(reader.GetOrdinal("Id")),
                         CoinNoteName = reader.GetString(reader.GetOrdinal("CoinNoteName")),
@@ -66,16 +66,16 @@ namespace FMS_Collection.Infrastructure.Repositories
                 throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
-            return coinnotecollections;
+            return Notifications;
         }
 
-        public async Task<List<CoinNoteCollectionListResponse>> GetCoinNoteCollectionListAsync(Guid userId)
+        public async Task<List<NotificationListResponse>> GetNotificationListAsync(Guid userId)
         {
-            var coinnotecollections = new List<CoinNoteCollectionListResponse>();
+            var Notifications = new List<NotificationListResponse>();
             try
             {
                 using var conn = _dbFactory.CreateConnection();
-                using var cmd = new SqlCommand("CoinNoteCollection_Get", conn)
+                using var cmd = new SqlCommand("Notification_Get", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -86,7 +86,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    coinnotecollections.Add(new CoinNoteCollectionListResponse
+                    Notifications.Add(new NotificationListResponse
                     {
                         Id = reader.IsDBNull(reader.GetOrdinal("Id")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("Id")),
                         CurrencyCoinType = reader.IsDBNull(reader.GetOrdinal("CurrencyCoinType")) ? null : reader.GetString(reader.GetOrdinal("CurrencyCoinType")),
@@ -116,16 +116,16 @@ namespace FMS_Collection.Infrastructure.Repositories
                 throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
-            return coinnotecollections;
+            return Notifications;
         }
 
-        public async Task<List<CoinNoteCollectionSummaryResponse>> GetSummaryAsync()
+        public async Task<List<NotificationSummaryResponse>> GetSummaryAsync()
         {
-            var coinnotecollections = new List<CoinNoteCollectionSummaryResponse>();
+            var Notifications = new List<NotificationSummaryResponse>();
             try
             {
                 using var conn = _dbFactory.CreateConnection();
-                using var cmd = new SqlCommand("CoinNoteCollectionSummary_Get", conn)
+                using var cmd = new SqlCommand("NotificationSummary_Get", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -135,7 +135,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    coinnotecollections.Add(new CoinNoteCollectionSummaryResponse
+                    Notifications.Add(new NotificationSummaryResponse
                     {
                         CountryId = reader["CountryId"] != DBNull.Value ? Convert.ToInt32(reader["CountryId"]) : 0,
                         CountryName = reader["CountryName"]?.ToString(),
@@ -155,27 +155,27 @@ namespace FMS_Collection.Infrastructure.Repositories
                 throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
-            return coinnotecollections;
+            return Notifications;
         }
 
-        public async Task<CoinNoteCollectionDetailsResponse> GetCoinNoteCollectionDetailsAsync(Guid coinNoteCollectionId, Guid userId)
+        public async Task<NotificationDetailsResponse> GetNotificationDetailsAsync(Guid NotificationId, Guid userId)
         {
-            var result = new CoinNoteCollectionDetailsResponse();
+            var result = new NotificationDetailsResponse();
             try
             {
                 using var conn = _dbFactory.CreateConnection();
-                using var cmd = new SqlCommand("CoinNoteCollection_Details_Get", conn)
+                using var cmd = new SqlCommand("Notification_Details_Get", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-                cmd.Parameters.Add(new SqlParameter("@in_coinNoteCollectionId", SqlDbType.UniqueIdentifier) { Value = coinNoteCollectionId });
+                cmd.Parameters.Add(new SqlParameter("@in_NotificationId", SqlDbType.UniqueIdentifier) { Value = NotificationId });
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
 
                 conn.Open();
                 using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
                 {
-                    result = new CoinNoteCollectionDetailsResponse
+                    result = new NotificationDetailsResponse
                     {
                         Id = reader.IsDBNull(reader.GetOrdinal("Id")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("Id")),
                         CollectionCurrencyTypeId = reader.GetGuid(reader.GetOrdinal("CollectionCurrencyTypeId")),
@@ -217,16 +217,16 @@ namespace FMS_Collection.Infrastructure.Repositories
             return result;
         }
 
-        public async Task<Guid> AddAsync(CoinNoteCollectionRequest coinnotecollection, Guid userId)
+        public async Task<Guid> AddAsync(NotificationRequest Notification, Guid userId)
         {
             try
             {
                 using var conn = _dbFactory.CreateConnection();
-                using var cmd = new SqlCommand("CoinNoteCollection_Add", conn)
+                using var cmd = new SqlCommand("Notification_Add", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-                CoinNoteCollectionRequestParameters(cmd, coinnotecollection, userId);
+                NotificationRequestParameters(cmd, Notification, userId);
                 // Add Output Parameter
                 var outIdParam = new SqlParameter("@out_Id", SqlDbType.UniqueIdentifier)
                 {
@@ -247,18 +247,18 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> UpdateAsync(CoinNoteCollectionRequest coinnotecollection, Guid userId)
+        public async Task<bool> UpdateAsync(NotificationRequest Notification, Guid userId)
         {
             try
             {
                 using var conn = _dbFactory.CreateConnection();
-                using var cmd = new SqlCommand("CoinNoteCollection_Update", conn)
+                using var cmd = new SqlCommand("Notification_Update", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-                cmd.Parameters.AddWithValue("@in_CoinNoteCollectionId", coinnotecollection.Id);
+                cmd.Parameters.AddWithValue("@in_NotificationId", Notification.Id);
 
-                CoinNoteCollectionRequestParameters(cmd, coinnotecollection, userId);
+                NotificationRequestParameters(cmd, Notification, userId);
                 conn.Open();
                 await cmd.ExecuteNonQueryAsync();
             }
@@ -269,17 +269,17 @@ namespace FMS_Collection.Infrastructure.Repositories
             return true;
         }
 
-        public async Task<bool> DeleteAsync(Guid CoinNoteCollectionId, Guid userId)
+        public async Task<bool> DeleteAsync(Guid NotificationId, Guid userId)
         {
             try
             {
                 using var conn = _dbFactory.CreateConnection();
-                using var cmd = new SqlCommand("CoinNoteCollection_Delete", conn)
+                using var cmd = new SqlCommand("Notification_Delete", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
 
-                cmd.Parameters.AddWithValue("@in_CoinNoteCollectionId", CoinNoteCollectionId);
+                cmd.Parameters.AddWithValue("@in_NotificationId", NotificationId);
                 cmd.Parameters.AddWithValue("@in_UserId", userId);
 
                 await conn.OpenAsync();
@@ -296,22 +296,22 @@ namespace FMS_Collection.Infrastructure.Repositories
             return false;
         }
 
-        private void CoinNoteCollectionRequestParameters(SqlCommand cmd, CoinNoteCollectionRequest coinnotecollection, Guid userId)
+        private void NotificationRequestParameters(SqlCommand cmd, NotificationRequest Notification, Guid userId)
         {
-            cmd.Parameters.AddWithValue("@in_CoinNoteName", (object?)coinnotecollection.CoinNoteName ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@in_CollectionCoinTypeId", (object?)coinnotecollection.CollectionCoinTypeId ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@in_CountryId", (object?)coinnotecollection.CountryId ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@in_MetalsUsed", (object?)coinnotecollection.MetalsUsed ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@in_CoinWeightInGrams", (object?)coinnotecollection.CoinWeightInGrams ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@in_ActualValue", (object?)coinnotecollection.ActualValue ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@in_IndianValue", (object?)coinnotecollection.IndianValue ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@in_PrintedYear", (object?)coinnotecollection.PrintedYear ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@in_Speciality", (object?)coinnotecollection.Speciality ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@in_DiameterOfCoin", (object?)coinnotecollection.DiameterOfCoin ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@in_LengthOfNote", (object?)coinnotecollection.LengthOfNote ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@in_BreadthOfNote", (object?)coinnotecollection.BreadthOfNote ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@in_Description", (object?)coinnotecollection.Description ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@in_AssetId", (object?)coinnotecollection.AssetId ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@in_CoinNoteName", (object?)Notification.CoinNoteName ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@in_CollectionCoinTypeId", (object?)Notification.CollectionCoinTypeId ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@in_CountryId", (object?)Notification.CountryId ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@in_MetalsUsed", (object?)Notification.MetalsUsed ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@in_CoinWeightInGrams", (object?)Notification.CoinWeightInGrams ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@in_ActualValue", (object?)Notification.ActualValue ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@in_IndianValue", (object?)Notification.IndianValue ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@in_PrintedYear", (object?)Notification.PrintedYear ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@in_Speciality", (object?)Notification.Speciality ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@in_DiameterOfCoin", (object?)Notification.DiameterOfCoin ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@in_LengthOfNote", (object?)Notification.LengthOfNote ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@in_BreadthOfNote", (object?)Notification.BreadthOfNote ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@in_Description", (object?)Notification.Description ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@in_AssetId", (object?)Notification.AssetId ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@in_UserId", userId);
         }
     }

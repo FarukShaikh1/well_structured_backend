@@ -57,7 +57,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving users.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return users;
@@ -97,7 +97,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving users.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return users;
@@ -146,7 +146,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving user details.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return result;
@@ -182,7 +182,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while adding the special occasion.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
         }
 
@@ -201,7 +201,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while updating the user.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
         }
 
@@ -223,7 +223,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while deleting the user.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
             return true;
         }
@@ -256,7 +256,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while updating the user.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
             return true;
         }
@@ -304,7 +304,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving user details.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return result;
@@ -340,7 +340,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving users.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return users;
@@ -386,7 +386,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving users.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return users;

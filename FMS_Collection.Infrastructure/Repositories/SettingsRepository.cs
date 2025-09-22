@@ -54,7 +54,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving Configs.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return Configs;
@@ -97,7 +97,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving Configs.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return Configs;
@@ -137,7 +137,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving Config details.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return result;
@@ -177,7 +177,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while adding the special occasion.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
         }
 
@@ -299,7 +299,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving Accounts.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return Accounts;
@@ -338,7 +338,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving Relations.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return Relations;
@@ -377,7 +377,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving OccasionTypes.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return OccasionTypes;

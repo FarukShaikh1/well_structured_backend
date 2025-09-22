@@ -49,7 +49,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving roles.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return roles;
@@ -82,7 +82,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving roles.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return roles;
@@ -114,7 +114,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving role details.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return result;
@@ -135,7 +135,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while adding the role.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
         }
 
@@ -155,7 +155,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while updating the role.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
         }
 
@@ -180,9 +180,8 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while deleting the role.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
-            return true;
         }
 
         private void AddRoleRequestParameters(SqlCommand cmd, RoleRequest role, Guid userId)

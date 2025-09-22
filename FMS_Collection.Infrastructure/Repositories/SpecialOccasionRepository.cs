@@ -62,7 +62,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving days.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return days;
@@ -111,7 +111,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving days.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return days;
@@ -153,7 +153,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving day details.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
 
             return result;
@@ -188,7 +188,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while adding the special occasion.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
         }
 
@@ -208,7 +208,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while updating the day.", ex);
+                throw new Exception($"An error occurred. actual error is :{ex}", ex);
             }
             return true;
         }
