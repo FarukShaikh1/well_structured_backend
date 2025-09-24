@@ -74,4 +74,12 @@ public class AssetController : ControllerBase
 
     }
 
+    [HttpGet]
+    [Route("CreateThumbnails")]
+    public async Task<IActionResult> CreateThumbnails()
+    {
+        int total = await _service.CreateThumbnails();
+        return Ok(total);
+    }
+
 }

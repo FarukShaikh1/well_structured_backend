@@ -44,6 +44,14 @@
 
         }
 
+        public struct DocumentType
+        {
+            public const string BIRTHDAY_PERSON_PIC = "Birthday_Person_Pic";
+            public const string COLLECTION_COINS = "Collection_Coins";
+            public const string USER_PROFILE_PICTURE = "User_Profile_Picture";
+            public const string THUMBNAILS = "thumbnails\\";
+        }
+
         public struct CacheKeys
         {
             public const string APP_TOKEN = "data:apptoken";

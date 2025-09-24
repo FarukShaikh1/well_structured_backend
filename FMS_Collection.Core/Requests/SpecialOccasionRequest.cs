@@ -3,9 +3,9 @@
     public class SpecialOccasionRequest
     {
         public Guid? Id { get; set; }
-        public DateTime? SpecialOccasionDate { get; set; }
-        public string? PersonName { get; set; } = string.Empty;
-        public Guid? DayTypeId { get; set; }
+        public DateTime SpecialOccasionDate { get; set; }
+        public string PersonName { get; set; } = string.Empty;
+        public Guid OccasionTypeId { get; set; }
         public Guid? RelationId { get; set; }
         public string? MobileNumber { get; set; }
         public string? ContactNumber { get; set; }

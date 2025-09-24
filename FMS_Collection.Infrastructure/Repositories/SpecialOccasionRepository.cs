@@ -249,7 +249,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             cmd.Parameters.AddWithValue("@In_MobileNumber", (object?)request.MobileNumber ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@in_EmailId", (object?)request.EmailId ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@in_Gender", request.Gender);
-            cmd.Parameters.AddWithValue("@In_DayTypeId", request.DayTypeId);
+            cmd.Parameters.AddWithValue("@In_DayTypeId", request.OccasionTypeId);
             cmd.Parameters.AddWithValue("@In_RelationId", request.RelationId);
             cmd.Parameters.AddWithValue("@in_UserId", userId);
             cmd.Parameters.AddWithValue("@in_assetId", (object?)request.AssetId ?? DBNull.Value);

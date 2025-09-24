@@ -1,5 +1,6 @@
 ﻿
 using FMS_Collection.Core.Common;
+using FMS_Collection.Core.Constants;
 using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Enum;
 using FMS_Collection.Core.Interfaces;
@@ -9,7 +10,9 @@ using Microsoft.AspNetCore.Http;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace FMS_Collection.Application.Services
 {
@@ -91,7 +94,6 @@ namespace FMS_Collection.Application.Services
             }
             return response;
         }
-        //=> 
 
         public async Task<ServiceResponse<Guid>> SaveFile(IFormFile file, string documentType, Guid userId, bool isNonSecuredFile = true)
         {
@@ -142,6 +144,62 @@ namespace FMS_Collection.Application.Services
             //DELETE OLD DOC ASSET FILES
             await DeleteOldDocStoreAssetFiles(oldAssetDetail);
         }
+
+        public async Task<int> CreateThumbnails()
+        {
+            int count = 0;
+            try
+            {
+                string baseAssetDirectory = AppSettings.PhysicalPathDirectory;
+                string relativeDirectoryPath = string.Format("\\{0}\\", Constants.DocumentType.BIRTHDAY_PERSON_PIC);
+                //string sourcePath = baseAssetDirectory + relativeDirectoryPath;
+                //string destinationPath = sourcePath + Constants.DocumentType.THUMBNAILS;
+
+                string sourcePath = "D:\\Projects\\DeployedSites\\well_structured_frontend\\assets\\ProjectAttatchments\\Birthday_Person_Pic/";
+                string destinationPath = "D:\\Projects\\DeployedSites\\well_structured_frontend\\assets\\ProjectAttatchments\\Birthday_Person_Pic\\thumbnails/";
+
+                this.ValidateDirectory(sourcePath);
+                this.ValidateDirectory(destinationPath);
+
+
+                // Get all files from the source folder
+                string[] files = Directory.GetFiles(sourcePath);
+
+                foreach (string file in files)
+                {
+                    // Load the image from the file
+                    using (Image image = Image.Load(file))
+                    {
+                        // Resize the image to create a thumbnail
+                        image.Mutate(x => x.Resize(new ResizeOptions
+                        {
+                            Mode = ResizeMode.Max, // Maintain aspect ratio
+                            Size = new Size(200, 200)
+                        }));
+
+                        // Get the file name from the path
+                        string fileName = Path.GetFileName(file);
+                        string thumbFileName = $"thumb_{fileName}";
+
+                        // Create the full path for the thumbnail
+                        string thumbnailPath = Path.Combine(destinationPath, thumbFileName);
+
+                        // Save the thumbnail to the target folder
+                        image.Save(thumbnailPath);
+                        count++;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle or log any errors that occur during processing of a single file
+                Console.WriteLine($"Error : {ex.Message}");
+            }
+            //after completing this method successfully run below query 
+            //UPDATE Asset SET ThumbnailPath = REPLACE(OriginalPath,'/Birthday_Person_Pic/','/Birthday_Person_Pic/thumbnails/thumb_') WHERE ThumbnailPath LIKE '%Birthday_Person_Pic%'
+
+            return count;
+        }
         #endregion
 
 
@@ -180,7 +238,7 @@ namespace FMS_Collection.Application.Services
             return filePathResponse;
         }
 
-        private  async Task<string> CreateAndSaveThumbnail(string thumbFileName, byte[] fileBytes, string documentType)
+        private async Task<string> CreateAndSaveThumbnail(string thumbFileName, byte[] fileBytes, string documentType)
         {
             string baseAssetDirectory = AppSettings.PhysicalPathDirectory;
             string relativeDirectoryPath = $"/{documentType}/thumbnails/";
