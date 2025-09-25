@@ -145,7 +145,7 @@ namespace FMS_Collection.Application.Services
             await DeleteOldDocStoreAssetFiles(oldAssetDetail);
         }
 
-        public async Task<int> CreateThumbnails(string sourcePath, string destinationPath)
+        public async Task<int> CreateThumbnails(string sourcePath, string destinationPath, bool isSquare)
         {
             int count = 0;
             try
@@ -162,11 +162,26 @@ namespace FMS_Collection.Application.Services
                     using (Image image = Image.Load(file))
                     {
                         // Resize the image to create a thumbnail
-                        image.Mutate(x => x.Resize(new ResizeOptions
+                        if (isSquare)
                         {
-                            Mode = ResizeMode.Max, // Maintain aspect ratio
-                            Size = new Size(200, 200)
-                        }));
+                            // Resize and pad to 200×200 exactly square image
+                            image.Mutate(x => x.Resize(new ResizeOptions
+                            {
+                                Size = new Size(200, 200),
+                                Mode = ResizeMode.Pad,
+                                Position = AnchorPositionMode.Center,
+                                //BackgroundColor = Color.White
+                            }));
+                        }
+                        else
+                        {
+                            // Just resize directly to max 200×200 similar to original shape
+                            image.Mutate(x => x.Resize(new ResizeOptions
+                            {
+                                Size = new Size(200, 200),
+                                Mode = ResizeMode.Max // maintain aspect ratio, but since square it’s fine
+                            }));
+                        }
 
                         // Get the file name from the path
                         string fileName = Path.GetFileName(file);
