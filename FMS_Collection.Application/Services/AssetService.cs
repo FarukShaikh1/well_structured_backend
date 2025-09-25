@@ -145,22 +145,13 @@ namespace FMS_Collection.Application.Services
             await DeleteOldDocStoreAssetFiles(oldAssetDetail);
         }
 
-        public async Task<int> CreateThumbnails()
+        public async Task<int> CreateThumbnails(string sourcePath, string destinationPath)
         {
             int count = 0;
             try
             {
-                string baseAssetDirectory = AppSettings.PhysicalPathDirectory;
-                string relativeDirectoryPath = string.Format("\\{0}\\", Constants.DocumentType.BIRTHDAY_PERSON_PIC);
-                //string sourcePath = baseAssetDirectory + relativeDirectoryPath;
-                //string destinationPath = sourcePath + Constants.DocumentType.THUMBNAILS;
-
-                string sourcePath = "D:\\Projects\\DeployedSites\\well_structured_frontend\\assets\\ProjectAttatchments\\Birthday_Person_Pic/";
-                string destinationPath = "D:\\Projects\\DeployedSites\\well_structured_frontend\\assets\\ProjectAttatchments\\Birthday_Person_Pic\\thumbnails/";
-
                 this.ValidateDirectory(sourcePath);
                 this.ValidateDirectory(destinationPath);
-
 
                 // Get all files from the source folder
                 string[] files = Directory.GetFiles(sourcePath);
@@ -196,7 +187,7 @@ namespace FMS_Collection.Application.Services
                 Console.WriteLine($"Error : {ex.Message}");
             }
             //after completing this method successfully run below query 
-            //UPDATE Asset SET ThumbnailPath = REPLACE(OriginalPath,'/Birthday_Person_Pic/','/Birthday_Person_Pic/thumbnails/thumb_') WHERE ThumbnailPath LIKE '%Birthday_Person_Pic%'
+            //UPDATE Asset SET ThumbnailPath = REPLACE(OriginalPath,'/Birthday_Person_Pic/','/Birthday_Person_Pic/thumbnails/thumb_') WHERE OriginalPath LIKE '%Birthday_Person_Pic%'
 
             return count;
         }
