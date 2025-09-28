@@ -32,7 +32,7 @@ public class CoinNoteCollectionController : ControllerBase
     }
 
 
-    [HttpPost]
+    [HttpGet]
     [Route("GetSummary")]
     public async Task<IActionResult> GetSummary()
     {
