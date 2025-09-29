@@ -23,7 +23,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetAllAsync();
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.DaysFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -40,7 +40,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetDayListAsync(userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.DayListFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -57,7 +57,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetDayDetailsAsync(dayId, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.DayDetailsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -74,7 +74,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.AddAsync(Day, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.DayCreatedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -91,7 +91,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.UpdateAsync(Day, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.DayUpdatedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -108,7 +108,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.DeleteAsync(dayId, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.DayDeletedSuccessfully;
             }
             catch (Exception ex)
             {

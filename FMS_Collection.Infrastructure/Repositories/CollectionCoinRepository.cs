@@ -63,7 +63,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception($"An error occurred. actual error is :{ex}", ex);
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
             }
 
             return coinnotecollections;
@@ -113,7 +113,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception($"An error occurred. actual error is :{ex}", ex);
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
             }
 
             return coinnotecollections;
@@ -152,7 +152,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception($"An error occurred. actual error is :{ex}", ex);
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
             }
 
             return coinnotecollections;
@@ -211,7 +211,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception($"An error occurred. actual error is :{ex}", ex);
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
             }
 
             return result;
@@ -243,7 +243,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception($"An error occurred. actual error is :{ex}", ex);
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
             }
         }
 
@@ -264,7 +264,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception($"An error occurred. actual error is :{ex}", ex);
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
             }
             return true;
         }

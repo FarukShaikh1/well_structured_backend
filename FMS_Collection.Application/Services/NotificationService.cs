@@ -23,7 +23,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetAllAsync();
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.NotificationsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -39,7 +39,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetNotificationListAsync(userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.NotificationListFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -56,7 +56,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetNotificationDetailsAsync(NotificationId, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.NotificationDetailsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -73,7 +73,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.AddAsync(Notification, NotificationId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.NotificationCreatedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -90,7 +90,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.UpdateAsync(Notification, NotificationId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.NotificationUpdatedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -107,7 +107,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.DeleteAsync(NotificationId, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.NotificationDeletedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -124,7 +124,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetSummaryAsync();
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.NotificationSummaryFetchedSuccessfully;
             }
             catch (Exception ex)
             {

@@ -23,7 +23,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetAllAsync();
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CoinNoteCollectionsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -39,7 +39,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetCoinNoteCollectionListAsync(userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CoinNoteCollectionListFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -56,7 +56,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetCoinNoteCollectionDetailsAsync(coinNoteCollectionId, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CoinNoteCollectionDetailsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -73,7 +73,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.AddAsync(CoinNoteCollection, coinNoteCollectionId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CoinNoteCollectionCreatedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -90,7 +90,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.UpdateAsync(CoinNoteCollection, coinNoteCollectionId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CoinNoteCollectionUpdatedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -107,7 +107,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.DeleteAsync(coinNoteCollectionId, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CoinNoteCollectionDeletedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -124,7 +124,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetSummaryAsync();
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CoinNoteCollectionSummaryFetchedSuccessfully;
             }
             catch (Exception ex)
             {

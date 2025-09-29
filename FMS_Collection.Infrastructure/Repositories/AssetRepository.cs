@@ -55,7 +55,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving assets.", ex);
+                throw new Exception(FMS_Collection.Core.Constants.Constants.Messages.RetrieveAssetsError, ex);
             }
 
             return assets;
@@ -92,7 +92,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving asset details.", ex);
+                throw new Exception(FMS_Collection.Core.Constants.Constants.Messages.RetrieveAssetDetailsError, ex);
             }
 
             return result;
@@ -125,7 +125,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while adding the asset.", ex);
+                throw new Exception(FMS_Collection.Core.Constants.Constants.Messages.AddAssetError, ex);
             }
         }
 
@@ -146,7 +146,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while updating the asset.", ex);
+                throw new Exception(FMS_Collection.Core.Constants.Constants.Messages.UpdateAssetError, ex);
             }
         }
 

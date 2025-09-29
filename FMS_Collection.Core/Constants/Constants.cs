@@ -2,6 +2,99 @@
 {
     public class Constants
     {
+        public struct Messages
+        {
+            public const string TransactionRecordsFetched = "Transaction Records Fetched successfully";
+            public const string GenericError = "An error occurred";
+            public const string GenericErrorWithActual = "An error occurred. actual error is :{0}";
+            public const string RetrieveAssetsError = "An error occurred while retrieving assets.";
+            public const string RetrieveAssetDetailsError = "An error occurred while retrieving asset details.";
+            public const string AddAssetError = "An error occurred while adding the asset.";
+            public const string UpdateAssetError = "An error occurred while updating the asset.";
+            public const string InvalidUserOrPassword = "Invalid user or password.";
+            public const string RetrieveTransactionsError = "An error occurred while retrieving Transactions.";
+
+            // Assets
+            public const string AssetsFetchedSuccessfully = "Assets fetched successfully";
+            public const string AssetDetailsFetchedSuccessfully = "Asset details fetched successfully";
+            public const string AssetCreatedSuccessfully = "Asset created successfully";
+            public const string AssetDeletedSuccessfully = "Asset deleted successfully";
+            public const string AssetSavedSuccessfully = "Asset saved successfully";
+
+            // Notifications
+            public const string NotificationsFetchedSuccessfully = "Notifications fetched successfully";
+            public const string NotificationListFetchedSuccessfully = "Notification list fetched successfully";
+            public const string NotificationDetailsFetchedSuccessfully = "Notification details fetched successfully";
+            public const string NotificationCreatedSuccessfully = "Notification created successfully";
+            public const string NotificationUpdatedSuccessfully = "Notification updated successfully";
+            public const string NotificationDeletedSuccessfully = "Notification deleted successfully";
+            public const string NotificationSummaryFetchedSuccessfully = "Notification summary fetched successfully";
+
+            // Users
+            public const string UsersFetchedSuccessfully = "Users fetched successfully";
+            public const string UserListFetchedSuccessfully = "User list fetched successfully";
+            public const string UserDetailsFetchedSuccessfully = "User details fetched successfully";
+            public const string UserSavedSuccessfully = "User saved successfully";
+            public const string UserDeletedSuccessfully = "User deleted successfully";
+            public const string UserPermissionsUpdatedSuccessfully = "User permissions updated successfully";
+            public const string UserPermissionsFetchedSuccessfully = "User permissions fetched successfully";
+            public const string ModulesFetchedSuccessfully = "Modules fetched successfully";
+            public const string LoginSuccessful = "Login successful";
+
+            // Common Lists
+            public const string CommonListsFetchedSuccessfully = "Common lists fetched successfully";
+            public const string CommonListItemsFetchedSuccessfully = "Common list items fetched successfully";
+            public const string CommonListDetailsFetchedSuccessfully = "Common list details fetched successfully";
+            public const string CommonListItemDetailsFetchedSuccessfully = "Common list item details fetched successfully";
+            public const string CommonListCreatedSuccessfully = "Common list created successfully";
+            public const string CommonListItemCreatedSuccessfully = "Common list item created successfully";
+            public const string CommonListUpdatedSuccessfully = "Common list updated successfully";
+            public const string CommonListItemUpdatedSuccessfully = "Common list item updated successfully";
+            public const string CommonListDeletedSuccessfully = "Common list deleted successfully";
+            public const string CommonListItemDeletedSuccessfully = "Common list item deleted successfully";
+            public const string CountriesFetchedSuccessfully = "Countries fetched successfully";
+
+            // Settings/Configurations
+            public const string ConfigurationsFetchedSuccessfully = "Configurations fetched successfully";
+            public const string ActiveConfigurationsFetchedSuccessfully = "Active configurations fetched successfully";
+            public const string ConfigurationDetailsFetchedSuccessfully = "Configuration details fetched successfully";
+            public const string ConfigurationCreatedSuccessfully = "Configuration created successfully";
+            public const string ConfigurationUpdatedSuccessfully = "Configuration updated successfully";
+            public const string ConfigurationDeletedSuccessfully = "Configuration deleted successfully";
+            public const string ConfigurationDeactivatedSuccessfully = "Configuration deactivated successfully";
+            public const string AccountsFetchedSuccessfully = "Accounts fetched successfully";
+            public const string RelationsFetchedSuccessfully = "Relations fetched successfully";
+            public const string OccasionTypesFetchedSuccessfully = "Occasion types fetched successfully";
+
+            // Transactions
+            public const string TransactionsFetchedSuccessfully = "Transactions fetched successfully";
+            public const string TransactionListFetchedSuccessfully = "Transaction list fetched successfully";
+            public const string TransactionSummaryFetchedSuccessfully = "Transaction summary fetched successfully";
+            public const string BalanceSummaryFetchedSuccessfully = "Balance summary fetched successfully";
+            public const string TransactionReportFetchedSuccessfully = "Transaction report fetched successfully";
+            public const string TransactionDetailsFetchedSuccessfully = "Transaction details fetched successfully";
+            public const string TransactionSuggestionsFetchedSuccessfully = "Transaction suggestions fetched successfully";
+            public const string TransactionCreatedSuccessfully = "Transaction created successfully";
+            public const string TransactionUpdatedSuccessfully = "Transaction updated successfully";
+            public const string TransactionDeletedSuccessfully = "Transaction deleted successfully";
+
+            // Coin/Note Collections
+            public const string CoinNoteCollectionsFetchedSuccessfully = "Coin/note collections fetched successfully";
+            public const string CoinNoteCollectionListFetchedSuccessfully = "Coin/note collection list fetched successfully";
+            public const string CoinNoteCollectionDetailsFetchedSuccessfully = "Coin/note collection details fetched successfully";
+            public const string CoinNoteCollectionCreatedSuccessfully = "Coin/note collection created successfully";
+            public const string CoinNoteCollectionUpdatedSuccessfully = "Coin/note collection updated successfully";
+            public const string CoinNoteCollectionDeletedSuccessfully = "Coin/note collection deleted successfully";
+            public const string CoinNoteCollectionSummaryFetchedSuccessfully = "Coin/note collection summary fetched successfully";
+
+            // Special Occasions (Days)
+            public const string DaysFetchedSuccessfully = "Days fetched successfully";
+            public const string DayListFetchedSuccessfully = "Day list fetched successfully";
+            public const string DayDetailsFetchedSuccessfully = "Day details fetched successfully";
+            public const string DayCreatedSuccessfully = "Day created successfully";
+            public const string DayUpdatedSuccessfully = "Day updated successfully";
+            public const string DayDeletedSuccessfully = "Day deleted successfully";
+        }
         public struct Roles
         {
             public const string None = "None";

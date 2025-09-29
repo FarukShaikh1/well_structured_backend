@@ -23,7 +23,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetAllAsync();
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -41,7 +41,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetTransactionListAsync(filter, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionListFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -59,7 +59,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetTransactionSummaryAsync(filter, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionSummaryFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -78,7 +78,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetBalanceSummaryAsync(filter, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.BalanceSummaryFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -97,7 +97,7 @@ namespace FMS_Collection.Application.Services
 
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionReportFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -116,7 +116,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetTransactionDetailsAsync(TransactionId, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionDetailsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -135,7 +135,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetTransactionSuggestionListAsync(userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionSuggestionsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -154,7 +154,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.DeleteAsync(TransactionId, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionDeletedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -173,7 +173,7 @@ namespace FMS_Collection.Application.Services
                     var data = await _repository.AddAsync(transaction, splitTable, userId);
                     response.Success = true;
                     response.Data = data;
-                    response.Message = "Transaction Records Fetched successfully";
+                    response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionCreatedSuccessfully;
                 }
                 catch (Exception ex)
                 {
@@ -196,7 +196,7 @@ namespace FMS_Collection.Application.Services
                     var data = await _repository.UpdateAsync(transaction, splitTable, userId);
                     response.Success = true;
                     response.Data = data;
-                    response.Message = "Transaction Records Fetched successfully";
+                    response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionUpdatedSuccessfully;
                 }
                 catch (Exception ex)
                 {

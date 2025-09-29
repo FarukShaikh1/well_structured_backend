@@ -23,7 +23,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetAllAsync();
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.UsersFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -40,7 +40,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetUserListAsync(userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.UserListFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -57,7 +57,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetUserDetailsAsync(userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.UserDetailsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -79,7 +79,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.AddAsync(User, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.UserSavedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -96,7 +96,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.DeleteAsync(userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.UserDeletedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -113,7 +113,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.UpdateUserPermissionAsync(userPermission, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.UserPermissionsUpdatedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -133,7 +133,7 @@ namespace FMS_Collection.Application.Services
                 var loginResponse = await _repository.GetLoginDetails(user);
                 response.Success = true;
                 response.Data = loginResponse;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.LoginSuccessful;
             }
             catch (Exception ex)
             {
@@ -143,7 +143,7 @@ namespace FMS_Collection.Application.Services
             // Perform additional logic in UserService layer
             if (response.Data == null)
             {
-                throw new Exception("Invalid user or password."); // Custom business logic
+                throw new Exception(FMS_Collection.Core.Constants.Constants.Messages.InvalidUserOrPassword); // Custom business logic
             }
 
             // Example: Mask the password before returning
@@ -171,7 +171,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetModuleListAsync();
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.ModulesFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -188,7 +188,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetUserPermissionListAsync(UserId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.UserPermissionsFetchedSuccessfully;
             }
             catch (Exception ex)
             {

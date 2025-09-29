@@ -23,7 +23,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetAllCommonListAsync();
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CommonListsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -40,7 +40,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetAllCommonListItemAsync();
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CommonListItemsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -58,7 +58,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetCommonListAsync();
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CommonListsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -75,7 +75,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetCommonListItemAsync(CommonId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CommonListItemsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -93,7 +93,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetCommonListDetailsAsync(CommonId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CommonListDetailsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -110,7 +110,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetCommonListItemDetailsAsync(CommonId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CommonListItemDetailsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -128,7 +128,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.AddCommonListAsync(Common, CommonId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CommonListCreatedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -145,7 +145,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.AddCommonListItemAsync(Common, CommonId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CommonListItemCreatedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -163,7 +163,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.UpdateCommonListAsync(Common, CommonId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CommonListUpdatedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -180,7 +180,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.UpdateCommonListItemAsync(Common, CommonId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CommonListItemUpdatedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -198,7 +198,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.DeleteCommonListAsync(CommonId, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CommonListDeletedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -215,7 +215,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.DeleteCommonListItemAsync(CommonId, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CommonListItemDeletedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -233,7 +233,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetCountryListAsync();
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.CountriesFetchedSuccessfully;
             }
             catch (Exception ex)
             {

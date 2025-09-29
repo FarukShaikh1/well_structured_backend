@@ -33,7 +33,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetAllAsync();
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.AssetsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -49,7 +49,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.GetAssetDetailsAsync(assetId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.AssetDetailsFetchedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -65,7 +65,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.AddAsync(Asset, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.AssetCreatedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -86,7 +86,7 @@ namespace FMS_Collection.Application.Services
                 var data = await _repository.DeleteAsync(assetId, userId);
                 response.Success = true;
                 response.Data = data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.AssetDeletedSuccessfully;
             }
             catch (Exception ex)
             {
@@ -114,7 +114,7 @@ namespace FMS_Collection.Application.Services
                 var data = await AddAssetAsync(assetRequest, userId);
                 response.Success = true;
                 response.Data = data.Data;
-                response.Message = "Transaction Records Fetched successfully";
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.AssetSavedSuccessfully;
             }
             catch (Exception ex)
             {
