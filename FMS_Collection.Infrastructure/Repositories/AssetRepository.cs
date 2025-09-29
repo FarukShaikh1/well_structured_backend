@@ -29,7 +29,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.CommandTimeout = 120;
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -73,7 +73,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 };
                 cmd.Parameters.Add(new SqlParameter("@in_AssetId", SqlDbType.UniqueIdentifier) { Value = assetId });
 
-                conn.Open();
+                await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
                 {
@@ -141,7 +141,7 @@ namespace FMS_Collection.Infrastructure.Repositories
 
                 cmd.Parameters.AddWithValue("@in_AssetId", (object?)asset.Id ?? DBNull.Value);
                 AssetRequestParameters(cmd, asset, userId);
-                conn.Open();
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)

@@ -31,7 +31,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.CommandTimeout = 120;
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
                 cmd.Parameters.Add(new SqlParameter("@in_ConfigType", SqlDbType.VarChar) { Value = config});
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -74,7 +74,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
                 cmd.Parameters.Add(new SqlParameter("@in_ConfigType", SqlDbType.VarChar) { Value = config });
                 cmd.Parameters.Add(new SqlParameter("@in_ShowActiveOnly", SqlDbType.Bit) { Value = true });
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -116,7 +116,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.Add(new SqlParameter("@in_ConfigId", SqlDbType.UniqueIdentifier) { Value = id });
                 cmd.Parameters.Add(new SqlParameter("@in_ConfigType", SqlDbType.VarChar) { Value = config });
 
-                conn.Open();
+                await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
                 {
@@ -277,7 +277,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.CommandTimeout = 600;
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -316,7 +316,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.CommandTimeout = 600;
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -355,7 +355,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.CommandTimeout = 600;
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())

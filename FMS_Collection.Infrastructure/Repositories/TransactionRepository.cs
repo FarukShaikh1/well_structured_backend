@@ -28,7 +28,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 CommandType = CommandType.StoredProcedure
             };
             cmd.CommandTimeout = 600;
-            conn.Open();
+            await conn.OpenAsync();
 
             using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -70,7 +70,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             cmd.Parameters.Add(new SqlParameter("@in_MinAmount", SqlDbType.Decimal) { Value = filter.MinAmount });
             cmd.Parameters.Add(new SqlParameter("@in_MaxAmount", SqlDbType.Decimal) { Value = filter.MaxAmount });
             cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
-            conn.Open();
+            await conn.OpenAsync();
 
 
             using var reader = await cmd.ExecuteReaderAsync();
@@ -116,7 +116,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.Add(new SqlParameter("@in_MinAmount", SqlDbType.Decimal) { Value = filter.MinAmount });
                 cmd.Parameters.Add(new SqlParameter("@in_MaxAmount", SqlDbType.Decimal) { Value = filter.MaxAmount });
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -166,7 +166,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.Add(new SqlParameter("@in_MinAmount", SqlDbType.Decimal) { Value = filter.MinAmount });
                 cmd.Parameters.Add(new SqlParameter("@in_MaxAmount", SqlDbType.Decimal) { Value = filter.MaxAmount });
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -210,7 +210,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.Add(new SqlParameter("@in_MinAmount", SqlDbType.Decimal) { Value = filter.MinAmount });
                 cmd.Parameters.Add(new SqlParameter("@in_MaxAmount", SqlDbType.Decimal) { Value = filter.MaxAmount });
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
 
@@ -249,7 +249,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 };
                 cmd.Parameters.Add(new SqlParameter("@in_TransactionId", SqlDbType.UniqueIdentifier) { Value = TransactionId });
 
-                conn.Open();
+                await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
@@ -298,7 +298,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
                 cmd.CommandTimeout = 600;
 
-                conn.Open();
+                await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {

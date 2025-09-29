@@ -29,7 +29,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.CommandTimeout = 120;
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -75,7 +75,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 };
                 cmd.CommandTimeout = 120;
 
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -115,7 +115,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 };
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
 
-                conn.Open();
+                await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
                 {
@@ -196,7 +196,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
 
-                conn.Open();
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -218,7 +218,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
 
-                conn.Open();
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -251,7 +251,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.Add(new SqlParameter("@in_Download", SqlDbType.Bit) { Value = userPermission.Download ?? false });
                 cmd.Parameters.Add(new SqlParameter("@in_Upload", SqlDbType.Bit) { Value = userPermission.Upload ?? false });
                 cmd.Parameters.Add(new SqlParameter("@in_ModifiedBy", SqlDbType.UniqueIdentifier) { Value = userId });
-                conn.Open();
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -274,7 +274,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.Add(new SqlParameter("@in_UserName", SqlDbType.VarChar) { Value = user.UserName });
                 cmd.Parameters.Add(new SqlParameter("@in_Password", SqlDbType.VarChar) { Value = user.Password });
 
-                conn.Open();
+                await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
                 {
@@ -321,7 +321,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.CommandTimeout = 120;
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -358,7 +358,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 };
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = UserId });
                 cmd.CommandTimeout = 120;
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())

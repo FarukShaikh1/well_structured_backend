@@ -28,7 +28,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.CommandTimeout = 120;
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -67,7 +67,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.CommandTimeout = 120;
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -108,7 +108,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.CommandTimeout = 120;
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -146,7 +146,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 };
                 cmd.CommandTimeout = 120;
                 cmd.Parameters.Add(new SqlParameter("@in_CommonListId", SqlDbType.UniqueIdentifier) { Value = CommonListId });
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -184,7 +184,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 };
                 cmd.Parameters.Add(new SqlParameter("@in_CommonListItemId", SqlDbType.UniqueIdentifier) { Value = CommonListId });
 
-                conn.Open();
+                await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
                 {
@@ -221,7 +221,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 };
                  cmd.Parameters.Add(new SqlParameter("@in_CommonListItemId", SqlDbType.UniqueIdentifier) { Value = CommonListId });
 
-                conn.Open();
+                await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
                 {
@@ -255,7 +255,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 };
 
                 AddCommonListRequestParameters(cmd, Common, CommonListId);
-                conn.Open();
+                await conn.OpenAsync();
                 var result = await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -276,7 +276,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 };
 
                 AddCommonListItemRequestParameters(cmd, Common, CommonListId);
-                conn.Open();
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -297,7 +297,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 };
 
                 AddCommonListRequestParameters(cmd, Common, CommonListId);
-                conn.Open();
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -318,7 +318,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 };
 
                 AddCommonListItemRequestParameters(cmd, Common, CommonListId);
-                conn.Open();
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -341,7 +341,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.Add(new SqlParameter("@in_CommonListId", SqlDbType.UniqueIdentifier) { Value = CommonListId });
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
 
-                conn.Open();
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -364,7 +364,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.Add(new SqlParameter("@in_CommonListId", SqlDbType.UniqueIdentifier) { Value = CommonListItemId });
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
 
-                conn.Open();
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -385,7 +385,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.CommandTimeout = 120;
-                conn.Open();
+                await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
