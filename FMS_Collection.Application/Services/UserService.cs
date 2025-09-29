@@ -17,53 +17,26 @@ namespace FMS_Collection.Application.Services
 
         public async Task<ServiceResponse<List<User>> >GetAllUsersAsync()
         {
-            var response = new ServiceResponse<List<User>>();
-            try
-            {
-                var data = await _repository.GetAllAsync();
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.UsersFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetAllAsync(),
+                FMS_Collection.Core.Constants.Constants.Messages.UsersFetchedSuccessfully
+            );
         }
         
         public async Task<ServiceResponse<List<UserListResponse>>> GetUserListAsync(Guid userId)
         {
-            var response = new ServiceResponse<List<UserListResponse>>();
-            try
-            {
-                var data = await _repository.GetUserListAsync(userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.UserListFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetUserListAsync(userId),
+                FMS_Collection.Core.Constants.Constants.Messages.UserListFetchedSuccessfully
+            );
         }
         
         public async Task<ServiceResponse<UserDetailsResponse>> GetUserDetailsAsync(Guid userId)
         {
-            var response = new ServiceResponse<UserDetailsResponse>();
-            try
-            {
-                var data = await _repository.GetUserDetailsAsync(userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.UserDetailsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetUserDetailsAsync(userId),
+                FMS_Collection.Core.Constants.Constants.Messages.UserDetailsFetchedSuccessfully
+            );
         }
         
         public async Task AddUserAsync(UserRequest User,Guid userId)
@@ -73,53 +46,26 @@ namespace FMS_Collection.Application.Services
         
         public async Task<ServiceResponse<Guid>> UpdateUserAsync(UserRequest User, Guid userId)
         {
-            var response = new ServiceResponse<Guid>();
-            try
-            {
-                var data = await _repository.AddAsync(User, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.UserSavedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.AddAsync(User, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.UserSavedSuccessfully
+            );
         }
         
         public async Task<ServiceResponse<bool>> DeleteUserAsync(Guid userId)
         {
-            var response = new ServiceResponse<bool>();
-            try
-            {
-                var data = await _repository.DeleteAsync(userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.UserDeletedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.DeleteAsync(userId),
+                FMS_Collection.Core.Constants.Constants.Messages.UserDeletedSuccessfully
+            );
         }
         
         public async Task<ServiceResponse<bool>> UpdateUserPermissionAsync(UserPermissionRequest userPermission, Guid userId)
         {
-            var response = new ServiceResponse<bool>();
-            try
-            {
-                var data = await _repository.UpdateUserPermissionAsync(userPermission, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.UserPermissionsUpdatedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.UpdateUserPermissionAsync(userPermission, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.UserPermissionsUpdatedSuccessfully
+            );
         }
         
 
@@ -165,36 +111,18 @@ namespace FMS_Collection.Application.Services
         }
         public async Task<ServiceResponse<List<ModuleListResponse>>> GetModuleListAsync()
         {
-            var response = new ServiceResponse<List<ModuleListResponse>>();
-            try
-            {
-                var data = await _repository.GetModuleListAsync();
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.ModulesFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetModuleListAsync(),
+                FMS_Collection.Core.Constants.Constants.Messages.ModulesFetchedSuccessfully
+            );
         }
         
         public async Task<ServiceResponse<List<UserPermissionResponse>>> GetUserPermissionListAsync(Guid UserId)
         {
-            var response = new ServiceResponse<List<UserPermissionResponse>>();
-            try
-            {
-                var data = await _repository.GetUserPermissionListAsync(UserId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.UserPermissionsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetUserPermissionListAsync(UserId),
+                FMS_Collection.Core.Constants.Constants.Messages.UserPermissionsFetchedSuccessfully
+            );
         }
     }
 }

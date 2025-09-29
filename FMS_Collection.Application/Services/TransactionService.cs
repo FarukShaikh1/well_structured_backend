@@ -17,150 +17,63 @@ namespace FMS_Collection.Application.Services
 
         public async Task<ServiceResponse<List<Transaction>>> GetAllTransactionsAsync()
         {
-            var response = new ServiceResponse<List<Transaction>>();
-            try
-            {
-                var data = await _repository.GetAllAsync();
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Data = null;
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetAllAsync(),
+                FMS_Collection.Core.Constants.Constants.Messages.TransactionsFetchedSuccessfully
+            );
         }
         public async Task<ServiceResponse<List<TransactionListResponse>>> GetTransactionListAsync(TransactionFilterRequest filter, Guid userId)
         {
-            var response = new ServiceResponse<List<TransactionListResponse>>();
-            try
-            {
-                var data = await _repository.GetTransactionListAsync(filter, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionListFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Data = null;
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetTransactionListAsync(filter, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.TransactionListFetchedSuccessfully
+            );
         }
         public async Task<ServiceResponse<List<TransactionSummaryResponse>>> GetTransactionSummaryAsync(TransactionFilterRequest filter, Guid userId)
         {
-            var response = new ServiceResponse<List<TransactionSummaryResponse>>();
-            try
-            {
-                var data = await _repository.GetTransactionSummaryAsync(filter, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionSummaryFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Data = null;
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetTransactionSummaryAsync(filter, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.TransactionSummaryFetchedSuccessfully
+            );
         }
         public async Task<ServiceResponse<List<TransactionSummaryResponse>>> GetBalanceSummaryAsync(TransactionFilterRequest filter, Guid userId)
         {
             
-            var response = new ServiceResponse<List<TransactionSummaryResponse>>();
-            try
-            {
-                var data = await _repository.GetBalanceSummaryAsync(filter, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.BalanceSummaryFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Data = null;
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetBalanceSummaryAsync(filter, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.BalanceSummaryFetchedSuccessfully
+            );
         }
         public async Task<ServiceResponse<List<TransactionReportResponse>>> GetTransactionReportAsync(TransactionFilterRequest filter, Guid userId)
         {
-            var response = new ServiceResponse<List<TransactionReportResponse>>();
-            try
-            {
-                var data = await _repository.GetTransactionReportAsync(filter, userId);
-
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionReportFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Data = null;
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetTransactionReportAsync(filter, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.TransactionReportFetchedSuccessfully
+            );
         }
 
         public async Task<ServiceResponse<TransactionDetailsResponse>> GetTransactionDetailsAsync(Guid TransactionId, Guid userId)
         {
-            var response = new ServiceResponse<TransactionDetailsResponse>();
-            try
-            {
-                var data = await _repository.GetTransactionDetailsAsync(TransactionId, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionDetailsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Data = null;
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetTransactionDetailsAsync(TransactionId, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.TransactionDetailsFetchedSuccessfully
+            );
         }
         public async Task<ServiceResponse<List<TransactionSuggestionList>>> GetTransactionSuggestionListAsync(Guid userId)
         {
 
-            var response = new ServiceResponse<List<TransactionSuggestionList>>();
-            try
-            {
-                var data = await _repository.GetTransactionSuggestionListAsync(userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionSuggestionsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Data = null;
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetTransactionSuggestionListAsync(userId),
+                FMS_Collection.Core.Constants.Constants.Messages.TransactionSuggestionsFetchedSuccessfully
+            );
         }
         public async Task<ServiceResponse<bool>> DeleteTransactionAsync(Guid TransactionId, Guid userId)
         {
 
-            var response = new ServiceResponse<bool>();
-            try
-            {
-                var data = await _repository.DeleteAsync(TransactionId, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionDeletedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.DeleteAsync(TransactionId, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.TransactionDeletedSuccessfully
+            );
         }
         public async Task<ServiceResponse<Guid>> AddTransactionAsync(TransactionRequest transaction, Guid userId)
         {
@@ -168,19 +81,10 @@ namespace FMS_Collection.Application.Services
             var (splitTable, hasValid) = BuildSplitTable(transaction);
             if (hasValid)
             {
-                try
-                {
-                    var data = await _repository.AddAsync(transaction, splitTable, userId);
-                    response.Success = true;
-                    response.Data = data;
-                    response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionCreatedSuccessfully;
-                }
-                catch (Exception ex)
-                {
-                    response.Success = false;
-                    response.Data = Guid.Empty;
-                    response.Message = ex.Message;
-                }
+                return await ServiceExecutor.ExecuteAsync(
+                    () => _repository.AddAsync(transaction, splitTable, userId),
+                    FMS_Collection.Core.Constants.Constants.Messages.TransactionCreatedSuccessfully
+                );
             }
             return response;
         }
@@ -191,19 +95,10 @@ namespace FMS_Collection.Application.Services
             var (splitTable, hasValid) = BuildSplitTable(transaction);
             if (hasValid)
             { //&& await _repository.UpdateAsync(transaction, splitTable, userId);
-                try
-                {
-                    var data = await _repository.UpdateAsync(transaction, splitTable, userId);
-                    response.Success = true;
-                    response.Data = data;
-                    response.Message = FMS_Collection.Core.Constants.Constants.Messages.TransactionUpdatedSuccessfully;
-                }
-                catch (Exception ex)
-                {
-                    response.Success = false;
-                    response.Data = false;
-                    response.Message = ex.Message;
-                }
+                return await ServiceExecutor.ExecuteAsync(
+                    () => _repository.UpdateAsync(transaction, splitTable, userId),
+                    FMS_Collection.Core.Constants.Constants.Messages.TransactionUpdatedSuccessfully
+                );
             }
             return response;
         }

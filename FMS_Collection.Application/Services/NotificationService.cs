@@ -17,120 +17,57 @@ namespace FMS_Collection.Application.Services
 
         public async Task<ServiceResponse<List<Notification>>> GetAllNotificationsAsync()
         {
-            var response = new ServiceResponse<List<Notification>>();
-            try
-            {
-                var data = await _repository.GetAllAsync();
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.NotificationsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetAllAsync(),
+                FMS_Collection.Core.Constants.Constants.Messages.NotificationsFetchedSuccessfully
+            );
         }// => 
         public async Task<ServiceResponse<List<NotificationListResponse>>> GetNotificationListAsync(Guid userId)
         {
-            var response = new ServiceResponse<List<NotificationListResponse>>();
-            try
-            {
-                var data = await _repository.GetNotificationListAsync(userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.NotificationListFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetNotificationListAsync(userId),
+                FMS_Collection.Core.Constants.Constants.Messages.NotificationListFetchedSuccessfully
+            );
         }
         
         public async Task<ServiceResponse<NotificationDetailsResponse>> GetNotificationDetailsAsync(Guid NotificationId, Guid userId)
         {
-            var response = new ServiceResponse<NotificationDetailsResponse>();
-            try
-            {
-                var data = await _repository.GetNotificationDetailsAsync(NotificationId, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.NotificationDetailsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetNotificationDetailsAsync(NotificationId, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.NotificationDetailsFetchedSuccessfully
+            );
         }
         
         public async Task<ServiceResponse<Guid>> AddNotificationAsync(NotificationRequest Notification,Guid NotificationId)
         {
-            var response = new ServiceResponse<Guid>();
-            try
-            {
-                var data = await _repository.AddAsync(Notification, NotificationId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.NotificationCreatedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.AddAsync(Notification, NotificationId),
+                FMS_Collection.Core.Constants.Constants.Messages.NotificationCreatedSuccessfully
+            );
         }
         
         public async Task<ServiceResponse<bool>> UpdateNotificationAsync(NotificationRequest Notification, Guid NotificationId)
         {
-            var response = new ServiceResponse<bool>();
-            try
-            {
-                var data = await _repository.UpdateAsync(Notification, NotificationId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.NotificationUpdatedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.UpdateAsync(Notification, NotificationId),
+                FMS_Collection.Core.Constants.Constants.Messages.NotificationUpdatedSuccessfully
+            );
         }
         
         public async Task<ServiceResponse<bool>> DeleteNotificationAsync(Guid NotificationId, Guid userId)
         {
-            var response = new ServiceResponse<bool>();
-            try
-            {
-                var data = await _repository.DeleteAsync(NotificationId, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.NotificationDeletedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.DeleteAsync(NotificationId, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.NotificationDeletedSuccessfully
+            );
         }
         
         public async Task<ServiceResponse<List<NotificationSummaryResponse>>> GetSummaryAsync()
         {
-            var response = new ServiceResponse<List<NotificationSummaryResponse>>();
-            try
-            {
-                var data = await _repository.GetSummaryAsync();
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.NotificationSummaryFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetSummaryAsync(),
+                FMS_Collection.Core.Constants.Constants.Messages.NotificationSummaryFetchedSuccessfully
+            );
         }
         
     }

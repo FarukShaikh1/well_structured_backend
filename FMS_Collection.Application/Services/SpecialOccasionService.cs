@@ -17,104 +17,50 @@ namespace FMS_Collection.Application.Services
 
         public async Task<ServiceResponse<List<SpecialOccasion>>> GetAllDaysAsync()
         {
-            var response = new ServiceResponse<List<SpecialOccasion>>();
-            try
-            {
-                var data = await _repository.GetAllAsync();
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.DaysFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetAllAsync(),
+                FMS_Collection.Core.Constants.Constants.Messages.DaysFetchedSuccessfully
+            );
         }
 
         public async Task<ServiceResponse<List<SpecialOccasionListResponse>>> GetDayListAsync(Guid userId)
         {
-            var response = new ServiceResponse<List<SpecialOccasionListResponse>>();
-            try
-            {
-                var data = await _repository.GetDayListAsync(userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.DayListFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetDayListAsync(userId),
+                FMS_Collection.Core.Constants.Constants.Messages.DayListFetchedSuccessfully
+            );
         }
 
         public async Task<ServiceResponse<SpecialOccasionDetailsResponse>> GetDayDetailsAsync(Guid dayId, Guid userId)
         {
-            var response = new ServiceResponse<SpecialOccasionDetailsResponse>();
-            try
-            {
-                var data = await _repository.GetDayDetailsAsync(dayId, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.DayDetailsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetDayDetailsAsync(dayId, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.DayDetailsFetchedSuccessfully
+            );
         }
 
         public async Task<ServiceResponse<Guid>> AddDayAsync(SpecialOccasionRequest Day, Guid userId)
         {
-            var response = new ServiceResponse<Guid>();
-            try
-            {
-                var data = await _repository.AddAsync(Day, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.DayCreatedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.AddAsync(Day, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.DayCreatedSuccessfully
+            );
         }
 
         public async Task<ServiceResponse<bool>> UpdateDayAsync(SpecialOccasionRequest Day, Guid userId)
         {
-            var response = new ServiceResponse<bool>();
-            try
-            {
-                var data = await _repository.UpdateAsync(Day, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.DayUpdatedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.UpdateAsync(Day, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.DayUpdatedSuccessfully
+            );
         }
 
         public async Task<ServiceResponse<bool>> DeleteDayAsync(Guid dayId, Guid userId)
         {
-            var response = new ServiceResponse<bool>();
-            try
-            {
-                var data = await _repository.DeleteAsync(dayId, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.DayDeletedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.DeleteAsync(dayId, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.DayDeletedSuccessfully
+            );
         }
     }
 }

@@ -27,51 +27,24 @@ namespace FMS_Collection.Application.Services
         public async Task<ServiceResponse<List<Asset>>> GetAllAssetsAsync()
         {
 
-            var response = new ServiceResponse<List<Asset>>();
-            try
-            {
-                var data = await _repository.GetAllAsync();
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.AssetsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetAllAsync(),
+                FMS_Collection.Core.Constants.Constants.Messages.AssetsFetchedSuccessfully
+            );
         }
         public async Task<ServiceResponse<AssetResponse>> GetAssetDetailsAsync(Guid assetId)
         {
-            var response = new ServiceResponse<AssetResponse>();
-            try
-            {
-                var data = await _repository.GetAssetDetailsAsync(assetId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.AssetDetailsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetAssetDetailsAsync(assetId),
+                FMS_Collection.Core.Constants.Constants.Messages.AssetDetailsFetchedSuccessfully
+            );
         }
         public async Task<ServiceResponse<Guid>> AddAssetAsync(AssetRequest Asset, Guid userId)
         {
-            var response = new ServiceResponse<Guid>();
-            try
-            {
-                var data = await _repository.AddAsync(Asset, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.AssetCreatedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.AddAsync(Asset, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.AssetCreatedSuccessfully
+            );
         }
 
         public async Task UpdateAssetAsync(AssetRequest Asset, Guid userId)
@@ -80,19 +53,10 @@ namespace FMS_Collection.Application.Services
         }
         public async Task<ServiceResponse<bool>> DeleteAssetAsync(Guid assetId, Guid userId)
         {
-            var response = new ServiceResponse<bool>();
-            try
-            {
-                var data = await _repository.DeleteAsync(assetId, userId);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.AssetDeletedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.DeleteAsync(assetId, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.AssetDeletedSuccessfully
+            );
         }
 
         public async Task<ServiceResponse<Guid>> SaveFile(IFormFile file, string documentType, Guid userId, bool isNonSecuredFile = true)
@@ -108,19 +72,13 @@ namespace FMS_Collection.Application.Services
             assetRequest.ContentType = file.ContentType;
             assetRequest.IsNonSecuredFile = isNonSecuredFile;
             //return await AddAssetAsync(assetRequest, userId);
-            var response = new ServiceResponse<Guid>();
-            try
-            {
-                var data = await AddAssetAsync(assetRequest, userId);
-                response.Success = true;
-                response.Data = data.Data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.AssetSavedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                async () => {
+                    var data = await AddAssetAsync(assetRequest, userId);
+                    return data.Data;
+                },
+                FMS_Collection.Core.Constants.Constants.Messages.AssetSavedSuccessfully
+            );
 
         }
 

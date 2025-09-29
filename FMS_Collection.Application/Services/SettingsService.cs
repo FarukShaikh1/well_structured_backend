@@ -16,173 +16,83 @@ namespace FMS_Collection.Application.Services
 
         public async Task<ServiceResponse<List<ConfigurationResponse>>> GetConfigListAsync(Guid userId, string config)
         {
-            var response = new ServiceResponse<List<ConfigurationResponse>>();
-            try
-            {
-                var data = await _repository.GetConfigListAsync(userId, config);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.ConfigurationsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetConfigListAsync(userId, config),
+                FMS_Collection.Core.Constants.Constants.Messages.ConfigurationsFetchedSuccessfully
+            );
         }
         //=> 
         public async Task<ServiceResponse<List<ConfigurationResponse>>> GetActiveConfigListAsync(Guid userId, string config)
         {
-            var response = new ServiceResponse<List<ConfigurationResponse>>();
-            try
-            {
-                var data = await _repository.GetActiveConfigListAsync(userId, config);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.ActiveConfigurationsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetActiveConfigListAsync(userId, config),
+                FMS_Collection.Core.Constants.Constants.Messages.ActiveConfigurationsFetchedSuccessfully
+            );
         }
         //=> 
         public async Task<ServiceResponse<ConfigurationResponse>> GetConfigDetailsAsync(Guid id, string config)
         {
-            var response = new ServiceResponse<ConfigurationResponse>();
-            try
-            {
-                var data = await _repository.GetConfigDetailsAsync(id, config);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.ConfigurationDetailsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetConfigDetailsAsync(id, config),
+                FMS_Collection.Core.Constants.Constants.Messages.ConfigurationDetailsFetchedSuccessfully
+            );
         }
         //=> 
         public async Task<ServiceResponse<Guid>> AddConfigAsync(ConfigurationRequest Config, Guid userId, string config)
         {
-            var response = new ServiceResponse<Guid>();
-            try
-            {
-                var data = await _repository.AddConfigAsync(Config, userId, config);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.ConfigurationCreatedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.AddConfigAsync(Config, userId, config),
+                FMS_Collection.Core.Constants.Constants.Messages.ConfigurationCreatedSuccessfully
+            );
         }
         //=> 
         public async Task<ServiceResponse<bool>> UpdateConfigAsync(ConfigurationRequest Config, Guid userId, string config)
         {
-            var response = new ServiceResponse<bool>();
-            try
-            {
-                var data = await _repository.UpdateConfigAsync(Config, userId, config);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.ConfigurationUpdatedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.UpdateConfigAsync(Config, userId, config),
+                FMS_Collection.Core.Constants.Constants.Messages.ConfigurationUpdatedSuccessfully
+            );
         }
         //=> 
         public async Task<ServiceResponse<bool>> DeleteConfigAsync(Guid id, Guid userId, string config)
         {
-            var response = new ServiceResponse<bool>();
-            try
-            {
-                var data = await _repository.DeleteConfigAsync(id, userId, config);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.ConfigurationDeletedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.DeleteConfigAsync(id, userId, config),
+                FMS_Collection.Core.Constants.Constants.Messages.ConfigurationDeletedSuccessfully
+            );
         }
         //=> 
         public async Task<ServiceResponse<bool>> DeactivateConfigAsync(Guid id, Guid userId, string config)
         {
-            var response = new ServiceResponse<bool>();
-            try
-            {
-                var data = await _repository.DeactivateConfigAsync(id, userId, config);
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.ConfigurationDeactivatedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.DeactivateConfigAsync(id, userId, config),
+                FMS_Collection.Core.Constants.Constants.Messages.ConfigurationDeactivatedSuccessfully
+            );
         }
         //=> 
 
         public async Task<ServiceResponse<List<Account>>> GetAllAccountsAsync()
         {
-            var response = new ServiceResponse<List<Account>>();
-            try
-            {
-                var data = await _repository.GetAllAccountsAsync();
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.AccountsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetAllAccountsAsync(),
+                FMS_Collection.Core.Constants.Constants.Messages.AccountsFetchedSuccessfully
+            );
         }
         //=> 
         public async Task<ServiceResponse<List<Relation>>> GetAllRelationsAsync()
         {
-            var response = new ServiceResponse<List<Relation>>();
-            try
-            {
-                var data = await _repository.GetAllRelationsAsync();
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.RelationsFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetAllRelationsAsync(),
+                FMS_Collection.Core.Constants.Constants.Messages.RelationsFetchedSuccessfully
+            );
         }
         //=> 
         public async Task<ServiceResponse<List<OccasionType>>> GetAllOccasionTypesAsync()
         {
-            var response = new ServiceResponse<List<OccasionType>>();
-            try
-            {
-                var data = await _repository.GetAllOccasionTypesAsync();
-                response.Success = true;
-                response.Data = data;
-                response.Message = FMS_Collection.Core.Constants.Constants.Messages.OccasionTypesFetchedSuccessfully;
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-            }
-            return response;
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetAllOccasionTypesAsync(),
+                FMS_Collection.Core.Constants.Constants.Messages.OccasionTypesFetchedSuccessfully
+            );
         }
         //=> 
     }
