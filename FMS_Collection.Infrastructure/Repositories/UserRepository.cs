@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using FMS_Collection.Core.Entities;
+﻿using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Interfaces;
 using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
@@ -103,7 +102,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             return users;
         }
 
-        public async Task<UserDetailsResponse> GetUserDetailsAsync(Guid userId)
+        public async Task<UserDetailsResponse> GetUserDetailsAsync(Guid? userId, string? emailId)
         {
             var result = new UserDetailsResponse();
             try
@@ -113,8 +112,16 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-                cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
+                // Both parameters exist in the SP now
+                cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier)
+                {
+                    Value = (object?)userId ?? DBNull.Value
+                });
 
+                cmd.Parameters.Add(new SqlParameter("@in_EmailId", SqlDbType.VarChar, 200)
+                {
+                    Value = (object?)emailId ?? DBNull.Value
+                });
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
@@ -285,21 +292,17 @@ namespace FMS_Collection.Infrastructure.Repositories
                         LastName = reader["LastName"] != DBNull.Value ? reader["LastName"].ToString() : null,
                         UserName = reader["UserName"] != DBNull.Value ? reader["UserName"].ToString() : null,
                         EmailAddress = reader["EmailAddress"] != DBNull.Value ? reader["EmailAddress"].ToString() : null,
+                        MobileNumber = reader["MobileNumber"] != DBNull.Value ? reader["MobileNumber"].ToString() : null,
                         Password = reader["Password"] != DBNull.Value ? reader["Password"].ToString() : null,
                         PasswordLastChangeDate = reader["PasswordLastChangeDate"] != DBNull.Value ? (DateTime?)reader["PasswordLastChangeDate"] : null,
+                        FailedLoginCount = reader["FailedLoginCount"] != DBNull.Value ? (int?)reader["FailedLoginCount"] : null,
+                        LockExpiryDate = reader["LockExpiryDate"] != DBNull.Value ? (DateTime?)reader["LockExpiryDate"] : null,
+                        SpecialOccasionDate = reader["SpecialOccasionDate"] != DBNull.Value ? (DateTime?)reader["SpecialOccasionDate"] : null,
+                        IsOtpRequired = reader["IsOtpRequired"] != DBNull.Value && Convert.ToBoolean(reader["IsOtpRequired"]),
+                        IsDeleted = reader["IsDeleted"] != DBNull.Value && Convert.ToBoolean(reader["IsDeleted"]),
                         RoleId = reader["RoleId"] != DBNull.Value ? (Guid?)reader["RoleId"] : null,
-                        RoleName = reader["RoleName"] != DBNull.Value ? reader["RoleName"].ToString() : null,
-                        AccessibleModuleIds = new List<Guid>() // Will be populated below
+                        RoleName = reader["RoleName"] != DBNull.Value ? reader["RoleName"].ToString() : null
                     };
-                }
-                // Move to second result set (AccessibleModuleIds)
-                if (await reader.NextResultAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        if (reader["ModuleId"] != DBNull.Value)
-                            result.AccessibleModuleIds.Add((Guid)reader["ModuleId"]);
-                    }
                 }
             }
             catch (Exception ex)
@@ -390,6 +393,32 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
 
             return users;
+        }
+
+        public async Task<bool> UpdatePasswordHashAsync(Guid? userId, string newPasswordHash)
+        {
+            try
+            {
+                using var conn = _dbFactory.CreateConnection();
+                using var cmd = new SqlCommand("User_Update_Password", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                // Add parameters expected by the stored procedure
+                cmd.Parameters.AddWithValue("@In_UserId", (object?)userId ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@In_NewPasswordHash", newPasswordHash ?? (object)DBNull.Value);
+
+                await conn.OpenAsync();
+                int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                return rowsAffected > 0; // true if update happened
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+            }
         }
 
     }

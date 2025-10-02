@@ -1,7 +1,5 @@
 ﻿// API/Controllers/AssetController.cs
-using Azure;
 using FMS_Collection.Application.Services;
-using FMS_Collection.Core.Common;
 using FMS_Collection.Core.Request;
 using Microsoft.AspNetCore.Mvc;
 

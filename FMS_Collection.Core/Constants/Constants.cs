@@ -40,6 +40,7 @@
             public const string UserPermissionsFetchedSuccessfully = "User permissions fetched successfully";
             public const string ModulesFetchedSuccessfully = "Modules fetched successfully";
             public const string LoginSuccessful = "Login successful";
+            public const string TooManyLoginAttempts = "Too many failed login attempt done, you are locked for 24 hours.";
 
             // Common Lists
             public const string CommonListsFetchedSuccessfully = "Common lists fetched successfully";
@@ -94,6 +95,15 @@
             public const string DayCreatedSuccessfully = "Day created successfully";
             public const string DayUpdatedSuccessfully = "Day updated successfully";
             public const string DayDeletedSuccessfully = "Day deleted successfully";
+
+            // OTP
+            public const string OtpSentSuccessfully = "OTP sent successfully";
+            public const string OtpVerifiedSuccessfully = "OTP verified successfully";
+            public const string OtpInvalidOrExpired = "OTP is invalid or expired";
+            public const string PasswordResetSuccessful = "Password reset successful";
+            public const string OtpResentSuccessfully = "OTP resent successfully";
+            public const string OtpGenerationFailed = "Unable to generate OTP";
+            public const string OtpDeliveryFailed = "Unable to send OTP";
         }
         public struct Roles
         {
@@ -105,6 +115,11 @@
             public const string Person = "Person";
         }
 
+        public struct OtpPurpose
+        {
+            public const string PasswordReset = "password_reset";
+            public const string Login = "Login";
+        }
         public struct Permissions
         {
             public const string None = "None";

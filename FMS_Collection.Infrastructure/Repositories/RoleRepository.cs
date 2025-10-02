@@ -35,7 +35,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     roles.Add(new Role
                     {
-                        RoleId = reader.GetGuid(reader.GetOrdinal("RoleId")),
+                        RoleId = reader.GetGuid(reader.GetOrdinal("Id")),
                         RoleName = reader.GetString(reader.GetOrdinal("RoleName")),
                         RoleDescription = reader.IsDBNull(reader.GetOrdinal("RoleDescription")) ? null : reader.GetString(reader.GetOrdinal("RoleDescription")),
                         CreatedOn = reader.IsDBNull(reader.GetOrdinal("CreatedOn")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("CreatedOn")),
@@ -106,7 +106,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     result = new RoleDetailsResponse
                     {
-                        Id = reader.GetGuid(reader.GetOrdinal("RoleId")),
+                        Id = reader.GetGuid(reader.GetOrdinal("Id")),
                         RoleName = reader.IsDBNull(reader.GetOrdinal("RoleName")) ? null : reader.GetString(reader.GetOrdinal("RoleName")),
                         RoleDescription = reader.IsDBNull(reader.GetOrdinal("RoleDescription")) ? null : reader.GetString(reader.GetOrdinal("RoleDescription"))
                     };

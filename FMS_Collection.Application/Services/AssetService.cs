@@ -204,7 +204,7 @@ namespace FMS_Collection.Application.Services
 
         private async Task<string> CreateAndSaveThumbnail(string thumbFileName, byte[] fileBytes, string documentType)
         {
-            string baseAssetDirectory = AppSettings.PhysicalPathDirectory;
+            string baseAssetDirectory = AppSettings.AssetDirectory;
             string relativeDirectoryPath = $"/{documentType}/thumbnails/";
 
             ValidateDirectory(baseAssetDirectory + relativeDirectoryPath);
@@ -233,7 +233,7 @@ namespace FMS_Collection.Application.Services
 
             //string baseAssetDirectory = Directory.GetCurrentDirectory() + "\\wwwroot\\ProjectAttatchments\\";
             //string baseAssetDirectory = "D:\\Projects\\MyProj\\Project\\MyCollection\\src\\assets\\ProjectAttatchments";
-            string baseAssetDirectory = AppSettings.PhysicalPathDirectory;
+            string baseAssetDirectory = AppSettings.AssetDirectory;
             //string baseAssetDirectory = AppSettings.AssetDirectory;
             string fileExtension = Path.GetExtension(fileName);
 
@@ -270,16 +270,16 @@ namespace FMS_Collection.Application.Services
         private async Task<bool> DeleteFileFromDocStore(string fileName)
         {
             bool isDeleteSuccess = false;
-            await Task.Run(() =>
+            await Task.Run((Action)(() =>
             {
-                if (File.Exists(AppSettings.PhysicalPathDirectory + fileName))
+                if (File.Exists((string)(AppSettings.AssetDirectory + fileName)))
                 //if (File.Exists(Directory.GetCurrentDirectory() + "\\wwwroot\\ProjectAttatchments\\" + fileName))
                 {
                     //File.Delete(Directory.GetCurrentDirectory() + "\\wwwroot\\ProjectAttatchments\\" + fileName);
-                    File.Delete(AppSettings.PhysicalPathDirectory + fileName);
+                    File.Delete((string)(AppSettings.AssetDirectory + fileName));
                     isDeleteSuccess = true;
                 }
-            });
+            }));
             return isDeleteSuccess;
         }
 

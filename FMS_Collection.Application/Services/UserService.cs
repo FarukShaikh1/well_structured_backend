@@ -1,28 +1,32 @@
 ﻿
 using FMS_Collection.Core.Common;
+using FMS_Collection.Core.Constants;
 using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Interfaces;
 using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
+using System.Reflection.Metadata;
 
 namespace FMS_Collection.Application.Services
 {
     public class UserService
     {
         private readonly IUserRepository _repository;
-        public UserService(IUserRepository repository)
+        private readonly OtpService _otpService;
+        public UserService(IUserRepository repository, OtpService otpService)
         {
             _repository = repository;
+            _otpService = otpService;
         }
 
-        public async Task<ServiceResponse<List<User>> >GetAllUsersAsync()
+        public async Task<ServiceResponse<List<User>>> GetAllUsersAsync()
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetAllAsync(),
                 FMS_Collection.Core.Constants.Constants.Messages.UsersFetchedSuccessfully
             );
         }
-        
+
         public async Task<ServiceResponse<List<UserListResponse>>> GetUserListAsync(Guid userId)
         {
             return await ServiceExecutor.ExecuteAsync(
@@ -30,7 +34,7 @@ namespace FMS_Collection.Application.Services
                 FMS_Collection.Core.Constants.Constants.Messages.UserListFetchedSuccessfully
             );
         }
-        
+
         public async Task<ServiceResponse<UserDetailsResponse>> GetUserDetailsAsync(Guid userId)
         {
             return await ServiceExecutor.ExecuteAsync(
@@ -38,12 +42,12 @@ namespace FMS_Collection.Application.Services
                 FMS_Collection.Core.Constants.Constants.Messages.UserDetailsFetchedSuccessfully
             );
         }
-        
-        public async Task AddUserAsync(UserRequest User,Guid userId)
+
+        public async Task AddUserAsync(UserRequest User, Guid userId)
         {
             _repository.UpdateAsync(User, userId);
         }
-        
+
         public async Task<ServiceResponse<Guid>> UpdateUserAsync(UserRequest User, Guid userId)
         {
             return await ServiceExecutor.ExecuteAsync(
@@ -51,7 +55,7 @@ namespace FMS_Collection.Application.Services
                 FMS_Collection.Core.Constants.Constants.Messages.UserSavedSuccessfully
             );
         }
-        
+
         public async Task<ServiceResponse<bool>> DeleteUserAsync(Guid userId)
         {
             return await ServiceExecutor.ExecuteAsync(
@@ -59,7 +63,7 @@ namespace FMS_Collection.Application.Services
                 FMS_Collection.Core.Constants.Constants.Messages.UserDeletedSuccessfully
             );
         }
-        
+
         public async Task<ServiceResponse<bool>> UpdateUserPermissionAsync(UserPermissionRequest userPermission, Guid userId)
         {
             return await ServiceExecutor.ExecuteAsync(
@@ -67,7 +71,7 @@ namespace FMS_Collection.Application.Services
                 FMS_Collection.Core.Constants.Constants.Messages.UserPermissionsUpdatedSuccessfully
             );
         }
-        
+
 
         public async Task<ServiceResponse<LoginResponse>> GetLoginDetails(LoginRequest user)
         {
@@ -87,26 +91,29 @@ namespace FMS_Collection.Application.Services
             }
 
             // Perform additional logic in UserService layer
-            if (response.Data == null)
+            if (response.Data.EmailAddress == null || response.Data.Password != user.Password)
             {
-                throw new Exception(FMS_Collection.Core.Constants.Constants.Messages.InvalidUserOrPassword); // Custom business logic
+                response.Success = true;
+                response.Data = null;
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.InvalidUserOrPassword;
+                return response;
             }
-
-            // Example: Mask the password before returning
             response.Data.Password = null;
-
-            // Example: Log or audit
-            // _logger.LogInformation($"User {response.Data.UserName} logged in at {DateTime.UtcNow}");
-
-            // Example: Add a default module if user has no modules assigned
-            if (response.Data.AccessibleModuleIds == null || !response.Data.AccessibleModuleIds.Any())
+            if (response.Data.FailedLoginCount > AppSettings.AllowedFailedLoginCount)
             {
-                response.Data.AccessibleModuleIds = new List<Guid>
-        {
-            Guid.Parse("11111111-1111-1111-1111-111111111111") // Default module id
-        };
+                response.Success = true;
+                response.Data = null;
+                response.Message = FMS_Collection.Core.Constants.Constants.Messages.TooManyLoginAttempts;
+                return response;
             }
 
+            if (response.Data.IsOtpRequired)
+            {
+                SendOtpRequest request = new SendOtpRequest();
+                request.EmailId = response.Data.EmailAddress;
+                request.Purpose = Constants.OtpPurpose.Login;
+                await _otpService.SendAsync(request);
+            }
             return response;
         }
         public async Task<ServiceResponse<List<ModuleListResponse>>> GetModuleListAsync()
@@ -116,7 +123,7 @@ namespace FMS_Collection.Application.Services
                 FMS_Collection.Core.Constants.Constants.Messages.ModulesFetchedSuccessfully
             );
         }
-        
+
         public async Task<ServiceResponse<List<UserPermissionResponse>>> GetUserPermissionListAsync(Guid UserId)
         {
             return await ServiceExecutor.ExecuteAsync(

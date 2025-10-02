@@ -18,6 +18,8 @@ builder.Services.AddScoped<ISettingsRepository, SettingsRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<IOtpRepository, OtpRepository>();
+builder.Services.AddScoped<INotificationSender, NotificationSender>();
 
 builder.Services.AddScoped<AssetService>();
 builder.Services.AddScoped<CoinNoteCollectionService>();
@@ -27,6 +29,7 @@ builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<SpecialOccasionService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<OtpService>();
 
 builder.Services.AddControllers();
 builder.Services.AddControllers().AddJsonOptions(options =>

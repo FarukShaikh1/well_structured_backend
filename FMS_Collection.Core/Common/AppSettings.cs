@@ -1,19 +1,23 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
+using System.ComponentModel;
+using System.Net.Mail;
 
 namespace FMS_Collection.Core.Common
 {
     public static class AppSettings
     {
         public static string DefaultDbConnectionString { get; }
-        public static string LoggingConnectionString { get; }
+        public static int AllowedFailedLoginCount { get; }
         public static string CachingMode { get; }
         public static string AssetDirectory { get; }
-        public static string PhysicalPathDirectory { get; }
 
         public static string CurrencyConversionApiBaseUrl { get; set; }
         public static string CurrencyConversionApiPath { get; set; }
         public static string CurrencyConversionApiAccessKey { get; set; }
+
+        public static string SmtpHost { get; set; }
+        public static int SmtpPort { get; set; }
 
         static AppSettings()
         {
@@ -24,14 +28,16 @@ namespace FMS_Collection.Core.Common
 
             var config = builder.Build();
 
-            DefaultDbConnectionString = config["ConnectionStrings:FMSConnectionString"];
-            //LoggingConnectionString = config["ConnectionStrings:LoggingConnectionString"];
-            CachingMode = config["ConnectionStrings:CachingMode"];
-            AssetDirectory = config["ConnectionStrings:AssetDirectory"];
-            PhysicalPathDirectory = config["AppSettings:PhysicalPathDirectory"];
-            CurrencyConversionApiBaseUrl = config["ConnectionStrings:CurrencyConversionApiBaseUrl"];
-            CurrencyConversionApiPath = config["ConnectionStrings:CurrencyConversionApiPath"];
-            CurrencyConversionApiAccessKey = config["ConnectionStrings:CurrencyConversionApiAccessKey"];
+            DefaultDbConnectionString = config["ConnectionStrings:FMSConnectionString"]??"";
+
+            AllowedFailedLoginCount = Convert.ToInt32(config["AppSettings:AllowedFailedLoginCount"]);
+            CachingMode = config["AppSettings:CachingMode"] ??"";
+            AssetDirectory = config["AppSettings:AssetDirectory"] ?? "";
+            CurrencyConversionApiBaseUrl = config["AppSettings:CurrencyConversionApiBaseUrl"] ?? "";
+            CurrencyConversionApiPath = config["AppSettings:CurrencyConversionApiPath"] ?? "";
+            CurrencyConversionApiAccessKey = config["AppSettings:CurrencyConversionApiAccessKey"] ?? "";
+            SmtpHost = config["MailConfig:SmtpHost"] ?? "";
+            SmtpPort= Convert.ToInt32(config["MailConfig:SmtpPort"]);
         }
 
     }
