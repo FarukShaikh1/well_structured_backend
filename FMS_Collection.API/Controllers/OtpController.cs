@@ -18,7 +18,7 @@ namespace FMS_Collection.API.Controllers
         public async Task<IActionResult> Send([FromBody] SendOtpRequest request)
         {
             var result = await _otpService.SendAsync(request);
-            if (!result.Success) return BadRequest(result);
+            //if (!result.Success) return BadRequest(result);
             return Ok(result);
         }
 

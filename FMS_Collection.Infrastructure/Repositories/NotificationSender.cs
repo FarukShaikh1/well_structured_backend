@@ -11,16 +11,16 @@ namespace FMS_Collection.Infrastructure.Repositories
         {
             try
             {
-                var fromEmail = "farukshaikh908@gmail.com";
-                var fromPassword = "peof easy ddyp pffj"; // Use secrets manager / config, not hardcoded
+                //var fromEmail = "farukshaikh908@gmail.com";
+                //var fromPassword = "peof easy ddyp pffj"; // Use secrets manager / config, not hardcoded
 
                 using var smtp = new SmtpClient(AppSettings.SmtpHost, AppSettings.SmtpPort) // Example: smtp.gmail.com, port 587
                 {
-                    Credentials = new NetworkCredential(fromEmail, fromPassword),
+                    Credentials = new NetworkCredential(AppSettings.SenderEmail, AppSettings.EmailPassword),
                     EnableSsl = true // use true for Gmail, Outlook, most providers
                 };
 
-                using var message = new MailMessage(fromEmail, toEmail)
+                using var message = new MailMessage(AppSettings.SenderEmail, toEmail)
                 {
                     Subject = subject,
                     Body = body,

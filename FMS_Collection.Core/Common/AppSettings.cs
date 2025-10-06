@@ -18,6 +18,8 @@ namespace FMS_Collection.Core.Common
 
         public static string SmtpHost { get; set; }
         public static int SmtpPort { get; set; }
+        public static string SenderEmail { get; set; }
+        public static string EmailPassword { get; set; }
 
         static AppSettings()
         {
@@ -38,6 +40,8 @@ namespace FMS_Collection.Core.Common
             CurrencyConversionApiAccessKey = config["AppSettings:CurrencyConversionApiAccessKey"] ?? "";
             SmtpHost = config["MailConfig:SmtpHost"] ?? "";
             SmtpPort= Convert.ToInt32(config["MailConfig:SmtpPort"]);
+            SenderEmail = config["MailConfig:SenderEmail"] ?? "";
+            EmailPassword = config["MailConfig:EmailPassword"] ?? "";
         }
 
     }
