@@ -4,7 +4,7 @@
     {
         public Guid? Id { get; set; }
         public Guid? AccountId { get; set; }
-        public DateTime? TransactionDate { get; set; }
+        public DateOnly? TransactionDate { get; set; }
         public string? SourceOrReason { get; set; }
         public decimal? Amount { get; set; }
         public decimal? Balance { get; set; }

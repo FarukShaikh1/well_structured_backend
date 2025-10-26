@@ -40,7 +40,7 @@ namespace FMS_Collection.Application.Services
         }
 
         public async Task<ServiceResponse<Guid>> AddDayAsync(SpecialOccasionRequest Day, Guid userId)
-        {
+        {   
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.AddAsync(Day, userId),
                 FMS_Collection.Core.Constants.Constants.Messages.DayCreatedSuccessfully

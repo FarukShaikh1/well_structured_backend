@@ -1,6 +1,8 @@
-﻿namespace FMS_Collection.Core.Response
+﻿using FMS_Collection.Core.Common;
+
+namespace FMS_Collection.Core.Response
 {
-    public class CoinNoteCollectionListResponse
+    public class CoinNoteCollectionListResponse : CommonResponse
     {
         public Guid? Id { get; set; }
         public string? CurrencyCoinType { get; set; }

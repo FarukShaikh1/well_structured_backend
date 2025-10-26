@@ -37,7 +37,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
                     AccountId = reader["AccountId"] != DBNull.Value ? (Guid?)reader["AccountId"] : null,
-                    TransactionDate = reader["TransactionDate"] != DBNull.Value ? (DateTime?)reader["TransactionDate"] : null,
+                    TransactionDate = reader["TransactionDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["TransactionDate"])) : (DateOnly?)null,
                     SourceOrReason = reader["SourceOrReason"]?.ToString(),
                     Amount = reader["Amount"] != DBNull.Value ? (decimal?)reader["Amount"] : null,
                     Balance = reader["Balance"] != DBNull.Value ? (decimal?)reader["Balance"] : null,
@@ -80,19 +80,13 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
                     TransactionGroupId = reader["TransactionGroupId"] != DBNull.Value ? (Guid?)reader["TransactionGroupId"] : null,
-                    TransactionDate = reader["TransactionDate"] != DBNull.Value ? (DateTime?)reader["TransactionDate"] : null,
+                    TransactionDate = reader["TransactionDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["TransactionDate"])) : (DateOnly?)null,
                     SourceOrReason = reader["SourceOrReason"]?.ToString(),
                     Income = reader["Income"] != DBNull.Value ? (decimal?)reader["Income"] : null,
                     Expense = reader["Expense"] != DBNull.Value ? (decimal?)reader["Expense"] : null,
                     Description = reader["Description"]?.ToString(),
                     Purpose = reader["Purpose"]?.ToString(),
                     AccountName = reader["AccountName"]?.ToString(),
-                    //AssetId = reader["AssetId"] != DBNull.Value ? (Guid?)reader["AssetId"] : null,
-                    //Balance = reader["Balance"] != DBNull.Value ? (decimal?)reader["Balance"] : null,
-                    //CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
-                    //CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
-                    //ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
-                    //ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
                 });
             }
             return Transactions;
@@ -125,7 +119,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                     {
                         Id = reader.GetGuid(reader.GetOrdinal("TransactionGroupId")),
                         TransactionGroupId = reader.GetGuid(reader.GetOrdinal("TransactionGroupId")),
-                        TransactionDate = reader.GetDateTime(reader.GetOrdinal("TransactionDate")),
+                        TransactionDate = reader["TransactionDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["TransactionDate"])) : (DateOnly?)null,
                         SourceOrReason = reader.IsDBNull(reader.GetOrdinal("SourceOrReason")) ? null : reader.GetString(reader.GetOrdinal("SourceOrReason")),
                         Purpose = reader.IsDBNull(reader.GetOrdinal("Purpose")) ? null : reader.GetString(reader.GetOrdinal("Purpose")),
                         Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString(reader.GetOrdinal("Description")),
@@ -173,7 +167,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     var row = new TransactionSummaryResponse
                     {
-                        TransactionDate = reader.GetDateTime(reader.GetOrdinal("TransactionDate")),
+                        TransactionDate = reader["TransactionDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["TransactionDate"])) : (DateOnly?)null,
                     };
                     for (int i = 0; i < reader.FieldCount; i++)
                     {
@@ -218,8 +212,8 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     Transactions.Add(new TransactionReportResponse
                     {
-                        FirstDate = reader["FirstDate"] != DBNull.Value ? Convert.ToDateTime(reader["FirstDate"]) : DateTime.MinValue,
-                        LastDate = reader["LastDate"] != DBNull.Value ? Convert.ToDateTime(reader["LastDate"]) : DateTime.MinValue,
+                        FirstDate = reader["FirstDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["FirstDate"])) : (DateOnly?)null,
+                        LastDate = reader["LastDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["LastDate"])) : (DateOnly?)null,
                         SourceOrReason = reader["SourceOrReason"] != DBNull.Value ? reader["SourceOrReason"].ToString() : null,
                         Description = reader["Descriptions"] != DBNull.Value ? reader["Descriptions"].ToString() : null,
                         TakenAmount = reader["TakenAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TakenAmount"]) : (decimal?)null,
@@ -259,7 +253,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                         {
                             Id = reader["Id"] as Guid?,
                             TransactionGroupId = reader["TransactionGroupId"] as Guid?,
-                            TransactionDate = reader["TransactionDate"] as DateTime?,
+                            TransactionDate = reader["TransactionDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["TransactionDate"])) : (DateOnly?)null,
                             SourceOrReason = reader["SourceOrReason"]?.ToString(),
                             Description = reader["Description"]?.ToString(),
                             Purpose = reader["Purpose"]?.ToString(),

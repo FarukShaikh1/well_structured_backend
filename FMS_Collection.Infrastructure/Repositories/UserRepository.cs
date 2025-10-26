@@ -135,7 +135,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                         Password = reader["Password"]?.ToString(),
                         EmailAddress = reader["EmailAddress"]?.ToString(),
                         RoleId = reader["RoleId"] != DBNull.Value ? (Guid?)reader["RoleId"] : null,
-                        Birthdate = reader["Birthdate"] != DBNull.Value ? (DateTime?)reader["Birthdate"] : null,
+                        Birthdate = reader["Birthdate"] != DBNull.Value ? (DateOnly?)reader["Birthdate"] : null,
                         MobileNumber = reader["MobileNumber"]?.ToString(),
                         FailedLoginCount = reader["FailedLoginCount"] != DBNull.Value ? Convert.ToInt32(reader["FailedLoginCount"]) : null,
                         LockExpiryDate = reader["LockExpiryDate"] != DBNull.Value ? (DateTime?)reader["LockExpiryDate"] : null,
@@ -143,10 +143,10 @@ namespace FMS_Collection.Infrastructure.Repositories
                         ThumbnailPath = reader["ThumbnailPath"]?.ToString(),
                         OriginalPath = reader["OriginalPath"]?.ToString(),
                         Address = reader["Address"]?.ToString(),
-                        ModifiedBy = reader["ModifiedBy"]?.ToString(),
+                        ModifiedBy = (Guid?)reader["ModifiedBy"],
                         ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
                         IsLocked = reader["IsLocked"] != DBNull.Value ? (bool?)reader["IsLocked"] : null,
-                        IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : null
+                        IsDeleted = (bool)reader["IsDeleted"]
                     };
                 }
 
@@ -383,7 +383,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                         CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
                         ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
                         ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
-                        IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : null
+                        IsDeleted = (bool)reader["IsDeleted"] 
                     });
                 }
             }

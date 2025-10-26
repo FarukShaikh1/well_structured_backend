@@ -1,4 +1,4 @@
-using FMS_Collection.Application.Services;
+﻿using FMS_Collection.Application.Services;
 using FMS_Collection.Core.Interfaces;
 using FMS_Collection.Infrastructure.Data;
 using FMS_Collection.Infrastructure.Repositories;
@@ -31,26 +31,56 @@ builder.Services.AddScoped<SpecialOccasionService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<OtpService>();
 
-builder.Services.AddControllers();
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false)
+        );
+    });
+
+// ✅ Define a named CORS policy
+builder.Services.AddCors(options =>
 {
-    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false));
+    options.AddPolicy("AllowAngularApp", policy =>
+    {
+        policy.WithOrigins(
+            "http://localhost:4200",                    // Angular dev
+            "http://farukshaikh-001-site1.ltempurl.com" // Deployed site (if needed)
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+    });
 });
+
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
-//Allow CORS
-app.UseCors(c => c.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
-
+// Swagger should be available in all environments (optional)
 app.UseSwagger();
 app.UseSwaggerUI();
+
+// ✅ Use CORS *before* routing / authenticationUseAuthorization
+
+app.UseCors("AllowAngularApp");
+// ✅ Optional: Handle preflight requests explicitly
+app.Use(async (context, next) =>
+{
+    if (context.Request.Method == "OPTIONS")
+    {
+        context.Response.StatusCode = 200;
+        return;
+    }
+    await next();
+});
+
+//app.UseAuthentication();   // (Add this later if you use auth)
+//app.UseAuthorization();
+
 app.MapControllers();
 app.Run();
