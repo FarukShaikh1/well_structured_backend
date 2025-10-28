@@ -103,8 +103,9 @@ namespace FMS_Collection.Application.Services
             await DeleteOldDocStoreAssetFiles(oldAssetDetail);
         }
 
-        public async Task<int> CreateThumbnails(string sourcePath, string destinationPath, bool isSquare)
+        public async Task<int> CreateThumbnails(string sourcePath, bool isSquare)
         {
+            string destinationPath = sourcePath + "/thumbnails";
             int count = 0;
             try
             {
@@ -161,6 +162,54 @@ namespace FMS_Collection.Application.Services
             }
             //after completing this method successfully run below query 
             //UPDATE Asset SET ThumbnailPath = REPLACE(OriginalPath,'/Birthday_Person_Pic/','/Birthday_Person_Pic/thumbnails/thumb_') WHERE OriginalPath LIKE '%Birthday_Person_Pic%'
+
+            return count;
+        }
+
+        public async Task<int> CopyFiles(string sourcePath)
+        {
+            string destinationPath = sourcePath + "-copy";
+            int count = 0;
+            try
+            {
+                this.ValidateDirectory(sourcePath);
+                this.ValidateDirectory(destinationPath);
+
+                List<Asset> files = await _repository.GetAllAsync();
+
+                foreach (var file in files)
+                {
+                    if (string.IsNullOrWhiteSpace(file?.OriginalPath))
+                        continue;
+
+                    // 🔹 Fix: remove leading slashes so Path.Combine works properly
+                    string relativePath = file.OriginalPath.TrimStart('/', '\\');
+
+                    string sourceFilePath = Path.Combine(sourcePath, relativePath);
+                    string destinationFilePath = Path.Combine(destinationPath, relativePath);
+
+                    if (File.Exists(sourceFilePath))
+                    {
+                        // 🔹 Ensure destination subfolder exists
+                        string? destinationDir = Path.GetDirectoryName(destinationFilePath);
+                        if (!string.IsNullOrEmpty(destinationDir))
+                            this.ValidateDirectory(destinationDir);
+
+                        // 🔹 Copy file (overwrite if already exists)
+                        File.Copy(sourceFilePath, destinationFilePath, overwrite: true);
+                        Console.WriteLine($"✅ Copied: {relativePath}");
+                        count++;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"⚠️ File not found: {relativePath}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error: {ex.Message}");
+            }
 
             return count;
         }

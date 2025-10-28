@@ -9,7 +9,7 @@ namespace FMS_Collection.Core.Interfaces
     {
         Task<List<User>> GetAllAsync();
         Task<List<UserListResponse>> GetUserListAsync(Guid userId);
-        Task<UserDetailsResponse> GetUserDetailsAsync(Guid? userId, string? emailId=null);
+        Task<UserDetailsResponse> GetUserDetailsAsync(Guid? userId, string? emailId = null);
         Task<Guid> AddAsync(UserRequest user, Guid userId);
         Task UpdateAsync(UserRequest user, Guid userId);
         Task<bool> DeleteAsync(Guid userId);
@@ -18,5 +18,6 @@ namespace FMS_Collection.Core.Interfaces
         Task<List<ModuleListResponse>> GetModuleListAsync();
         Task<List<UserPermissionResponse>> GetUserPermissionListAsync(Guid UserId);
         Task<bool> UpdatePasswordHashAsync(Guid? userId, string newPasswordHash);
+        Task<(bool IsSuccess, string Message)> ChangePasswordHashAsync(string oldPasswordHash, string newPasswordHash, Guid? userId, Guid? modifiedBy);
     }
 }

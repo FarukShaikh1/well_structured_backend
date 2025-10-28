@@ -383,7 +383,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                         CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
                         ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
                         ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
-                        IsDeleted = (bool)reader["IsDeleted"] 
+                        IsDeleted = (bool)reader["IsDeleted"]
                     });
                 }
             }
@@ -400,19 +400,28 @@ namespace FMS_Collection.Infrastructure.Repositories
             try
             {
                 using var conn = _dbFactory.CreateConnection();
-                using var cmd = new SqlCommand("User_Update_Password", conn)
+                using var cmd = new SqlCommand("Update_Password", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
 
-                // Add parameters expected by the stored procedure
-                cmd.Parameters.AddWithValue("@In_UserId", (object?)userId ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@In_NewPasswordHash", newPasswordHash ?? (object)DBNull.Value);
+                // ✅ Input parameters
+                cmd.Parameters.AddWithValue("@in_UserId", (object?)userId ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@in_NewPassword", newPasswordHash ?? (object)DBNull.Value);
+
+                // ✅ Output parameters
+                var outIsSuccess = new SqlParameter("@out_IsSuccess", SqlDbType.Bit)
+                {
+                    Direction = ParameterDirection.Output
+                };
 
                 await conn.OpenAsync();
-                int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync();
 
-                return rowsAffected > 0; // true if update happened
+                // ✅ Extract output parameter values
+                bool isSuccess = outIsSuccess.Value != DBNull.Value && (bool)outIsSuccess.Value;
+
+                return isSuccess;
             }
             catch (Exception ex)
             {
@@ -421,5 +430,50 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
         }
 
+
+        public async Task<(bool IsSuccess, string Message)> ChangePasswordHashAsync(string oldPasswordHash, string newPasswordHash, Guid? userId, Guid? modifiedBy)
+        {
+            try
+            {
+                using var conn = _dbFactory.CreateConnection();
+                using var cmd = new SqlCommand("User_Change_Password", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                // ✅ Input parameters
+                cmd.Parameters.AddWithValue("@in_UserId", (object?)userId ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@in_OldPassword", oldPasswordHash ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@in_NewPassword", newPasswordHash ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@in_ModifiedBy", modifiedBy);
+
+                // ✅ Output parameters
+                var outIsSuccess = new SqlParameter("@out_IsSuccess", SqlDbType.Bit)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(outIsSuccess);
+
+                var outMessage = new SqlParameter("@out_Message", SqlDbType.NVarChar, 200)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(outMessage);
+
+                await conn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+
+                // ✅ Extract output parameter values
+                bool isSuccess = outIsSuccess.Value != DBNull.Value && (bool)outIsSuccess.Value;
+                string message = outMessage.Value?.ToString() ?? string.Empty;
+
+                return (isSuccess, message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+            }
+        }
     }
 }

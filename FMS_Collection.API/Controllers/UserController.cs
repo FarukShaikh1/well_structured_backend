@@ -86,4 +86,13 @@ public class UserController : ControllerBase
         var result = await _service.UpdateUserPermissionAsync(userPermission, userId);
         return Ok(result);
     }
+
+    [HttpPost]
+    [Route("ChangePassword")]
+    public async Task<IActionResult> ChangePassword(ChangePassword request)
+    {
+        var response = await _service.ChangePassword(request.OldPassword, request.NewPassword, request.UserId, request.ModifiedBy);
+        return Ok(new { Success = response.Data.IsSuccess, Message = response.Data.Message });
+    }
+
 }

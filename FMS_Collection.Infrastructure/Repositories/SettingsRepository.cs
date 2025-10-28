@@ -194,7 +194,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.AddWithValue("@in_ConfigName", request.ConfigurationName);
                 cmd.Parameters.AddWithValue("@in_Description", request.Description);
                 cmd.Parameters.AddWithValue("@in_DisplayOrder", request.DisplayOrder);
-                cmd.Parameters.AddWithValue("@in_UserId", request.SelectedUserId);
                 cmd.Parameters.AddWithValue("@in_ModifiedBy", userId);
                 cmd.Parameters.Add(new SqlParameter("@in_ConfigType", SqlDbType.VarChar) { Value = config});
                 await conn.OpenAsync();
