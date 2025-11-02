@@ -10,9 +10,11 @@ namespace FMS_Collection.Application.Services
     public class CoinNoteCollectionService
     {
         private readonly ICoinNoteCollectionRepository _repository;
-        public CoinNoteCollectionService(ICoinNoteCollectionRepository repository)
+        private readonly AzureBlobService _blobService;
+        public CoinNoteCollectionService(ICoinNoteCollectionRepository repository, AzureBlobService blobService)
         {
             _repository = repository;
+            _blobService = blobService;
         }
 
         public async Task<ServiceResponse<List<CoinNoteCollection>>> GetAllCoinNoteCollectionsAsync()
@@ -24,12 +26,33 @@ namespace FMS_Collection.Application.Services
         }// => 
         public async Task<ServiceResponse<List<CoinNoteCollectionListResponse>>> GetCoinNoteCollectionListAsync(Guid userId)
         {
-            return await ServiceExecutor.ExecuteAsync(
+            // Fetch data from repository
+            var response = await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetCoinNoteCollectionListAsync(userId),
                 FMS_Collection.Core.Constants.Constants.Messages.CoinNoteCollectionListFetchedSuccessfully
             );
+
+            // Null or empty check
+            if (response?.Data == null || !response.Data.Any())
+                return response;
+
+            // Replace ImagePath and ThumbnailPath with Blob SAS URLs
+            //foreach (var item in response.Data)
+            //{
+            //    if (!string.IsNullOrEmpty(item.ImagePath))
+            //    {
+            //        item.ImagePath = _blobService.GetBlobSasUrl(item.ImagePath);
+            //    }
+
+            //    if (!string.IsNullOrEmpty(item.ThumbnailPath))
+            //    {
+            //        item.ThumbnailPath = _blobService.GetBlobSasUrl(item.ThumbnailPath);
+            //    }
+            //}
+
+            return response;
         }
-        
+
         public async Task<ServiceResponse<CoinNoteCollectionDetailsResponse>> GetCoinNoteCollectionDetailsAsync(Guid coinNoteCollectionId, Guid userId)
         {
             return await ServiceExecutor.ExecuteAsync(
@@ -37,7 +60,7 @@ namespace FMS_Collection.Application.Services
                 FMS_Collection.Core.Constants.Constants.Messages.CoinNoteCollectionDetailsFetchedSuccessfully
             );
         }
-        
+
         public async Task<ServiceResponse<Guid>> AddCoinNoteCollectionAsync(CoinNoteCollectionRequest CoinNoteCollection,Guid coinNoteCollectionId)
         {
             return await ServiceExecutor.ExecuteAsync(
@@ -45,7 +68,7 @@ namespace FMS_Collection.Application.Services
                 FMS_Collection.Core.Constants.Constants.Messages.CoinNoteCollectionCreatedSuccessfully
             );
         }
-        
+
         public async Task<ServiceResponse<bool>> UpdateCoinNoteCollectionAsync(CoinNoteCollectionRequest CoinNoteCollection, Guid coinNoteCollectionId)
         {
             return await ServiceExecutor.ExecuteAsync(
@@ -53,7 +76,7 @@ namespace FMS_Collection.Application.Services
                 FMS_Collection.Core.Constants.Constants.Messages.CoinNoteCollectionUpdatedSuccessfully
             );
         }
-        
+
         public async Task<ServiceResponse<bool>> DeleteCoinNoteCollectionAsync(Guid coinNoteCollectionId, Guid userId)
         {
             return await ServiceExecutor.ExecuteAsync(
@@ -61,7 +84,7 @@ namespace FMS_Collection.Application.Services
                 FMS_Collection.Core.Constants.Constants.Messages.CoinNoteCollectionDeletedSuccessfully
             );
         }
-        
+
         public async Task<ServiceResponse<List<CoinNoteCollectionSummaryResponse>>> GetSummaryAsync()
         {
             return await ServiceExecutor.ExecuteAsync(
@@ -69,6 +92,6 @@ namespace FMS_Collection.Application.Services
                 FMS_Collection.Core.Constants.Constants.Messages.CoinNoteCollectionSummaryFetchedSuccessfully
             );
         }
-        
+
     }
 }

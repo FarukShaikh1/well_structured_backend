@@ -10,9 +10,12 @@ namespace FMS_Collection.Application.Services
     public class SpecialOccasionService
     {
         private readonly ISpecialOccasionRepository _repository;
-        public SpecialOccasionService(ISpecialOccasionRepository repository)
+        private readonly AzureBlobService _blobService;
+
+        public SpecialOccasionService(ISpecialOccasionRepository repository, AzureBlobService blobService)
         {
             _repository = repository;
+            _blobService = blobService;
         }
 
         public async Task<ServiceResponse<List<SpecialOccasion>>> GetAllDaysAsync()
@@ -25,10 +28,31 @@ namespace FMS_Collection.Application.Services
 
         public async Task<ServiceResponse<List<SpecialOccasionListResponse>>> GetDayListAsync(Guid userId)
         {
-            return await ServiceExecutor.ExecuteAsync(
+            var response = await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetDayListAsync(userId),
                 FMS_Collection.Core.Constants.Constants.Messages.DayListFetchedSuccessfully
             );
+
+            // Null or empty check
+            if (response?.Data == null || !response.Data.Any())
+                return response;
+
+            //// Replace ImagePath and ThumbnailPath with Blob SAS URLs
+            //foreach (var item in response.Data)
+            //{
+            //    if (!string.IsNullOrEmpty(item.ImagePath))
+            //    {
+            //        item.ImagePath = _blobService.GetBlobSasUrl(item.ImagePath);
+            //    }
+
+            //    if (!string.IsNullOrEmpty(item.ThumbnailPath))
+            //    {
+            //        item.ThumbnailPath = _blobService.GetBlobSasUrl(item.ThumbnailPath);
+            //    }
+            //}
+
+            return response;
+           
         }
 
         public async Task<ServiceResponse<SpecialOccasionDetailsResponse>> GetDayDetailsAsync(Guid dayId, Guid userId)
@@ -36,7 +60,7 @@ namespace FMS_Collection.Application.Services
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetDayDetailsAsync(dayId, userId),
                 FMS_Collection.Core.Constants.Constants.Messages.DayDetailsFetchedSuccessfully
-            );
+           );          
         }
 
         public async Task<ServiceResponse<Guid>> AddDayAsync(SpecialOccasionRequest Day, Guid userId)
