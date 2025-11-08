@@ -1,6 +1,5 @@
 ﻿
 using FMS_Collection.Core.Common;
-using FMS_Collection.Core.Constants;
 using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Enum;
 using FMS_Collection.Core.Interfaces;
@@ -10,18 +9,19 @@ using Microsoft.AspNetCore.Http;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
+using static FMS_Collection.Core.Constants.Constants;
 
 namespace FMS_Collection.Application.Services
 {
     public class AssetService
     {
         private readonly IAssetRepository _repository;
-        public AssetService(IAssetRepository repository)
+        private readonly AzureBlobService _blobService;
+        public AssetService(IAssetRepository repository, AzureBlobService blobService)
         {
             _repository = repository;
+            _blobService = blobService;
         }
         #region public methods
         public async Task<ServiceResponse<List<Asset>>> GetAllAssetsAsync()
@@ -32,13 +32,20 @@ namespace FMS_Collection.Application.Services
                 FMS_Collection.Core.Constants.Constants.Messages.AssetsFetchedSuccessfully
             );
         }
+
         public async Task<ServiceResponse<AssetResponse>> GetAssetDetailsAsync(Guid assetId)
         {
-            return await ServiceExecutor.ExecuteAsync(
+            var response = await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetAssetDetailsAsync(assetId),
-                FMS_Collection.Core.Constants.Constants.Messages.AssetDetailsFetchedSuccessfully
+                Messages.AssetDetailsFetchedSuccessfully
             );
+
+            if (response?.Data != null)
+                ApplySasUrls(response.Data);
+
+            return response;
         }
+
         public async Task<ServiceResponse<Guid>> AddAssetAsync(AssetRequest Asset, Guid userId)
         {
             return await ServiceExecutor.ExecuteAsync(
@@ -51,57 +58,37 @@ namespace FMS_Collection.Application.Services
         {
             _repository.UpdateAsync(Asset, userId);
         }
-        public async Task<ServiceResponse<bool>> DeleteAssetAsync(Guid assetId, Guid userId)
+        public async Task<ServiceResponse<bool>> DeleteAssetAsync(Guid? assetId, Guid userId)
         {
+            var old = await _repository.GetAssetDetailsAsync(assetId);
+            await DeleteOldDocStoreAssetFiles(old);
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.DeleteAsync(assetId, userId),
                 FMS_Collection.Core.Constants.Constants.Messages.AssetDeletedSuccessfully
             );
         }
 
-        public async Task<ServiceResponse<Guid>> SaveFile(IFormFile file, string documentType, Guid userId, bool isNonSecuredFile = true)
+        public async Task<ServiceResponse<Guid>> SaveFile(IFormFile file, string folder, Guid userId, bool isNonSecuredFile = true)
         {
-            string fileName = GetFileName(file, documentType);
-            AssetResponse filePathResponse = await UploadDocumentToDocStore(file, documentType, fileName);
-            //CREATE ASSET
-            AssetRequest assetRequest = new AssetRequest();
-            assetRequest.AssetType = IsImage(file.ContentType, Path.GetExtension(fileName)) ? AssetType.Image.ToString() : AssetType.Document.ToString();
-            assetRequest.UploadedFileName = fileName;
-            assetRequest.OriginalPath = filePathResponse.OriginalPath;
-            assetRequest.ThumbnailPath = filePathResponse.ThumbnailPath;
-            assetRequest.ContentType = file.ContentType;
-            assetRequest.IsNonSecuredFile = isNonSecuredFile;
-            //return await AddAssetAsync(assetRequest, userId);
+            var stored = await UploadDocumentToDocStore(file, folder, file.FileName);
+            var request = CreateAssetRequest(stored, file, null, isNonSecuredFile);
+
             return await ServiceExecutor.ExecuteAsync(
-                async () => {
-                    var data = await AddAssetAsync(assetRequest, userId);
-                    return data.Data;
-                },
-                FMS_Collection.Core.Constants.Constants.Messages.AssetSavedSuccessfully
+                async () => (await AddAssetAsync(request, userId)).Data,
+                Messages.AssetSavedSuccessfully
             );
-
         }
 
-        public async Task UpdateFile(IFormFile file, Guid userId, Guid? assetId, string? documentType = "Other")
+        public async Task UpdateFile(IFormFile file, Guid userId, Guid? assetId, string folder = "Other")
         {
-            string fileName = GetFileName(file, documentType);
-            AssetResponse oldAssetDetail = await _repository.GetAssetDetailsAsync(assetId);
+            var old = await _repository.GetAssetDetailsAsync(assetId);
+            var stored = await UploadDocumentToDocStore(file, folder, file.FileName);
+            var request = CreateAssetRequest(stored, file, assetId);
 
-            AssetResponse filePathResponse = await UploadDocumentToDocStore(file, documentType, fileName);
-            //UPDATE ASSET RECORD
-            AssetRequest assetResponse = new AssetRequest();
-            assetResponse.Id = assetId;
-            assetResponse.AssetType = IsImage(file.ContentType, Path.GetExtension(fileName)) ? AssetType.Image.ToString() : AssetType.Document.ToString();
-            assetResponse.OriginalPath = filePathResponse.OriginalPath;
-            assetResponse.ThumbnailPath = filePathResponse.ThumbnailPath;
-            assetResponse.UploadedFileName = fileName;
-            assetResponse.ContentType = file.ContentType;
-            //assetResponse.IsNonSecuredFile = isNonSecuredFile;
-            await UpdateAssetAsync(assetResponse, userId);
-
-            //DELETE OLD DOC ASSET FILES
-            await DeleteOldDocStoreAssetFiles(oldAssetDetail);
+            await UpdateAssetAsync(request, userId);
+            await DeleteOldDocStoreAssetFiles(old);
         }
+
 
         public async Task<int> CreateThumbnails(string sourcePath, bool isSquare)
         {
@@ -219,86 +206,68 @@ namespace FMS_Collection.Application.Services
         #region private
 
 
-        private async Task<AssetResponse> UploadDocumentToDocStore(IFormFile file, string documentType, string fileName)
+        private async Task<AssetResponse> UploadDocumentToDocStore(IFormFile file, string folder, string fileName)
         {
-            AssetResponse filePathResponse = new AssetResponse();
-            byte[] documentBytes = null;
-            if (file != null)
+            var fileBytes = await GetBytes(file);
+            string originalPath = await UploadFileAsync(folder, fileName, fileBytes);
+
+            string ? thumbnailPath = IsImage(file.ContentType)
+                ? await UploadThumbnailAsync(folder, originalPath, fileBytes)
+                : null;
+
+            return new AssetResponse
             {
-                using (Stream inputStream = file.OpenReadStream())
-                {
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        await inputStream.CopyToAsync(memoryStream);
-                        documentBytes = memoryStream.ToArray();
-                    }
-                }
-                //filePathResponse.OriginalPath = await this._assetRepository.UploadFile(fileName, file.ContentType, documentBytes, documentType);
-                filePathResponse.OriginalPath = await this.UploadFile(fileName, documentBytes, documentType);
-                // Create and save thumbnail if it's an image
-                if (IsImage(file.ContentType))
-                {
-                    string uploadedFileName = Path.GetFileName(filePathResponse.OriginalPath); // just the filename
-                    string baseFileNameWithoutExt = Path.GetFileNameWithoutExtension(uploadedFileName);
-                    string fileExtension = Path.GetExtension(uploadedFileName);
-
-                    string thumbFileName = "thumb_" + baseFileNameWithoutExt + fileExtension;
-
-                    string thumbnailPath = await CreateAndSaveThumbnail(thumbFileName, documentBytes, documentType);
-                    filePathResponse.ThumbnailPath = thumbnailPath;
-                }
-            }
-            return filePathResponse;
+                OriginalPath = originalPath,
+                ThumbnailPath = thumbnailPath
+            };
         }
 
-        private async Task<string> CreateAndSaveThumbnail(string thumbFileName, byte[] fileBytes, string documentType)
+        private async Task<string> UploadFileAsync(string folder, string fileName, byte[] fileBytes)
         {
-            string baseAssetDirectory = AppSettings.AssetDirectory;
-            string relativeDirectoryPath = $"/{documentType}/thumbnails/";
-
-            ValidateDirectory(baseAssetDirectory + relativeDirectoryPath);
-
-            string thumbnailPath = baseAssetDirectory + relativeDirectoryPath + thumbFileName;
-
-            using (var inputStream = new MemoryStream(fileBytes))
-            using (var image = await Image.LoadAsync(inputStream))
-            {
-                image.Mutate(x => x.Resize(new ResizeOptions
-                {
-                    Mode = ResizeMode.Max,
-                    Size = new Size(200, 200) // Adjust as needed to fit 20–50 KB
-                }));
-
-                var encoder = new JpegEncoder { Quality = 60 }; // Tune quality to reduce file size
-
-                await image.SaveAsync(thumbnailPath, encoder);
-            }
-
-            return relativeDirectoryPath + thumbFileName;
+            string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(fileName);
+            string blobPath = $"{folder}/{uniqueFileName}";
+            await _blobService.UploadFileAsync(fileBytes, blobPath);
+            return blobPath;
         }
 
-        private async Task<string> UploadFile(string fileName, byte[] fileBytes, string documentType = "Other")
+        private async Task<string> UploadThumbnailAsync(string folder, string originalBlobPath, byte[] fileBytes)
         {
+            string name = Path.GetFileNameWithoutExtension(originalBlobPath);
+            string ext = Path.GetExtension(originalBlobPath);
+            string thumbFileName = $"thumb_{name}{ext}";
 
-            //string baseAssetDirectory = Directory.GetCurrentDirectory() + "\\wwwroot\\ProjectAttatchments\\";
-            //string baseAssetDirectory = "D:\\Projects\\MyProj\\Project\\MyCollection\\src\\assets\\ProjectAttatchments";
-            string baseAssetDirectory = AppSettings.AssetDirectory;
-            //string baseAssetDirectory = AppSettings.AssetDirectory;
-            string fileExtension = Path.GetExtension(fileName);
+            using var inputStream = new MemoryStream(fileBytes);
+            using var image = await Image.LoadAsync(inputStream);
+            image.Mutate(x => x.Resize(new ResizeOptions { Mode = ResizeMode.Max, Size = new Size(200, 200) }));
 
-            string newFileName = Guid.NewGuid().ToString() + fileExtension;
-            string relativeDirectoryPath = string.Format("/{0}/", documentType);
+            using var outStream = new MemoryStream();
+            await image.SaveAsync(outStream, new JpegEncoder { Quality = 60 });
 
-            this.ValidateDirectory(baseAssetDirectory + relativeDirectoryPath);
+            string thumbPath = $"{folder}/thumbnails/{thumbFileName}";
+            await _blobService.UploadFileAsync(outStream.ToArray(), thumbPath);
 
-            string newFilePath = baseAssetDirectory + relativeDirectoryPath + newFileName;
-            using (FileStream sourceStream = new FileStream(newFilePath, FileMode.Create))
+            return thumbPath;
+        }
+
+        private async Task<byte[]> GetBytes(IFormFile file)
+        {
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+            return stream.ToArray();
+        }
+
+        private AssetRequest CreateAssetRequest(AssetResponse storedFile, IFormFile file, Guid? assetId = null, bool isNonSecuredFile = true)
+        {
+            return new AssetRequest
             {
-                await sourceStream.WriteAsync(fileBytes, 0, fileBytes.Length);
-            }
-            ;
-
-            return relativeDirectoryPath + newFileName;
+                Id = assetId,
+                UploadedFileName = GetFileName(file),
+                OriginalPath = storedFile.OriginalPath,
+                ThumbnailPath = storedFile.ThumbnailPath,
+                ContentType = file.ContentType,
+                IsNonSecuredFile = isNonSecuredFile,
+                AssetType = IsImage(file.ContentType) ? AssetType.Image.ToString() : AssetType.Document.ToString()
+            };
         }
 
         private async Task<bool> DeleteOldDocStoreAssetFiles(AssetResponse assetDetail)
@@ -307,35 +276,19 @@ namespace FMS_Collection.Application.Services
             if (assetDetail != null)
             {
                 if (!string.IsNullOrEmpty(assetDetail.OriginalPath))
-                    await DeleteFileFromDocStore(assetDetail.OriginalPath);
+                    await _blobService.DeleteFileAsync(assetDetail.OriginalPath);
                 if (!string.IsNullOrEmpty(assetDetail.ThumbnailPath))
-                    await DeleteFileFromDocStore(assetDetail.ThumbnailPath);
-
+                    await _blobService.DeleteFileAsync(assetDetail.ThumbnailPath);
+                if (!string.IsNullOrEmpty(assetDetail.PreviewPath))
+                    await _blobService.DeleteFileAsync(assetDetail.PreviewPath);
                 success = true;
             }
             return success;
         }
 
-        private async Task<bool> DeleteFileFromDocStore(string fileName)
-        {
-            bool isDeleteSuccess = false;
-            await Task.Run((Action)(() =>
-            {
-                if (File.Exists((string)(AppSettings.AssetDirectory + fileName)))
-                //if (File.Exists(Directory.GetCurrentDirectory() + "\\wwwroot\\ProjectAttatchments\\" + fileName))
-                {
-                    //File.Delete(Directory.GetCurrentDirectory() + "\\wwwroot\\ProjectAttatchments\\" + fileName);
-                    File.Delete((string)(AppSettings.AssetDirectory + fileName));
-                    isDeleteSuccess = true;
-                }
-            }));
-            return isDeleteSuccess;
-        }
-
 
         private string GetFileName(IFormFile file, string documentType = "Other")
         {
-            //string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName;
             string fileName = file.FileName;
 
             if (fileName.Split('\\') != null && fileName.Split('\\').Count() > 1)
@@ -349,38 +302,20 @@ namespace FMS_Collection.Application.Services
             {
                 fileName = fileName.Replace(c.ToString(), string.Empty);
             }
-
-            //generate display file name
-
             string extension = Path.GetExtension(fileName);
-            fileName = Regex.Replace(documentType, @"\s+", "") + "_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_fff").Replace("/", "") + extension;
-
+            fileName = Regex.Replace(fileName, @"\s+", "") + "_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_fff").Replace("/", "") + extension;
+            fileName = fileName.ToLower();
             return fileName;
         }
 
         private bool IsImage(string contentType, string fileExtension = null)
         {
-            if (contentType.ToLower() == "image/jpg" ||
-                contentType.ToLower() == "image/jpeg" ||
-                contentType.ToLower() == "image/pjpeg" ||
-                contentType.ToLower() == "image/gif" ||
-                contentType.ToLower() == "image/x-png" ||
-                contentType.ToLower() == "image/png")
-            {
+            if (!string.IsNullOrWhiteSpace(contentType) && ImageContentTypes.Contains(contentType))
                 return true;
-            }
 
-            //CHECK THE IMAGE EXTENSION
-            if (!string.IsNullOrEmpty(fileExtension))
-            {
-                if (fileExtension.ToLower() == ".jpg" ||
-                fileExtension.ToLower() == ".png" ||
-                fileExtension.ToLower() == ".gif" ||
-                fileExtension.ToLower() == ".jpeg")
-                {
-                    return true;
-                }
-            }
+            if (!string.IsNullOrWhiteSpace(fileExtension))
+                return ImageExtensionList.Contains(fileExtension.ToLower());
+
             return false;
         }
 
@@ -390,6 +325,15 @@ namespace FMS_Collection.Application.Services
             {
                 Directory.CreateDirectory(directoryPath);
             }
+        }
+
+        private void ApplySasUrls(AssetResponse asset)
+        {
+            if (asset == null) return;
+
+            asset.ThumbnailPath = string.IsNullOrEmpty(asset.ThumbnailPath) ? null : _blobService.GetBlobSasUrl(asset.ThumbnailPath);
+            asset.OriginalPath = string.IsNullOrEmpty(asset.OriginalPath) ? null : _blobService.GetBlobSasUrl(asset.OriginalPath);
+            asset.PreviewPath = string.IsNullOrEmpty(asset.PreviewPath) ? null : _blobService.GetBlobSasUrl(asset.PreviewPath);
         }
 
         #endregion

@@ -42,7 +42,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                         UserName = reader["UserName"]?.ToString(),
                         Password = reader["Password"]?.ToString() ?? string.Empty,
                         PasswordLastChangedOn = reader["PasswordLastChangedOn"] != DBNull.Value ? (DateTime?)reader["PasswordLastChangedOn"] : null,
-                        FailedLoginCount = reader["FailedLoginCount"] != DBNull.Value ? (long?)reader["FailedLoginCount"] : null,
+                        FailedLoginCount = reader["FailedLoginCount"] != DBNull.Value ? (int?)reader["FailedLoginCount"] : null,
                         LockExpiryDate = reader["LockExpiryDate"] != DBNull.Value ? (DateTime?)reader["LockExpiryDate"] : null,
                         CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
                         CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,

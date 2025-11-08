@@ -8,6 +8,9 @@ namespace FMS_Collection.Core.Common
     public static class AppSettings
     {
         public static string DefaultDbConnectionString { get; }
+        public static string AzureStorageConnectionString { get; }
+        public static string AzureStorageContainerName { get; }
+
         public static int AllowedFailedLoginCount { get; }
         public static string CachingMode { get; }
         public static string AssetDirectory { get; }
@@ -30,16 +33,18 @@ namespace FMS_Collection.Core.Common
 
             var config = builder.Build();
 
-            DefaultDbConnectionString = config["ConnectionStrings:FMSConnectionString"]??"";
+            DefaultDbConnectionString = config["ConnectionStrings:FMSConnectionString"] ?? "";
+            AzureStorageConnectionString = config["AzureStorage:ConnectionString"] ?? "";
+            AzureStorageContainerName = config["AzureStorage:ContainerName"] ?? "";
 
             AllowedFailedLoginCount = Convert.ToInt32(config["AppSettings:AllowedFailedLoginCount"]);
-            CachingMode = config["AppSettings:CachingMode"] ??"";
+            CachingMode = config["AppSettings:CachingMode"] ?? "";
             AssetDirectory = config["AppSettings:AssetDirectory"] ?? "";
             CurrencyConversionApiBaseUrl = config["AppSettings:CurrencyConversionApiBaseUrl"] ?? "";
             CurrencyConversionApiPath = config["AppSettings:CurrencyConversionApiPath"] ?? "";
             CurrencyConversionApiAccessKey = config["AppSettings:CurrencyConversionApiAccessKey"] ?? "";
             SmtpHost = config["MailConfig:SmtpHost"] ?? "";
-            SmtpPort= Convert.ToInt32(config["MailConfig:SmtpPort"]);
+            SmtpPort = Convert.ToInt32(config["MailConfig:SmtpPort"]);
             SenderEmail = config["MailConfig:SenderEmail"] ?? "";
             EmailPassword = config["MailConfig:EmailPassword"] ?? "";
         }

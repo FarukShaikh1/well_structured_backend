@@ -38,21 +38,16 @@ namespace FMS_Collection.Application.Services
                 return response;
 
             //// Replace ImagePath and ThumbnailPath with Blob SAS URLs
-            //foreach (var item in response.Data)
-            //{
-            //    if (!string.IsNullOrEmpty(item.ImagePath))
-            //    {
-            //        item.ImagePath = _blobService.GetBlobSasUrl(item.ImagePath);
-            //    }
-
-            //    if (!string.IsNullOrEmpty(item.ThumbnailPath))
-            //    {
-            //        item.ThumbnailPath = _blobService.GetBlobSasUrl(item.ThumbnailPath);
-            //    }
-            //}
+            foreach (var item in response.Data)
+            {
+                if (!string.IsNullOrEmpty(item.ThumbnailPath))
+                {
+                    item.ThumbnailPath = _blobService.GetBlobSasUrl(item.ThumbnailPath);
+                }
+            }
 
             return response;
-           
+
         }
 
         public async Task<ServiceResponse<SpecialOccasionDetailsResponse>> GetDayDetailsAsync(Guid dayId, Guid userId)
@@ -60,11 +55,11 @@ namespace FMS_Collection.Application.Services
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetDayDetailsAsync(dayId, userId),
                 FMS_Collection.Core.Constants.Constants.Messages.DayDetailsFetchedSuccessfully
-           );          
+           );
         }
 
         public async Task<ServiceResponse<Guid>> AddDayAsync(SpecialOccasionRequest Day, Guid userId)
-        {   
+        {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.AddAsync(Day, userId),
                 FMS_Collection.Core.Constants.Constants.Messages.DayCreatedSuccessfully
