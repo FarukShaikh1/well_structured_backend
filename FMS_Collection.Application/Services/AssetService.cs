@@ -12,6 +12,7 @@ using SixLabors.ImageSharp.Processing;
 using System.Text.RegularExpressions;
 using static FMS_Collection.Core.Constants.Constants;
 
+
 namespace FMS_Collection.Application.Services
 {
     public class AssetService
