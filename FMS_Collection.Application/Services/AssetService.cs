@@ -7,7 +7,7 @@ using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
 using Microsoft.AspNetCore.Http;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.Processing;
 using System.Text.RegularExpressions;
 using static FMS_Collection.Core.Constants.Constants;
@@ -82,11 +82,11 @@ namespace FMS_Collection.Application.Services
         public async Task UpdateFile(IFormFile file, Guid userId, Guid? assetId, string folder = "Other")
         {
             var old = await _repository.GetAssetDetailsAsync(assetId);
+            await DeleteOldDocStoreAssetFiles(old);
             var stored = await UploadDocumentToDocStore(file, folder, file.FileName);
             var request = CreateAssetRequest(stored, file, assetId);
 
             await UpdateAssetAsync(request, userId);
-            await DeleteOldDocStoreAssetFiles(old);
         }
 
 
@@ -128,6 +128,13 @@ namespace FMS_Collection.Application.Services
                                 Mode = ResizeMode.Max // maintain aspect ratio, but since square it’s fine
                             }));
                         }
+
+                        using var outStream = new MemoryStream();
+                        await image.SaveAsync(outStream, new WebpEncoder
+                        {
+                            Quality = 80,       // Good clarity
+                            FileFormat = WebpFileFormatType.Lossy, // Balanced size
+                        });
 
                         // Get the file name from the path
                         string fileName = Path.GetFileName(file);
@@ -211,7 +218,7 @@ namespace FMS_Collection.Application.Services
             var fileBytes = await GetBytes(file);
             string originalPath = await UploadFileAsync(folder, fileName, fileBytes);
 
-            string ? thumbnailPath = IsImage(file.ContentType)
+            string? thumbnailPath = IsImage(file.ContentType)
                 ? await UploadThumbnailAsync(folder, originalPath, fileBytes)
                 : null;
 
@@ -233,21 +240,30 @@ namespace FMS_Collection.Application.Services
         private async Task<string> UploadThumbnailAsync(string folder, string originalBlobPath, byte[] fileBytes)
         {
             string name = Path.GetFileNameWithoutExtension(originalBlobPath);
-            string ext = Path.GetExtension(originalBlobPath);
-            string thumbFileName = $"thumb_{name}{ext}";
+            string thumbFileName = $"thumb_{name}.webp"; // Save as WebP
 
             using var inputStream = new MemoryStream(fileBytes);
             using var image = await Image.LoadAsync(inputStream);
-            image.Mutate(x => x.Resize(new ResizeOptions { Mode = ResizeMode.Max, Size = new Size(200, 200) }));
+
+            image.Mutate(x => x.Resize(new ResizeOptions
+            {
+                Mode = ResizeMode.Max,
+                Size = new Size(200, 200) // Slightly bigger for better clarity
+            }));
 
             using var outStream = new MemoryStream();
-            await image.SaveAsync(outStream, new JpegEncoder { Quality = 60 });
+            await image.SaveAsync(outStream, new WebpEncoder
+            {
+                Quality = 80,       // Good clarity
+                FileFormat = WebpFileFormatType.Lossy, // Balanced size
+            });
 
             string thumbPath = $"{folder}/thumbnails/{thumbFileName}";
             await _blobService.UploadFileAsync(outStream.ToArray(), thumbPath);
 
             return thumbPath;
         }
+
 
         private async Task<byte[]> GetBytes(IFormFile file)
         {
