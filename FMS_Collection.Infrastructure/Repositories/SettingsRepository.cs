@@ -47,7 +47,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                         CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
                         ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
                         ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
-                        IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : null
+                        IsDeleted = (bool)reader["IsDeleted"]
                     });
                 }
 
@@ -90,7 +90,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                         CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
                         ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
                         ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
-                        IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : null
+                        IsDeleted = (bool)reader["IsDeleted"]
                     });
                 }
 
@@ -131,7 +131,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                         CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
                         ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
                         ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
-                        IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : null
+                        IsDeleted = (bool)reader["IsDeleted"]
                     };
                 }
             }
@@ -157,8 +157,8 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.AddWithValue("@in_ConfigName", request.ConfigurationName);
                 cmd.Parameters.AddWithValue("@in_Description", request.Description);
                 cmd.Parameters.AddWithValue("@in_DisplayOrder", request.DisplayOrder);
-                cmd.Parameters.AddWithValue("@in_UserId", request.UserId);
-                cmd.Parameters.AddWithValue("@in_CreatorId", userId);
+                cmd.Parameters.AddWithValue("@in_UserId", request.SelectedUserId);
+                cmd.Parameters.AddWithValue("@in_CreatedBy", userId);
                 cmd.Parameters.Add(new SqlParameter("@in_ConfigType", SqlDbType.VarChar) { Value = config });
 
                 // Add Output Parameter
@@ -194,7 +194,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.AddWithValue("@in_ConfigName", request.ConfigurationName);
                 cmd.Parameters.AddWithValue("@in_Description", request.Description);
                 cmd.Parameters.AddWithValue("@in_DisplayOrder", request.DisplayOrder);
-                cmd.Parameters.AddWithValue("@in_UserId", userId);
+                cmd.Parameters.AddWithValue("@in_ModifiedBy", userId);
                 cmd.Parameters.Add(new SqlParameter("@in_ConfigType", SqlDbType.VarChar) { Value = config});
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();

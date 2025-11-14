@@ -74,9 +74,18 @@ public class AssetController : ControllerBase
 
     [HttpGet]
     [Route("CreateThumbnails")]
-    public async Task<IActionResult> CreateThumbnails(string sourcePath, string destinationPath, bool isSquare)
+    public async Task<IActionResult> CreateThumbnails(string sourcePath, bool isSquare)
     {
-        int total = await _service.CreateThumbnails(sourcePath, destinationPath, isSquare);
+        int total = await _service.CreateThumbnails(sourcePath, isSquare);
+        return Ok(total);
+    }
+
+
+    [HttpGet]
+    [Route("CopyFiles")]
+    public async Task<IActionResult> CopyFiles(string sourcePath)
+    {
+        int total = await _service.CopyFiles(sourcePath);
         return Ok(total);
     }
 

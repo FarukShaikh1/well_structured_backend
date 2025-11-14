@@ -72,6 +72,16 @@ namespace FMS_Collection.Application.Services
             );
         }
 
+        public async Task<ServiceResponse<(bool IsSuccess, string Message)>> ChangePassword(string oldPassword, string newPassword, Guid? userId, Guid? modifiedBy)
+        {
+            HashAlgorithm hashAlgorithm = new HashAlgorithm();
+            string oldPasswordHash = hashAlgorithm.GetHash(oldPassword);
+            string newPasswordHash = hashAlgorithm.GetHash(newPassword);            
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.ChangePasswordHashAsync(oldPasswordHash, newPasswordHash, userId, modifiedBy),
+                FMS_Collection.Core.Constants.Constants.Messages.UserPermissionsUpdatedSuccessfully
+            );
+        }
 
         public async Task<ServiceResponse<LoginResponse>> GetLoginDetails(LoginRequest user)
         {
@@ -93,7 +103,7 @@ namespace FMS_Collection.Application.Services
             // Perform additional logic in UserService layer
             if (response.Data.EmailAddress == null || response.Data.Password != user.Password)
             {
-                response.Success = true;
+                response.Success = false;
                 response.Data = null;
                 response.Message = FMS_Collection.Core.Constants.Constants.Messages.InvalidUserOrPassword;
                 return response;
@@ -101,7 +111,7 @@ namespace FMS_Collection.Application.Services
             response.Data.Password = null;
             if (response.Data.FailedLoginCount > AppSettings.AllowedFailedLoginCount)
             {
-                response.Success = true;
+                response.Success = false;
                 response.Data = null;
                 response.Message = FMS_Collection.Core.Constants.Constants.Messages.TooManyLoginAttempts;
                 return response;

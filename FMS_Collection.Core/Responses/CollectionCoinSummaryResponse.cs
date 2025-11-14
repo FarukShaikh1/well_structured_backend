@@ -1,6 +1,8 @@
-﻿namespace FMS_Collection.Core.Response
+﻿using FMS_Collection.Core.Common;
+
+namespace FMS_Collection.Core.Response
 {
-    public class CoinNoteCollectionSummaryResponse
+    public class CoinNoteCollectionSummaryResponse : CommonResponse
     {
         public int CountryId { get; set; }
         public string? CountryName { get; set; }

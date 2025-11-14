@@ -1,6 +1,8 @@
-﻿namespace FMS_Collection.Core.Response
+﻿using FMS_Collection.Core.Common;
+
+namespace FMS_Collection.Core.Response
 {
-    public class AssetResponse
+    public class AssetResponse : CommonResponse
     {        
         public Guid Id { get; set; }
         public string? AssetType { get; set; }
