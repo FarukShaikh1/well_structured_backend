@@ -11,9 +11,6 @@ namespace FMS_Collection.Infrastructure.Repositories
         {
             try
             {
-                //var fromEmail = "farukshaikh908@gmail.com";
-                //var fromPassword = "peof easy ddyp pffj"; // Use secrets manager / config, not hardcoded
-
                 using var smtp = new SmtpClient(AppSettings.SmtpHost, AppSettings.SmtpPort) // Example: smtp.gmail.com, port 587
                 {
                     Credentials = new NetworkCredential(AppSettings.SenderEmail, AppSettings.EmailPassword),
