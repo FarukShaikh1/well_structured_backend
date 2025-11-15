@@ -2,6 +2,7 @@
 using Azure.Storage.Sas;
 using FMS_Collection.Core.Common;
 using Microsoft.Extensions.Configuration;
+using System.IO.Compression;
 
 public class AzureBlobService
 {
@@ -58,5 +59,32 @@ public class AzureBlobService
         var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
         var blobClient = containerClient.GetBlobClient(blobPath);
         return await blobClient.DeleteIfExistsAsync();
+    }
+
+    public async Task<byte[]> DownloadFolderAsZipAsync(string containerName, string folderPath)
+    {
+        string connectionString = "<YourConnectionString>";
+
+        BlobContainerClient container = new BlobContainerClient(connectionString, containerName);
+
+        using MemoryStream zipStream = new MemoryStream();
+
+        using (ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
+        {
+            await foreach (var blobItem in container.GetBlobsAsync(prefix: folderPath))
+            {
+                var blobClient = container.GetBlobClient(blobItem.Name);
+
+                using var blobData = new MemoryStream();
+                await blobClient.DownloadToAsync(blobData);
+                blobData.Position = 0;
+
+                var entry = zipArchive.CreateEntry(blobItem.Name.Replace(folderPath, ""));
+                using var entryStream = entry.Open();
+                blobData.CopyTo(entryStream);
+            }
+        }
+
+        return zipStream.ToArray(); // return ZIP bytes
     }
 }

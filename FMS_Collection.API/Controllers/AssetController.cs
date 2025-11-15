@@ -95,4 +95,25 @@ public class AssetController : ControllerBase
         return Ok(total);
     }
 
+    [HttpGet("downloadBlobZipFolder")]
+    public async Task<IActionResult> DownloadZip(string containerName, string folderPath)
+    {
+        try
+        {
+            byte[] zipBytes = await _service.DownloadFolderAsZipAsync(containerName, folderPath);
+
+            if (zipBytes == null || zipBytes.Length == 0)
+                return NotFound("No files found in folder.");
+
+            return File(
+                fileContents: zipBytes,
+                contentType: "application/zip",
+                fileDownloadName: $"{folderPath.Replace("/", "_")}.zip"
+            );
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error while generating zip: {ex.Message}");
+        }
+    }
 }

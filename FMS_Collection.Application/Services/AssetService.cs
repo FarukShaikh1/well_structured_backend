@@ -208,6 +208,11 @@ namespace FMS_Collection.Application.Services
 
             return count;
         }
+
+        public async Task<byte[]> DownloadFolderAsZipAsync(string containerName, string folderPath)
+        {
+            return await _blobService.DownloadFolderAsZipAsync(containerName, folderPath);
+        }
         #endregion
 
 
