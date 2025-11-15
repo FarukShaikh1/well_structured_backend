@@ -9,7 +9,7 @@
         public string? UserName { get; set; }
         public string Password { get; set; } = string.Empty;
         public DateTime? PasswordLastChangedOn { get; set; }
-        public long? FailedLoginCount { get; set; }
+        public int? FailedLoginCount { get; set; }
         public DateTime? LockExpiryDate { get; set; }
         public DateTime? CreatedOn { get; set; }
         public Guid? CreatedBy { get; set; }

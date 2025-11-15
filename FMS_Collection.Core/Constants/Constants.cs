@@ -88,6 +88,8 @@
             public const string CoinNoteCollectionDeletedSuccessfully = "Coin/note collection deleted successfully";
             public const string CoinNoteCollectionSummaryFetchedSuccessfully = "Coin/note collection summary fetched successfully";
 
+            public const string IssueInCoinDeletionNoteCollection= "Facing issue in deletion of this data";
+
             // Special Occasions (Days)
             public const string DaysFetchedSuccessfully = "Days fetched successfully";
             public const string DayListFetchedSuccessfully = "Day list fetched successfully";
@@ -157,7 +159,7 @@
             public const string BIRTHDAY_PERSON_PIC = "Birthday_Person_Pic";
             public const string COLLECTION_COINS = "Collection_Coins";
             public const string USER_PROFILE_PICTURE = "User_Profile_Picture";
-            public const string THUMBNAILS = "thumbnails\\";
+            public const string THUMBNAILS = "/thumbnails/";
         }
 
         public struct CacheKeys
@@ -189,6 +191,35 @@
             public const string LeaveFormat = "LeaveFormat";
             public const string ExpenseTemplate = "ExpenseTemplate";
         }
+
+
+        public static readonly HashSet<string> ImageContentTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+{
+    "image/jpg",
+    "image/jpeg",
+    "image/pjpeg",
+    "image/png",
+    "image/x-png",
+    "image/gif",
+    "image/bmp",
+    "image/webp",
+    "image/tiff",
+    "image/svg+xml",
+    "image/x-icon"
+};
+
+        public static readonly HashSet<string> ImageExtensionList = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+{
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".bmp",
+    ".webp",
+    ".tiff",
+    ".svg",
+    ".ico"
+};
 
         public struct EncryptionDecryptionKeys
         {

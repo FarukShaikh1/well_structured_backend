@@ -59,17 +59,23 @@ public class AssetController : ControllerBase
     [Route("UploadAndSaveFile")]
     public async Task<IActionResult> UploadAndSaveFile(IFormFile file, Guid userId, Guid? assetId = null, string documentType = null)
     {
-        if (file != null && assetId != null)
+        try
         {
-            await _service.UpdateFile(file, userId, assetId, documentType);
+            if (file != null && assetId != null)
+            {
+                await _service.UpdateFile(file, userId, assetId, documentType);
+            }
+            else if (file != null && assetId == null)
+            {
+                var response = await _service.SaveFile(file, documentType, userId, false);
+                return Ok(response);
+            }
+            return Ok();
         }
-        else if (file != null && assetId == null)
+        catch (Exception ex)
         {
-            var response = await _service.SaveFile(file, documentType, userId, false);
-            return Ok(response);
+            return BadRequest(ex.Message);
         }
-        return Ok();
-
     }
 
     [HttpGet]

@@ -150,7 +150,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> DeleteAsync(Guid AssetId, Guid userId)
+        public async Task<bool> DeleteAsync(Guid? AssetId, Guid userId)
         {
             using var conn = _dbFactory.CreateConnection();
             using var cmd = new SqlCommand("Asset_Delete", conn)

@@ -30,6 +30,7 @@ builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<SpecialOccasionService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<OtpService>();
+builder.Services.AddScoped<AzureBlobService>();
 
 builder.Services.AddControllers();
 builder.Services.AddControllers().AddJsonOptions(options =>
