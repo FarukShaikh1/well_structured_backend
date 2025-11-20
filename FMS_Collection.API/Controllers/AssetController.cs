@@ -1,4 +1,5 @@
 ﻿// API/Controllers/AssetController.cs
+using Azure.Core;
 using FMS_Collection.Application.Services;
 using FMS_Collection.Core.Request;
 using Microsoft.AspNetCore.Mvc;
@@ -95,6 +96,36 @@ public class AssetController : ControllerBase
         return Ok(total);
     }
 
+
+    [HttpGet("downloadFile")]
+    public async Task<IActionResult> DownloadFile(string imagePath)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(imagePath))
+                return BadRequest("Invalid blob path.");
+
+            byte[] fileBytes = await _service.DownloadFileAsync(imagePath);
+
+            if (fileBytes == null || fileBytes.Length == 0)
+                return NotFound("File not found.");
+
+            string fileName = Path.GetFileName(imagePath);
+
+            // Auto detect MIME
+            string contentType = "application/octet-stream";
+
+            return File(
+                fileContents: fileBytes,
+                contentType: contentType,
+                fileDownloadName: fileName
+            );
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error while generating zip: {ex.Message}");
+        }
+    }
     [HttpGet("downloadBlobZipFolder")]
     public async Task<IActionResult> DownloadZip(string containerName, string folderPath)
     {
@@ -110,6 +141,20 @@ public class AssetController : ControllerBase
                 contentType: "application/zip",
                 fileDownloadName: $"{folderPath.Replace("/", "_")}.zip"
             );
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error while generating zip: {ex.Message}");
+        }
+    }
+
+    [HttpGet("UpdateBlobHeadersInFolder")]
+    public async Task<IActionResult> UpdateBlobHeadersInFolderAsync(string folderPrefix)
+    {
+        try
+        {
+            await _service.UpdateBlobHeadersInFolderAsync(folderPrefix);
+            return Ok("Successfully updated");
         }
         catch (Exception ex)
         {

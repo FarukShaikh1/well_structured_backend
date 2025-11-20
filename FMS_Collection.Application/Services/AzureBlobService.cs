@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
 using FMS_Collection.Core.Common;
 using Microsoft.Extensions.Configuration;
@@ -52,7 +53,16 @@ public class AzureBlobService
         var blobClient = containerClient.GetBlobClient(blobPath);
 
         using var stream = new MemoryStream(fileBytes);
-        await blobClient.UploadAsync(stream, overwrite: true);
+
+        var headers = new BlobHttpHeaders
+        {
+            ContentType = "image/png", // or detect dynamically
+            ContentDisposition = "attachment" // 🔥 Forces browser to DOWNLOAD
+        };
+        await blobClient.UploadAsync(stream, new BlobUploadOptions
+        {
+            HttpHeaders = headers
+        });
     }
     public async Task<bool> DeleteFileAsync(string blobPath)
     {
@@ -63,9 +73,7 @@ public class AzureBlobService
 
     public async Task<byte[]> DownloadFolderAsZipAsync(string containerName, string folderPath)
     {
-        string connectionString = "<YourConnectionString>";
-
-        BlobContainerClient container = new BlobContainerClient(connectionString, containerName);
+        BlobContainerClient container = _blobServiceClient.GetBlobContainerClient(_containerName);
 
         using MemoryStream zipStream = new MemoryStream();
 
@@ -87,4 +95,49 @@ public class AzureBlobService
 
         return zipStream.ToArray(); // return ZIP bytes
     }
+
+    public async Task<byte[]> DownloadFileAsync(string blobPath)
+    {
+        BlobContainerClient container = _blobServiceClient.GetBlobContainerClient(_containerName);
+
+        var blobClient = container.GetBlobClient(blobPath);
+
+        if (!await blobClient.ExistsAsync())
+            throw new FileNotFoundException($"Blob not found: {blobPath}");
+
+        using var memory = new MemoryStream();
+        await blobClient.DownloadToAsync(memory);
+        memory.Position = 0;
+
+        return memory.ToArray();
+    }
+
+    public async Task UpdateBlobHeadersInFolderAsync(string folderPrefix)
+    {
+        var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+        await foreach (var blobItem in containerClient.GetBlobsAsync(prefix: folderPrefix))
+        {
+            var blobClient = containerClient.GetBlobClient(blobItem.Name);
+
+            // Get existing properties
+            var properties = await blobClient.GetPropertiesAsync();
+
+            // Prepare updated headers
+            var headers = new BlobHttpHeaders
+            {
+                ContentType = properties.Value.ContentType,
+                CacheControl = properties.Value.CacheControl,
+                ContentEncoding = properties.Value.ContentEncoding,
+                ContentLanguage = properties.Value.ContentLanguage,
+                ContentHash = properties.Value.ContentHash,
+
+                // 🔥 Add this to force download instead of open in browser
+                ContentDisposition = "attachment"
+            };
+
+            // Apply headers WITHOUT uploading file again
+            await blobClient.SetHttpHeadersAsync(headers);
+        }
+    }
+
 }
