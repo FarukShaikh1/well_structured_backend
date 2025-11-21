@@ -1,5 +1,6 @@
 ﻿
 using FMS_Collection.Core.Common;
+using FMS_Collection.Core.Constants;
 using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Enum;
 using FMS_Collection.Core.Interfaces;
@@ -72,7 +73,7 @@ namespace FMS_Collection.Application.Services
         public async Task<ServiceResponse<Guid>> SaveFile(IFormFile file, string folder, Guid userId, bool isNonSecuredFile = true)
         {
             var stored = await UploadDocumentToDocStore(file, folder, file.FileName);
-            var request = CreateAssetRequest(stored, file, null, isNonSecuredFile);
+            var request = CreateAssetRequest(stored, file, isNonSecuredFile);
 
             return await ServiceExecutor.ExecuteAsync(
                 async () => (await AddAssetAsync(request, userId)).Data,
@@ -85,9 +86,23 @@ namespace FMS_Collection.Application.Services
             var old = await _repository.GetAssetDetailsAsync(assetId);
             await DeleteOldDocStoreAssetFiles(old);
             var stored = await UploadDocumentToDocStore(file, folder, file.FileName);
-            var request = CreateAssetRequest(stored, file, assetId);
+            var request = CreateAssetRequest(stored, file);
 
             await UpdateAssetAsync(request, userId);
+        }
+
+        public async Task<Guid?> UploadDocument(DocumentRequest document, Guid userId)
+        {
+            if (document.AssetId != null)
+            {
+                var old = await _repository.GetAssetDetailsAsync(document.AssetId);
+                await DeleteOldDocStoreAssetFiles(old);
+            }
+            var stored = await UploadDocumentToDocStore(document.file, Constants.DocumentType.DOCUMENTS+ "/"+ userId, document.file.FileName);
+            var request = CreateAssetRequest(stored, document.file);
+
+            await UpdateAssetAsync(request, userId);
+            return request.Id;
         }
 
 
@@ -138,8 +153,8 @@ namespace FMS_Collection.Application.Services
                         });
 
                         // Get the file name from the path
-                        string fileName = Path.GetFileName(file);
-                        string thumbFileName = $"thumb_{fileName}";
+                        string fileName = Path.GetFileNameWithoutExtension(file);
+                        string thumbFileName = $"thumb_{fileName}.webp"; // Save as WebP
 
                         // Create the full path for the thumbnail
                         string thumbnailPath = Path.Combine(destinationPath, thumbFileName);
@@ -288,11 +303,11 @@ namespace FMS_Collection.Application.Services
             return stream.ToArray();
         }
 
-        private AssetRequest CreateAssetRequest(AssetResponse storedFile, IFormFile file, Guid? assetId = null, bool isNonSecuredFile = true)
+        private AssetRequest CreateAssetRequest(AssetResponse storedFile, IFormFile file,bool isNonSecuredFile = true)
         {
             return new AssetRequest
             {
-                Id = assetId,
+                Id = storedFile.Id,
                 UploadedFileName = GetFileName(file),
                 OriginalPath = storedFile.OriginalPath,
                 ThumbnailPath = storedFile.ThumbnailPath,
