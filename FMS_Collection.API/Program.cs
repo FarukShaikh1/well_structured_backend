@@ -13,6 +13,7 @@ builder.Services.AddSingleton<DbConnectionFactory>();
 builder.Services.AddScoped<ISpecialOccasionRepository, SpecialOccasionRepository>();
 builder.Services.AddScoped<IAssetRepository, AssetRepository>();
 builder.Services.AddScoped<ICoinNoteCollectionRepository, CoinNoteCollectionRepository>();
+builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<ICommonListRepository, CommonListRepository>();
 builder.Services.AddScoped<ISettingsRepository, SettingsRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
@@ -23,6 +24,7 @@ builder.Services.AddScoped<INotificationSender, NotificationSender>();
 
 builder.Services.AddScoped<AssetService>();
 builder.Services.AddScoped<CoinNoteCollectionService>();
+builder.Services.AddScoped<DocumentService>();
 builder.Services.AddScoped<CommonListService>();
 builder.Services.AddScoped<SettingsService>();
 builder.Services.AddScoped<TransactionService>();

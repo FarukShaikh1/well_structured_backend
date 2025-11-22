@@ -140,4 +140,22 @@ public class AzureBlobService
         }
     }
 
+    public string GetSasUrl(string containerName, string blobPath)
+    {
+        var container = _blobServiceClient.GetBlobContainerClient(containerName);
+        var blob = container.GetBlobClient(blobPath);
+
+        BlobSasBuilder sas = new BlobSasBuilder
+        {
+            BlobContainerName = containerName,
+            BlobName = blobPath,
+            Resource = "b",
+            ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(30)
+        };
+
+        sas.SetPermissions(BlobSasPermissions.Read);
+
+        return blob.GenerateSasUri(sas).ToString();
+    }
+
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using FMS_Collection.Application.Services;
 using FMS_Collection.Core.Request;
+using FMS_Collection.Core.Constants;
 
 namespace FMS_Collection.API.Controllers;
 [ApiController]
@@ -33,6 +34,15 @@ public class DocumentController : ControllerBase
         return Ok(result);
     }
 
+
+    [HttpGet]
+    [Route("GetDetails")]
+    public async Task<IActionResult> GetDetails(Guid documentId)
+    {
+        var result = await _service.GetDocumentDetailsAsync(documentId);
+        return Ok(result);
+    }
+
     [HttpPost]
     [Route("UploadDocument")]
     public async Task<IActionResult> UploadDocument([FromForm] DocumentRequest document, Guid userId)
@@ -43,7 +53,7 @@ public class DocumentController : ControllerBase
         // Upload file to asset storage
         var assetId = await _assetService.UploadDocument(document, userId);
 
-        if (assetId == null)
+        if (!assetId.HasValue || assetId.Value == Guid.Empty)
             return BadRequest("Issue in uploading file.");
 
         // Set AssetId so service can save it
@@ -59,7 +69,7 @@ public class DocumentController : ControllerBase
     [Route("Update")]
     public async Task<IActionResult> Update(DocumentRequest Document, Guid userId)
     {
-        var result = await _service.UpdateDocumentAsync(Document,userId);
+        var result = await _service.UpdateDocumentAsync(Document, userId);
         return Ok(result);
     }
 
@@ -68,6 +78,15 @@ public class DocumentController : ControllerBase
     public async Task<IActionResult> Delete(Guid DocumentId, Guid userId)
     {
         var result = await _service.DeleteDocumentAsync(DocumentId, userId);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("GetSasUrl")]
+    public async Task<IActionResult> GetSasUrl(Guid documentId)
+    {
+        var response= await _service.GetDocumentDetailsAsync(documentId);
+        var result = _assetService.GetSasUrl("project-attachments", response.Data.OriginalPath);
         return Ok(result);
     }
 }

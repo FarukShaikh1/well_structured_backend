@@ -9,7 +9,7 @@ namespace FMS_Collection.Core.Interfaces
     {
         Task<List<Asset>> GetAllAsync();
         Task<AssetResponse> GetAssetDetailsAsync(Guid? assetId);
-        Task<Guid> AddAsync(AssetRequest asset, Guid userId);
+        Task<Guid?> AddAsync(AssetRequest asset, Guid userId);
         Task UpdateAsync(AssetRequest asset, Guid userId);
         Task<bool> DeleteAsync(Guid? assetId, Guid userId);
     }

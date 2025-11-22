@@ -37,26 +37,14 @@ namespace FMS_Collection.Infrastructure.Repositories
                     Documents.Add(new Document
                     {
                         Id = reader.GetGuid(reader.GetOrdinal("Id")),
-                        CoinNoteName = reader.GetString(reader.GetOrdinal("CoinNoteName")),
-                        CurrencyTypeId = reader.IsDBNull(reader.GetOrdinal("CurrencyTypeId")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("CurrencyTypeId")),
-                        CountryId = reader.IsDBNull(reader.GetOrdinal("CountryId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("CountryId")),
-                        MetalsUsed = reader.IsDBNull(reader.GetOrdinal("MetalsUsed")) ? null : reader.GetString(reader.GetOrdinal("MetalsUsed")),
-                        CoinWeightInGrams = reader.IsDBNull(reader.GetOrdinal("CoinWeightInGrams")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("CoinWeightInGrams")),
-                        ActualValue = reader.IsDBNull(reader.GetOrdinal("ActualValue")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("ActualValue")),
-                        IndianValue = reader.IsDBNull(reader.GetOrdinal("IndianValue")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("IndianValue")),
-                        PrintedYear = reader.IsDBNull(reader.GetOrdinal("PrintedYear")) ? null : reader.GetString(reader.GetOrdinal("PrintedYear")),
-                        Speciality = reader.IsDBNull(reader.GetOrdinal("Speciality")) ? null : reader.GetString(reader.GetOrdinal("Speciality")),
-                        DiameterOfCoin = reader.IsDBNull(reader.GetOrdinal("DiameterOfCoin")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("DiameterOfCoin")),
-                        LengthOfNote = reader.IsDBNull(reader.GetOrdinal("LengthOfNote")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("LengthOfNote")),
-                        BreadthOfNote = reader.IsDBNull(reader.GetOrdinal("BreadthOfNote")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("BreadthOfNote")),
-                        Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString(reader.GetOrdinal("Description")),
+                        DocumentName = reader.GetString(reader.GetOrdinal("DocumentName")),
+                        Keywords = reader.IsDBNull(reader.GetOrdinal("Keywords")) ? null : reader.GetString(reader.GetOrdinal("Keywords")),
                         AssetId = reader.GetGuid(reader.GetOrdinal("AssetId")),
                         CreatedOn = reader.IsDBNull(reader.GetOrdinal("CreatedOn")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("CreatedOn")),
                         CreatedBy = reader.IsDBNull(reader.GetOrdinal("CreatedBy")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("CreatedBy")),
                         ModifiedOn = reader.IsDBNull(reader.GetOrdinal("ModifiedOn")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("ModifiedOn")),
                         ModifiedBy = reader.IsDBNull(reader.GetOrdinal("ModifiedBy")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("ModifiedBy")),
                         IsDeleted = reader.IsDBNull(reader.GetOrdinal("IsDeleted")) ? (bool?)null : reader.GetBoolean(reader.GetOrdinal("IsDeleted")),
-                        IsVerified = reader.IsDBNull(reader.GetOrdinal("IsVerified")) ? (bool?)null : reader.GetBoolean(reader.GetOrdinal("IsVerified"))
                     });
                 }
 
@@ -106,7 +94,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             return Documents;
         }
 
-        public async Task<DocumentDetailsResponse> GetDocumentDetailsAsync(Guid DocumentId, Guid userId)
+        public async Task<DocumentDetailsResponse> GetDocumentDetailsAsync(Guid DocumentId)
         {
             var result = new DocumentDetailsResponse();
             try
@@ -117,7 +105,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.Parameters.Add(new SqlParameter("@in_DocumentId", SqlDbType.UniqueIdentifier) { Value = DocumentId });
-                cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
+                //cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
 
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();

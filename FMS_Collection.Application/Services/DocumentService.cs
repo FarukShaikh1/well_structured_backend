@@ -55,6 +55,15 @@ namespace FMS_Collection.Application.Services
             return response;
         }
 
+        public async Task<ServiceResponse<DocumentDetailsResponse>> GetDocumentDetailsAsync(Guid documentId)
+        {
+            // Fetch data from repository
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetDocumentDetailsAsync(documentId),
+                FMS_Collection.Core.Constants.Constants.Messages.DocumentListFetchedSuccessfully
+            );
+        }
+
         public async Task<ServiceResponse<Guid>> AddDocumentAsync(DocumentRequest Document, Guid DocumentId)
         {
             return await ServiceExecutor.ExecuteAsync(
@@ -74,7 +83,7 @@ namespace FMS_Collection.Application.Services
         public async Task<ServiceResponse<bool>> DeleteDocumentAsync(Guid DocumentId, Guid userId)
         {
             // first delete assets related to the selected coin/note
-            DocumentDetailsResponse coinDetails = await _repository.GetDocumentDetailsAsync(DocumentId, userId);
+            DocumentDetailsResponse coinDetails = await _repository.GetDocumentDetailsAsync(DocumentId);
             var response = await _assetService.DeleteAssetAsync(coinDetails.AssetId, userId);
             if (response == null)
             {

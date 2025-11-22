@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.Processing;
+using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
 using static FMS_Collection.Core.Constants.Constants;
 
@@ -48,7 +49,7 @@ namespace FMS_Collection.Application.Services
             return response;
         }
 
-        public async Task<ServiceResponse<Guid>> AddAssetAsync(AssetRequest Asset, Guid userId)
+        public async Task<ServiceResponse<Guid?>> AddAssetAsync(AssetRequest Asset, Guid userId)
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.AddAsync(Asset, userId),
@@ -70,7 +71,7 @@ namespace FMS_Collection.Application.Services
             );
         }
 
-        public async Task<ServiceResponse<Guid>> SaveFile(IFormFile file, string folder, Guid userId, bool isNonSecuredFile = true)
+        public async Task<ServiceResponse<Guid?>> SaveFile(IFormFile file, string folder, Guid userId, bool isNonSecuredFile = true)
         {
             var stored = await UploadDocumentToDocStore(file, folder, file.FileName);
             var request = CreateAssetRequest(stored, file, isNonSecuredFile);
@@ -93,16 +94,23 @@ namespace FMS_Collection.Application.Services
 
         public async Task<Guid?> UploadDocument(DocumentRequest document, Guid userId)
         {
-            if (document.AssetId != null)
+            if (document.AssetId.HasValue && document.AssetId.Value != Guid.Empty)
             {
                 var old = await _repository.GetAssetDetailsAsync(document.AssetId);
                 await DeleteOldDocStoreAssetFiles(old);
             }
-            var stored = await UploadDocumentToDocStore(document.file, Constants.DocumentType.DOCUMENTS+ "/"+ userId, document.file.FileName);
-            var request = CreateAssetRequest(stored, document.file);
+            var stored = await UploadDocumentToDocStore(document.file, Constants.DocumentType.DOCUMENTS + "/" + userId, document.file.FileName);
 
-            await UpdateAssetAsync(request, userId);
-            return request.Id;
+            var request = CreateAssetRequest(stored, document.file);
+            if (!document.AssetId.HasValue || document.AssetId.Value != Guid.Empty)
+            {
+
+                var assetResult = await AddAssetAsync(request, userId);
+                document.AssetId = assetResult.Data;
+            }
+            else
+                await UpdateAssetAsync(request, userId);
+            return document.AssetId;
         }
 
 
@@ -238,6 +246,16 @@ namespace FMS_Collection.Application.Services
         {
             await _blobService.UpdateBlobHeadersInFolderAsync(folderPrefix);
         }
+
+        public ServiceResponse<string> GetSasUrl(string containerName, string blobPath)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            response.Data = _blobService.GetSasUrl(containerName, blobPath);
+            response.Success = true;
+            return response;
+        }
+
+
         #endregion
 
 
@@ -303,7 +321,7 @@ namespace FMS_Collection.Application.Services
             return stream.ToArray();
         }
 
-        private AssetRequest CreateAssetRequest(AssetResponse storedFile, IFormFile file,bool isNonSecuredFile = true)
+        private AssetRequest CreateAssetRequest(AssetResponse storedFile, IFormFile file, bool isNonSecuredFile = true)
         {
             return new AssetRequest
             {
