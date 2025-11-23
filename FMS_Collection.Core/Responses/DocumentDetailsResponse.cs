@@ -10,6 +10,7 @@ namespace FMS_Collection.Core.Response
         public Guid? AssetId { get; set; }
         public string? AssetType { get; set; }
 
+        public string? UploadedFileName { get; set; }
         public string? OriginalPath { get; set; }
         public string? PreviewPath { get; set; }
         public string? ThumbnailPath { get; set; }

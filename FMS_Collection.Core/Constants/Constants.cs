@@ -89,13 +89,13 @@
             public const string CoinNoteCollectionSummaryFetchedSuccessfully = "Coin/note collection summary fetched successfully";
 
             // Documents
-            public const string DocumentFetchedSuccessfully = "Coin/note collections fetched successfully";
-            public const string DocumentListFetchedSuccessfully = "Coin/note collection list fetched successfully";
-            public const string DocumentDetailsFetchedSuccessfully = "Coin/note collection details fetched successfully";
-            public const string DocumentCreatedSuccessfully = "Coin/note collection created successfully";
-            public const string DocumentUpdatedSuccessfully = "Coin/note collection updated successfully";
-            public const string DocumentDeletedSuccessfully = "Coin/note collection deleted successfully";
-            public const string DocumentummaryFetchedSuccessfully = "Coin/note collection summary fetched successfully";
+            public const string DocumentFetchedSuccessfully = "Document fetched successfully";
+            public const string DocumentListFetchedSuccessfully = "Document list fetched successfully";
+            public const string DocumentDetailsFetchedSuccessfully = "Document details fetched successfully";
+            public const string DocumentCreatedSuccessfully = "Document created successfully";
+            public const string DocumentUpdatedSuccessfully = "Document updated successfully";
+            public const string DocumentDeletedSuccessfully = "Document deleted successfully";
+            public const string DocumentummaryFetchedSuccessfully = "Document summary fetched successfully";
 
             public const string IssueInCoinDeletionNoteCollection = "Facing issue in deletion of this data";
 
