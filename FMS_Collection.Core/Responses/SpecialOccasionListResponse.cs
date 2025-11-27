@@ -11,6 +11,7 @@ namespace FMS_Collection.Core.Response
         public string? Address { get; set; }
         public string? ImagePath { get; set; }
         public string? ThumbnailPath { get; set; }
+        public string? ThumbnailPathSasUrl { get; set; }
         public string? RelationShipName { get; set; }
         public string? DayType { get; set; }
         public string? MobileNumber { get; set; }

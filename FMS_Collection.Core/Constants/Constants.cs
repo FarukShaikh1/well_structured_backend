@@ -88,7 +88,16 @@
             public const string CoinNoteCollectionDeletedSuccessfully = "Coin/note collection deleted successfully";
             public const string CoinNoteCollectionSummaryFetchedSuccessfully = "Coin/note collection summary fetched successfully";
 
-            public const string IssueInCoinDeletionNoteCollection= "Facing issue in deletion of this data";
+            // Documents
+            public const string DocumentFetchedSuccessfully = "Document fetched successfully";
+            public const string DocumentListFetchedSuccessfully = "Document list fetched successfully";
+            public const string DocumentDetailsFetchedSuccessfully = "Document details fetched successfully";
+            public const string DocumentCreatedSuccessfully = "Document created successfully";
+            public const string DocumentUpdatedSuccessfully = "Document updated successfully";
+            public const string DocumentDeletedSuccessfully = "Document deleted successfully";
+            public const string DocumentummaryFetchedSuccessfully = "Document summary fetched successfully";
+
+            public const string IssueInCoinDeletionNoteCollection = "Facing issue in deletion of this data";
 
             // Special Occasions (Days)
             public const string DaysFetchedSuccessfully = "Days fetched successfully";
@@ -160,6 +169,7 @@
             public const string COLLECTION_COINS = "Collection_Coins";
             public const string USER_PROFILE_PICTURE = "User_Profile_Picture";
             public const string THUMBNAILS = "/thumbnails/";
+            public const string DOCUMENTS = "documents";
         }
 
         public struct CacheKeys
@@ -194,32 +204,32 @@
 
 
         public static readonly HashSet<string> ImageContentTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-{
-    "image/jpg",
-    "image/jpeg",
-    "image/pjpeg",
-    "image/png",
-    "image/x-png",
-    "image/gif",
-    "image/bmp",
-    "image/webp",
-    "image/tiff",
-    "image/svg+xml",
-    "image/x-icon"
-};
+        {
+            "image/jpg",
+            "image/jpeg",
+            "image/pjpeg",
+            "image/png",
+            "image/x-png",
+            "image/gif",
+            "image/bmp",
+            "image/webp",
+            "image/tiff",
+            "image/svg+xml",
+            "image/x-icon"
+        };
 
         public static readonly HashSet<string> ImageExtensionList = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-{
-    ".jpg",
-    ".jpeg",
-    ".png",
-    ".gif",
-    ".bmp",
-    ".webp",
-    ".tiff",
-    ".svg",
-    ".ico"
-};
+        {
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".bmp",
+            ".webp",
+            ".tiff",
+            ".svg",
+            ".ico"
+        };
 
         public struct EncryptionDecryptionKeys
         {

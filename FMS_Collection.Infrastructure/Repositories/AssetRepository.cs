@@ -98,7 +98,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             return result;
         }
 
-        public async Task<Guid> AddAsync(AssetRequest asset, Guid userId)
+        public async Task<Guid?> AddAsync(AssetRequest asset, Guid userId)
         {
             try
             {
