@@ -12,7 +12,7 @@ namespace FMS_Collection.Core.Response
         public string? ImagePath { get; set; }
         public string? ThumbnailPath { get; set; }
         public string? ThumbnailPathSasUrl { get; set; }
-        public string? RelationShipName { get; set; }
+        public string? RelationName { get; set; }
         public string? DayType { get; set; }
         public string? MobileNumber { get; set; }
     }

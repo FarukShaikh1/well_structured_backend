@@ -15,8 +15,8 @@ namespace FMS_Collection.Core.Interfaces
         Task<List<SpecialOccasion>> GetAllAsync();
         Task<List<SpecialOccasionListResponse>> GetDayListAsync(Guid userId);
         Task<SpecialOccasionDetailsResponse> GetDayDetailsAsync(Guid dayId, Guid userId);
-        Task<Guid> AddAsync(SpecialOccasionRequest day, Guid userId);
-        Task<bool> UpdateAsync(SpecialOccasionRequest day, Guid userId);
+        Task<SpecialOccasionDetailsResponse> AddAsync(SpecialOccasionRequest day, Guid userId);
+        Task<SpecialOccasionDetailsResponse> UpdateAsync(SpecialOccasionRequest day, Guid userId);
         Task<bool> DeleteAsync(Guid dayId, Guid userId);
     }
 }

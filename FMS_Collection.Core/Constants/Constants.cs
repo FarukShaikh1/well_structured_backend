@@ -109,6 +109,7 @@
 
             // OTP
             public const string OtpSentSuccessfully = "OTP sent successfully";
+            public const string WelcomeInviteSentSuccessfully = "Welcome invite sent successfully";
             public const string OtpVerifiedSuccessfully = "OTP verified successfully";
             public const string OtpInvalidOrExpired = "OTP is invalid or expired";
             public const string PasswordResetSuccessful = "Password reset successful";
