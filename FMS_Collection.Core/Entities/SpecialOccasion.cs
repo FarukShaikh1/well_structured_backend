@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FMS_Collection.Core.Entities
+﻿namespace FMS_Collection.Core.Entities
 {
     public class SpecialOccasion
     {
@@ -13,12 +7,13 @@ namespace FMS_Collection.Core.Entities
         public string? PersonName { get; set; }
         public string? Address { get; set; }
         public int? SuperAdminRelationId { get; set; }
-        public string? RelationShipName { get; set; }
         public string? MobileNumber { get; set; }
         public string? ContactNumber { get; set; }
         public string? EmailId { get; set; }
         public Guid? DayTypeId { get; set; }
-        public Guid? AssetId { get; set; }
+        public string? DayTypeName { get; set; }
+    public string? RelationName { get; set; }
+    public Guid? AssetId { get; set; }
         public char? Gender { get; set; }
         public Guid? RelationId { get; set; }
         public DateTime? CreatedOn { get; set; }

@@ -6,6 +6,15 @@ namespace FMS_Collection.Infrastructure.Repositories
 {
     public class NotificationSender : INotificationSender
     {
+        string _emailPassword;
+        public NotificationSender()
+        {
+            _emailPassword =
+                  Environment.GetEnvironmentVariable("MailConfigEmailPassword")
+                                ?? throw new ArgumentNullException(
+                                    nameof(_emailPassword),
+                                    "Missing environment variable: MailConfigEmailPassword");
+        }
 
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
@@ -13,7 +22,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             {
                 using var smtp = new SmtpClient(AppSettings.SmtpHost, AppSettings.SmtpPort) // Example: smtp.gmail.com, port 587
                 {
-                    Credentials = new NetworkCredential(AppSettings.SenderEmail, AppSettings.EmailPassword),
+                    Credentials = new NetworkCredential(AppSettings.SenderEmail, _emailPassword),
                     EnableSsl = true // use true for Gmail, Outlook, most providers
                 };
 
@@ -28,7 +37,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error while sending email: {ex.Message}", ex);
+                throw new Exception($"Error while sending email emailPassword is '{_emailPassword}' and error is: {ex.Message}", ex);
             }
         }
 

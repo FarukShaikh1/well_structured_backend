@@ -145,11 +145,10 @@ namespace FMS_Collection.Infrastructure.Repositories
             Address = reader["Address"]?.ToString(),
             ModifiedBy = Guid.TryParse(reader["ModifiedBy"]?.ToString(), out var modByValue) ? modByValue : null,
             ModifiedOn = reader["ModifiedOn"] != DBNull.Value? (DateTime?)reader["ModifiedOn"]: null,
-            IsLocked = reader["IsLocked"] != DBNull.Value ? (bool?)reader["IsLocked"] : null,
-            IsDeleted = (bool)reader["IsDeleted"]
+            IsLocked = reader["IsLocked"] != DBNull.Value ? (bool?)reader["IsLocked"] : false,
+            IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : false
           };
         }
-
       }
       catch (Exception ex)
       {
@@ -164,17 +163,32 @@ namespace FMS_Collection.Infrastructure.Repositories
       try
       {
         using var conn = _dbFactory.CreateConnection();
-        using var cmd = new SqlCommand("SpecialOccasion_Add", conn)
+        using var cmd = new SqlCommand("User_Add", conn)
         {
           CommandType = CommandType.StoredProcedure
         };
 
-        // Add Input Parameters (matching your class)
-        cmd.Parameters.AddWithValue("@In_RelationId", request.Password);
-        cmd.Parameters.AddWithValue("@in_UserId", userId);
+        cmd.Parameters.Add(new SqlParameter("@in_PersonId", SqlDbType.UniqueIdentifier)
+        {
+          Value = request.SpecialOccasionId
+        });
 
-        // Add Output Parameter
-        var outIdParam = new SqlParameter("@Out_SpecialOccasionId", SqlDbType.UniqueIdentifier)
+        cmd.Parameters.Add(new SqlParameter("@in_Email", SqlDbType.NVarChar, 100)
+        {
+          Value = request.EmailAddress
+        });
+
+        cmd.Parameters.Add(new SqlParameter("@in_Password", SqlDbType.VarChar, 100)
+        {
+          Value = request.Password
+        });
+
+        cmd.Parameters.Add(new SqlParameter("@in_CreatedBy", SqlDbType.UniqueIdentifier)
+        {
+          Value = userId
+        });
+
+        var outIdParam = new SqlParameter("@out_Id", SqlDbType.UniqueIdentifier)
         {
           Direction = ParameterDirection.Output
         };
@@ -183,13 +197,13 @@ namespace FMS_Collection.Infrastructure.Repositories
         await conn.OpenAsync();
         await cmd.ExecuteNonQueryAsync();
 
-        // Retrieve the Output Parameter Value
-        Guid newInsertedId = (Guid)(outIdParam.Value ?? Guid.Empty);
-        return newInsertedId;
+        return (Guid)(outIdParam.Value ?? Guid.Empty);
       }
       catch (Exception ex)
       {
-        throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+        throw new Exception(
+            string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex),
+        ex);
       }
     }
 

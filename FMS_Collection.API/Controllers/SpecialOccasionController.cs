@@ -44,7 +44,7 @@ public class SpecialOccasionController : ControllerBase
     public async Task<IActionResult> Add([FromBody] SpecialOccasionRequest specialOccasionRequest, Guid userId)
     {
         var result = await _service.AddDayAsync(specialOccasionRequest, userId);
-        
+
         return Ok(result);
     }
 
@@ -52,8 +52,8 @@ public class SpecialOccasionController : ControllerBase
     [Route("Update")]
     public async Task<IActionResult> Update([FromBody] SpecialOccasionRequest specialOccasionRequest, Guid userId)
     {
-        var result = await _service.UpdateDayAsync(specialOccasionRequest,userId);
-        return Ok();
+        var result = await _service.UpdateDayAsync(specialOccasionRequest, userId);
+        return Ok(result);
     }
 
     [HttpGet]

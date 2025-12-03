@@ -41,11 +41,12 @@ namespace FMS_Collection.Infrastructure.Repositories
                         PersonName = reader.IsDBNull(reader.GetOrdinal("PersonName")) ? null : reader.GetString(reader.GetOrdinal("PersonName")),
                         Address = reader.IsDBNull(reader.GetOrdinal("Address")) ? null : reader.GetString(reader.GetOrdinal("Address")),
                         SuperAdminRelationId = reader.IsDBNull(reader.GetOrdinal("SuperAdminRelationId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("SuperAdminRelationId")),
-                        RelationShipName = reader.IsDBNull(reader.GetOrdinal("RelationShipName")) ? null : reader.GetString(reader.GetOrdinal("RelationShipName")),
                         MobileNumber = reader.IsDBNull(reader.GetOrdinal("MobileNumber")) ? null : reader.GetString(reader.GetOrdinal("MobileNumber")),
                         ContactNumber = reader.IsDBNull(reader.GetOrdinal("ContactNumber")) ? null : reader.GetString(reader.GetOrdinal("ContactNumber")),
                         EmailId = reader.IsDBNull(reader.GetOrdinal("EmailId")) ? null : reader.GetString(reader.GetOrdinal("EmailId")),
                         DayTypeId = reader.IsDBNull(reader.GetOrdinal("DayTypeId")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("DayTypeId")),
+                        DayTypeName = reader.IsDBNull(reader.GetOrdinal("DayTypeName")) ? null : reader.GetString(reader.GetOrdinal("DayTypeName")),
+                        RelationName = reader.IsDBNull(reader.GetOrdinal("RelationName")) ? null : reader.GetString(reader.GetOrdinal("RelationName")),
                         AssetId = reader.IsDBNull(reader.GetOrdinal("AssetId")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("AssetId")),
                         Gender = reader.IsDBNull(reader.GetOrdinal("Gender")) ? (char?)null : Convert.ToChar(reader.GetString(reader.GetOrdinal("Gender"))),
                         RelationId = reader.IsDBNull(reader.GetOrdinal("RelationId")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("RelationId")),
@@ -94,7 +95,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                         Address = reader.IsDBNull(reader.GetOrdinal("Address")) ? null : reader.GetString(reader.GetOrdinal("Address")),
                         ImagePath = reader.IsDBNull(reader.GetOrdinal("ImagePath")) ? null : reader.GetString(reader.GetOrdinal("ImagePath")),
                         ThumbnailPath = reader.IsDBNull(reader.GetOrdinal("ThumbnailPath")) ? null : reader.GetString(reader.GetOrdinal("ThumbnailPath")),
-                        RelationShipName = reader.IsDBNull(reader.GetOrdinal("RelationShipName")) ? null : reader.GetString(reader.GetOrdinal("RelationShipName")),
+                        RelationName = reader.IsDBNull(reader.GetOrdinal("RelationName")) ? null : reader.GetString(reader.GetOrdinal("RelationName")),
                         DayType = reader.IsDBNull(reader.GetOrdinal("DayType")) ? null : reader.GetString(reader.GetOrdinal("DayType")),
                         MobileNumber = reader.IsDBNull(reader.GetOrdinal("MobileNumber")) ? null : reader.GetString(reader.GetOrdinal("MobileNumber"))
 
@@ -146,7 +147,9 @@ namespace FMS_Collection.Infrastructure.Repositories
                         EmailId = reader.IsDBNull(reader.GetOrdinal("EmailId")) ? null : reader.GetString(reader.GetOrdinal("EmailId")),
                         Gender = reader.IsDBNull(reader.GetOrdinal("Gender")) ? null : reader.GetString(reader.GetOrdinal("Gender")),
                         Address = reader.IsDBNull(reader.GetOrdinal("Address")) ? null : reader.GetString(reader.GetOrdinal("Address")),
-                        AssetId = reader.IsDBNull(reader.GetOrdinal("AssetId")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("AssetId"))
+                        AssetId = reader.IsDBNull(reader.GetOrdinal("AssetId")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("AssetId")),
+                        DayTypeName = reader.IsDBNull(reader.GetOrdinal("DayTypeName")) ? null : reader.GetString(reader.GetOrdinal("DayTypeName")),
+                        RelationName = reader.IsDBNull(reader.GetOrdinal("RelationName")) ? null : reader.GetString(reader.GetOrdinal("RelationName")),
                     };
                 }
 
@@ -159,7 +162,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             return result;
         }
 
-        public async Task<Guid> AddAsync(SpecialOccasionRequest request, Guid userId)
+        public async Task<SpecialOccasionDetailsResponse> AddAsync(SpecialOccasionRequest request, Guid userId)
         {
             try
             {
@@ -168,31 +171,34 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-
-                // Add Input Parameters (matching your class)
                 AddDayRequestParameters(cmd, request, userId);
 
-                // Add Output Parameter
-                var outIdParam = new SqlParameter("@Out_SpecialOccasionId", SqlDbType.UniqueIdentifier)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                cmd.Parameters.Add(outIdParam);
-
                 await conn.OpenAsync();
-                await cmd.ExecuteNonQueryAsync();
 
-                // Retrieve the Output Parameter Value
-                Guid newInsertedId = (Guid)(outIdParam.Value ?? Guid.Empty);
-                return newInsertedId;
+                // SP returns a full SELECT resultset from SpecialOccasion_Details_Get
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                if (!reader.Read())
+                {
+                    return new SpecialOccasionDetailsResponse
+                    {
+                    };
+                }
+                var response = getResponse(reader);
+
+                return response;
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+                throw new Exception(
+                    string.Format(
+                        FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual,
+                        ex.Message),
+                    ex);
             }
         }
 
-        public async Task<bool> UpdateAsync(SpecialOccasionRequest request, Guid userId)
+        public async Task<SpecialOccasionDetailsResponse> UpdateAsync(SpecialOccasionRequest request, Guid userId)
         {
             try
             {
@@ -204,13 +210,21 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.AddWithValue("@in_specialOccasionId", request.Id);
                 AddDayRequestParameters(cmd, request, userId);
                 await conn.OpenAsync();
-                await cmd.ExecuteNonQueryAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                if (!reader.Read())
+                {
+                    return new SpecialOccasionDetailsResponse
+                    {
+                    };
+                }
+                var response = getResponse(reader);
+                return response;
             }
             catch (Exception ex)
             {
                 throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
             }
-            return true;
         }
 
         public async Task<bool> DeleteAsync(Guid specialoccasionId, Guid userId)
@@ -255,5 +269,29 @@ namespace FMS_Collection.Infrastructure.Repositories
             cmd.Parameters.AddWithValue("@in_assetId", (object?)request.AssetId ?? DBNull.Value);
         }
 
+        private SpecialOccasionDetailsResponse getResponse(SqlDataReader reader)
+        {
+            return new SpecialOccasionDetailsResponse
+            {
+                Id = reader["Id"] as Guid?,
+                SpecialOccasionDate = reader["SpecialOccasionDate"] as DateTime?,
+                PersonName = reader["PersonName"] as string,
+                Address = reader["Address"] as string,
+                RelationId = reader["RelationId"] as Guid?,
+                RelationName = reader["RelationName"] as string,
+                ContactNumber = reader["ContactNumber"] as string,
+                MobileNumber = reader["MobileNumber"] as string,
+                EmailId = reader["EmailId"] as string,
+                Gender = reader["Gender"] as string,
+                DayTypeId = reader["DayTypeId"] as Guid?,
+                DayTypeName = reader["DayTypeName"] as string,
+                AssetId = reader["AssetId"] as Guid?,
+                // Additional returned fields
+                CreatedOn = reader["CreatedOn"] as DateTime?,
+                CreatedByName = reader["CreatedBy"] as string,
+                ModifiedOn = reader["ModifiedOn"] as DateTime?,
+                ModifiedByName = reader["ModifiedBy"] as string,
+            };
+        }
     }
 }

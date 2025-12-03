@@ -29,7 +29,7 @@ namespace FMS_Collection.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost("reset-password")] 
+        [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordWithOtpRequest request)
         {
             var result = await _otpService.ResetPasswordWithOtpAsync(request);
