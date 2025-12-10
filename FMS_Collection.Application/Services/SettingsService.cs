@@ -1,5 +1,5 @@
 ﻿using FMS_Collection.Core.Common;
-using FMS_Collection.Core.Entities;
+using FMS_Collection.Core.Entities.ConfigEntities;
 using FMS_Collection.Core.Interfaces;
 using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
@@ -91,6 +91,14 @@ namespace FMS_Collection.Application.Services
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetAllOccasionTypesAsync(),
+                FMS_Collection.Core.Constants.Constants.Messages.OccasionTypesFetchedSuccessfully
+            );
+        }
+
+        public async Task<ServiceResponse<List<TransactionSubCategory>>> GetAllTransactionSubCategoriesAsync()
+        {
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetAllTransactionSubCategoriesAsync(),
                 FMS_Collection.Core.Constants.Constants.Messages.OccasionTypesFetchedSuccessfully
             );
         }

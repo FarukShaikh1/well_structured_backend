@@ -1,4 +1,4 @@
-﻿using FMS_Collection.Core.Entities;
+﻿using FMS_Collection.Core.Entities.ConfigEntities;
 using FMS_Collection.Core.Interfaces;
 using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
@@ -381,6 +381,45 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
 
             return OccasionTypes;
+        }
+
+        public async Task<List<TransactionSubCategory>> GetAllTransactionSubCategoriesAsync()
+        {
+            var transactionSubCategories = new List<TransactionSubCategory>();
+            try
+            {
+                using var conn = _dbFactory.CreateConnection();
+                using var cmd = new SqlCommand("OccasionType_GetAll", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.CommandTimeout = 600;
+                await conn.OpenAsync();
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    transactionSubCategories.Add(new TransactionSubCategory
+                    {
+                        Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
+                        TransactionSubCategoryName = reader["TransactionSubCategoryName"]?.ToString(),
+                        Description = reader["Description"]?.ToString(),
+                        DisplayOrder = reader["DisplayOrder"] != DBNull.Value ? (int?)reader["DisplayOrder"] : null,
+                        IsActive = reader["IsActive"] != DBNull.Value ? (bool?)reader["IsActive"] : null,
+                        CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
+                        CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
+                        ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
+                        ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
+                        IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : null
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+            }
+
+            return transactionSubCategories;
         }
     }
 }

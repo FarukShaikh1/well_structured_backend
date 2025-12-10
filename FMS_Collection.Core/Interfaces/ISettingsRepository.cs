@@ -1,5 +1,4 @@
-﻿
-using FMS_Collection.Core.Entities;
+﻿using FMS_Collection.Core.Entities.ConfigEntities;
 using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
 
@@ -18,6 +17,7 @@ namespace FMS_Collection.Core.Interfaces
         Task<List<Account>> GetAllAccountsAsync();
         Task<List<Relation>> GetAllRelationsAsync();
         Task<List<OccasionType>> GetAllOccasionTypesAsync();
+        Task<List<TransactionSubCategory>> GetAllTransactionSubCategoriesAsync();
 
 
     }

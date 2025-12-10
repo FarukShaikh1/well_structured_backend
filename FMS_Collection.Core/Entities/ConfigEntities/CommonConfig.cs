@@ -1,9 +1,9 @@
-﻿namespace FMS_Collection.Core.Entities
+﻿namespace FMS_Collection.Core.Entities.ConfigEntities
 {
-    public class OccasionType
+    public class CommonConfig
     {
         public Guid? Id { get; set; }
-        public string? OccasionTypeName { get; set; } = string.Empty;
+        public string? AccountName { get; set; } = string.Empty;
         public string? Description { get; set; } = string.Empty;
         public int? DisplayOrder { get; set; }
         public Guid? UserId { get; set; }
@@ -14,6 +14,4 @@
         public Guid? ModifiedBy { get; set; }
         public bool? IsDeleted { get; set; }
     }
-
-;
 }
