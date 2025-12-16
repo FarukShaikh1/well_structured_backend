@@ -4,7 +4,6 @@ using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
 using FMS_Collection.Infrastructure.Data;
 using Microsoft.Data.SqlClient;
-using System.Collections.Generic;
 using System.Data;
 //using System.Transactions;
 
@@ -106,9 +105,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.CommandTimeout = 120;
                 cmd.Parameters.Add(new SqlParameter("@in_FromDate", SqlDbType.Date) { Value = filter.FromDate });
                 cmd.Parameters.Add(new SqlParameter("@in_ToDate", SqlDbType.Date) { Value = filter.ToDate });
-                cmd.Parameters.Add(new SqlParameter("@in_SourceOrReason", SqlDbType.VarChar) { Value = filter.SourceOrReason });
-                cmd.Parameters.Add(new SqlParameter("@in_MinAmount", SqlDbType.Decimal) { Value = filter.MinAmount });
-                cmd.Parameters.Add(new SqlParameter("@in_MaxAmount", SqlDbType.Decimal) { Value = filter.MaxAmount });
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
                 await conn.OpenAsync();
 
@@ -156,9 +152,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.CommandTimeout = 120;
                 cmd.Parameters.Add(new SqlParameter("@in_FromDate", SqlDbType.Date) { Value = filter.FromDate });
                 cmd.Parameters.Add(new SqlParameter("@in_ToDate", SqlDbType.Date) { Value = filter.ToDate });
-                cmd.Parameters.Add(new SqlParameter("@in_SourceOrReason", SqlDbType.VarChar) { Value = filter.SourceOrReason });
-                cmd.Parameters.Add(new SqlParameter("@in_MinAmount", SqlDbType.Decimal) { Value = filter.MinAmount });
-                cmd.Parameters.Add(new SqlParameter("@in_MaxAmount", SqlDbType.Decimal) { Value = filter.MaxAmount });
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
                 await conn.OpenAsync();
 
@@ -216,6 +209,47 @@ namespace FMS_Collection.Infrastructure.Repositories
                         LastDate = reader["LastDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["LastDate"])) : (DateOnly?)null,
                         SourceOrReason = reader["SourceOrReason"] != DBNull.Value ? reader["SourceOrReason"].ToString() : null,
                         Description = reader["Descriptions"] != DBNull.Value ? reader["Descriptions"].ToString() : null,
+                        TakenAmount = reader["TakenAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TakenAmount"]) : (decimal?)null,
+                        GivenAmount = reader["GivenAmount"] != DBNull.Value ? Convert.ToDecimal(reader["GivenAmount"]) : (decimal?)null,
+                        TotalAmount = reader["TotalAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TotalAmount"]) : (decimal?)null,
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+
+            }
+
+            return Transactions;
+        }
+
+        public async Task<List<TransactionReportResponse>> GetCategoryWiseReportAsync(TransactionFilterRequest filter, Guid userId)
+        {
+            var Transactions = new List<TransactionReportResponse>();
+            try
+            {
+                using var conn = _dbFactory.CreateConnection();
+                using var cmd = new SqlCommand("TransactionCategoryWiseReport_Get", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.CommandTimeout = 600;
+                cmd.Parameters.Add(new SqlParameter("@in_FromDate", SqlDbType.Date) { Value = filter.FromDate });
+                cmd.Parameters.Add(new SqlParameter("@in_ToDate", SqlDbType.Date) { Value = filter.ToDate });
+                cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
+                await conn.OpenAsync();
+
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    Transactions.Add(new TransactionReportResponse
+                    {
+                        FirstDate = reader["FirstDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["FirstDate"])) : (DateOnly?)null,
+                        LastDate = reader["LastDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["LastDate"])) : (DateOnly?)null,
+                        SourceOrReason = reader["SourceOrReason"] != DBNull.Value ? reader["SourceOrReason"].ToString() : null,
+                        CategoryName = reader["CategoryName"] != DBNull.Value ? reader["CategoryName"].ToString() : null,
                         TakenAmount = reader["TakenAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TakenAmount"]) : (decimal?)null,
                         GivenAmount = reader["GivenAmount"] != DBNull.Value ? Convert.ToDecimal(reader["GivenAmount"]) : (decimal?)null,
                         TotalAmount = reader["TotalAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TotalAmount"]) : (decimal?)null,
@@ -329,6 +363,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.AddWithValue("@in_SourceOrReason", request.SourceOrReason ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_Description", request.Description ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_Purpose", request.Purpose ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@in_SubCategoryId", request.TransactionCategoryId ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_UserId", userId);
 
                 var tvpParam = new SqlParameter("@in_Splits", SqlDbType.Structured)
@@ -370,6 +405,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.AddWithValue("@in_SourceOrReason", request.SourceOrReason ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_Description", request.Description ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_Purpose", request.Purpose ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@in_SubCategoryId", request.TransactionCategoryId ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_UserId", userId);
 
                 var tvpParam = new SqlParameter("@in_Splits", SqlDbType.Structured)

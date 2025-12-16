@@ -38,7 +38,7 @@ namespace FMS_Collection.Application.Services
         }
         public async Task<ServiceResponse<List<TransactionSummaryResponse>>> GetBalanceSummaryAsync(TransactionFilterRequest filter, Guid userId)
         {
-            
+
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetBalanceSummaryAsync(filter, userId),
                 FMS_Collection.Core.Constants.Constants.Messages.BalanceSummaryFetchedSuccessfully
@@ -48,6 +48,14 @@ namespace FMS_Collection.Application.Services
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetTransactionReportAsync(filter, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.TransactionReportFetchedSuccessfully
+            );
+        }
+
+        public async Task<ServiceResponse<List<TransactionReportResponse>>> GetCategoryWiseReportAsync(TransactionFilterRequest filter, Guid userId)
+        {
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetCategoryWiseReportAsync(filter, userId),
                 FMS_Collection.Core.Constants.Constants.Messages.TransactionReportFetchedSuccessfully
             );
         }
@@ -117,13 +125,13 @@ namespace FMS_Collection.Application.Services
                 if (split.Amount != 0 && split.Category.HasValue)
                 {
                     validRecordExists = true;
+                    splitTable.Rows.Add(
+                        split.AccountId,
+                        split.Amount,
+                        split.Category?.ToString() ?? string.Empty
+                    );
                 }
 
-                splitTable.Rows.Add(
-                    split.AccountId,
-                    split.Amount,
-                    split.Category?.ToString() ?? string.Empty
-                );
             }
 
             return (splitTable, validRecordExists);
