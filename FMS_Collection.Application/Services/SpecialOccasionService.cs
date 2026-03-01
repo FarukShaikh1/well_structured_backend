@@ -1,5 +1,6 @@
 ﻿
 using FMS_Collection.Core.Common;
+using FMS_Collection.Core.Constants;
 using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Interfaces;
 using FMS_Collection.Core.Request;
@@ -20,7 +21,7 @@ namespace FMS_Collection.Application.Services
             _userService = userService;
         }
 
-        public async Task<ServiceResponse<List<SpecialOccasion>>> GetAllDaysAsync()
+        public async Task<ServiceResponse<List<SpecialOccasions>>> GetAllDaysAsync()
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetAllAsync(),
@@ -64,17 +65,24 @@ namespace FMS_Collection.Application.Services
                 () => _repository.AddAsync(Day, userId),
                 FMS_Collection.Core.Constants.Constants.Messages.DayCreatedSuccessfully
             );
-            var userResult = await _userService.GetUserDetailsAsync(null, response.Data.EmailId);
-            if (response != null && response.Success && response.Data != null 
-                && !string.IsNullOrEmpty(response.Data.EmailId) && response.Data.DayTypeName.Equals("Birthday") && string.IsNullOrEmpty(userResult.Data.EmailAddress))//check its birthday from SP
+            if (!String.IsNullOrEmpty(response.Data.EmailId))
             {
-                UserRequest User = new UserRequest
+                var loggedInUserData = await _userService.GetUserDetailsAsync(userId);
+                if (loggedInUserData != null && loggedInUserData.Data != null && (loggedInUserData.Data.RoleName == Constants.Roles.SuperAdmin || loggedInUserData.Data.RoleName == Constants.Roles.Admin))
                 {
-                    SpecialOccasionId = response.Data.Id,
-                    Password = RandomGeneratorService.GeneratePassword(10),
-                    EmailAddress = Day.EmailId.ToString(),
-                };
-                User.Id = await _userService.AddUserAsync(User, userId);
+                    var userResult = await _userService.GetUserDetailsAsync(null, response.Data.EmailId);
+                    if (response != null && response.Success && response.Data != null
+                        && !string.IsNullOrEmpty(response.Data.EmailId) && response.Data.DayTypeName.Equals("Birthday") && string.IsNullOrEmpty(userResult.Data.EmailAddress))//check its birthday from SP
+                    {
+                        UserRequest User = new UserRequest
+                        {
+                            SpecialOccasionId = response.Data.Id,
+                            Password = RandomGeneratorService.GeneratePassword(10),
+                            EmailAddress = Day.EmailId.ToString(),
+                        };
+                        User.Id = await _userService.AddUserAsync(User, userId);
+                    }
+                }
             }
             return response;
         }
@@ -85,16 +93,31 @@ namespace FMS_Collection.Application.Services
                 () => _repository.UpdateAsync(Day, userId),
                 FMS_Collection.Core.Constants.Constants.Messages.DayUpdatedSuccessfully
             );
-            var userResult = await _userService.GetUserDetailsAsync(null, response.Data.EmailId);
-            if (response != null && response.Success && response.Data != null && !string.IsNullOrEmpty(response.Data.EmailId) && response.Data.DayTypeName.Equals("Birthday") && string.IsNullOrEmpty(userResult.Data.EmailAddress))//check its birthday from SP
+            if (!String.IsNullOrEmpty(response.Data.EmailId))
             {
-                UserRequest User = new UserRequest
+                var loggedInUserData = await _userService.GetUserDetailsAsync(userId);
+                if (loggedInUserData != null && loggedInUserData.Data != null && (loggedInUserData.Data.RoleName == Constants.Roles.SuperAdmin || loggedInUserData.Data.RoleName == Constants.Roles.Admin))
                 {
-                    SpecialOccasionId = response.Data.Id,
-                    Password = RandomGeneratorService.GeneratePassword(10),
-                    EmailAddress = Day.EmailId.ToString(),
-                };
-                User.Id = await _userService.AddUserAsync(User, userId);
+                    var newUserResult = await _userService.GetUserDetailsAsync(null, response.Data.EmailId);
+                    if (response != null && response.Success && response.Data != null && !string.IsNullOrEmpty(response.Data.EmailId) && (response?.Data?.DayTypeName).Equals("Birthday") && string.IsNullOrEmpty(newUserResult.Data.EmailAddress))//check its birthday from SP
+                    {
+                        UserRequest User = new UserRequest
+                        {
+                            SpecialOccasionId = response.Data.Id,
+                            Password = RandomGeneratorService.GeneratePassword(10),
+                            EmailAddress = Day.EmailId.ToString(),
+                        };
+                        User.Id = await _userService.AddUserAsync(User, userId);
+                        if (User.Id != null)
+                        {
+                            response.Message += "User Added Successfully";
+                        }
+                    }
+                }
+                else
+                {
+                    response.Message = response.Message + ", LoggedInUserRoleName : " + loggedInUserData?.Data?.RoleName + ", ";
+                }
             }
             return response;
         }

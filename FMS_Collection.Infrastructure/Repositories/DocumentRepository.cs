@@ -17,10 +17,10 @@ namespace FMS_Collection.Infrastructure.Repositories
       _dbFactory = dbFactory;
     }
 
-    public async Task<List<Document>> GetAllAsync()
+    public async Task<List<Documents>> GetAllAsync()
     {
 
-      var Documents = new List<Document>();
+      var Documents = new List<Documents>();
       try
       {
         using var conn = _dbFactory.CreateConnection();
@@ -34,7 +34,7 @@ namespace FMS_Collection.Infrastructure.Repositories
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-          Documents.Add(new Document
+          Documents.Add(new Documents
           {
             Id = reader.GetGuid(reader.GetOrdinal("Id")),
             DocumentName = reader.GetString(reader.GetOrdinal("DocumentName")),

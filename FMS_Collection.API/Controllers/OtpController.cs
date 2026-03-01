@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
 using FMS_Collection.Application.Services;
 using FMS_Collection.Core.Request;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FMS_Collection.API.Controllers
 {
@@ -12,6 +12,22 @@ namespace FMS_Collection.API.Controllers
         public OtpController(OtpService otpService)
         {
             _otpService = otpService;
+        }
+
+        [HttpGet("SendWelcomeEmailAsync")]
+        public async Task<IActionResult> SendWelcomeEmailAsync(string emailAddress, string planePassword)
+        {
+            var result = await _otpService.SendWelcomeEmailAsync(emailAddress, planePassword);
+            if (!result.Success) return BadRequest(result);
+            return Ok(result);
+        }
+
+        [HttpPost("ResetPasswordWithOtpAsync")]
+        public async Task<IActionResult> ResetPasswordWithOtpAsync(ResetPasswordWithOtpRequest request)
+        {
+            var result = await _otpService.ResetPasswordWithOtpAsync(request);
+            if (!result.Success) return BadRequest(result);
+            return Ok(result);
         }
 
         [HttpPost("send")]

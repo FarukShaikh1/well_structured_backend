@@ -12,7 +12,7 @@ namespace FMS_Collection.Core.Interfaces
 {
     public interface IRoleRepository
     {
-        Task<List<Role>> GetAllAsync();
+        Task<List<Roles>> GetAllAsync();
         Task<List<RoleListResponse>> GetRoleListAsync();
         Task<RoleDetailsResponse> GetRoleDetailsAsync(Guid roleId);
         Task AddAsync(RoleRequest role, Guid userId);

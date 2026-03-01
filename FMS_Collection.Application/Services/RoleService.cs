@@ -13,7 +13,7 @@ namespace FMS_Collection.Application.Services
             _repository = repository;
         }
 
-        public Task<List<Role>> GetAllRolesAsync() => _repository.GetAllAsync();
+        public Task<List<Roles>> GetAllRolesAsync() => _repository.GetAllAsync();
         public Task<List<RoleListResponse>> GetRoleListAsync() => _repository.GetRoleListAsync();
         public Task<RoleDetailsResponse> GetRoleDetailsAsync(Guid roleId) => _repository.GetRoleDetailsAsync(roleId);
         public Task AddRoleAsync(RoleRequest Role,Guid roleId) => _repository.AddAsync(Role, roleId);

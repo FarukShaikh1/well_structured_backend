@@ -1,6 +1,6 @@
-﻿namespace FMS_Collection.Core.Entities
+﻿namespace FMS_Collection.Core.Entities.ConfigEntities
 {
-    public class Account
+    public class CommonConfig
     {
         public Guid? Id { get; set; }
         public string? AccountName { get; set; } = string.Empty;

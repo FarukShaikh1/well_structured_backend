@@ -1,5 +1,4 @@
-﻿
-using FMS_Collection.Core.Entities;
+﻿using FMS_Collection.Core.Entities.ConfigEntities;
 using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
 
@@ -15,9 +14,10 @@ namespace FMS_Collection.Core.Interfaces
         Task<bool> DeleteConfigAsync(Guid ConfigId, Guid userId, string config);
         Task<bool> DeactivateConfigAsync(Guid ConfigId, Guid userId, string config);
 
-        Task<List<Account>> GetAllAccountsAsync();
-        Task<List<Relation>> GetAllRelationsAsync();
-        Task<List<OccasionType>> GetAllOccasionTypesAsync();
+        Task<List<Accounts>> GetAllAccountsAsync();
+        Task<List<Relations>> GetAllRelationsAsync();
+        Task<List<OccasionTypes>> GetAllOccasionTypesAsync();
+        Task<List<TransactionSubCategories>> GetAllTransactionSubCategoriesAsync();
 
 
     }

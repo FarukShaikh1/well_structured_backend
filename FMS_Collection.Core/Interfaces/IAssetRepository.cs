@@ -7,10 +7,10 @@ namespace FMS_Collection.Core.Interfaces
 {
     public interface IAssetRepository
     {
-        Task<List<Asset>> GetAllAsync();
+        Task<List<Assets>> GetAllAsync();
         Task<AssetResponse> GetAssetDetailsAsync(Guid? assetId);
         Task<Guid?> AddAsync(AssetRequest asset, Guid userId);
-        Task UpdateAsync(AssetRequest asset, Guid userId);
+        Task<Guid?> UpdateAsync(AssetRequest asset, Guid userId);
         Task<bool> DeleteAsync(Guid? assetId, Guid userId);
     }
 }

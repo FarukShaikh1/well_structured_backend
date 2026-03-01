@@ -44,24 +44,32 @@ public class CoinNoteCollectionController : ControllerBase
     [Route("GetDetails")]
     public async Task<IActionResult> GetDetails(Guid coinNoteCollectionId, Guid userId)
     {
-        var result = await _service.GetCoinNoteCollectionDetailsAsync(coinNoteCollectionId,userId);
+        var result = await _service.GetCoinNoteCollectionDetailsAsync(coinNoteCollectionId, userId);
         return Ok(result);
     }
 
     [HttpPost]
     [Route("Add")]
-    public async Task<IActionResult> Add(CoinNoteCollectionRequest coinnotecollection, Guid userId)
+    public async Task<IActionResult> Add([FromBody] CoinNoteCollectionRequest coinNoteCollectionRequest, Guid userId)
     {
-        var result = await _service.AddCoinNoteCollectionAsync(coinnotecollection, userId);
+        var result = await _service.AddCoinNoteCollectionAsync(coinNoteCollectionRequest, userId);
         return Ok(result);
     }
 
     [HttpPost]
     [Route("Update")]
-    public async Task<IActionResult> Update(CoinNoteCollectionRequest coinnotecollection, Guid userId)
+    public async Task<IActionResult> Update([FromBody] CoinNoteCollectionRequest coinNoteCollectionRequest, Guid userId)
     {
-        var result = await _service.UpdateCoinNoteCollectionAsync(coinnotecollection,userId);
+        var result = await _service.UpdateCoinNoteCollectionAsync(coinNoteCollectionRequest, userId);
         return Ok(result);
+    }
+
+    [HttpPost]
+    [Route("UpdateCoinAIData")]
+    public async Task<IActionResult> UpdateCoinAIData()
+    {
+        int count = await _service.UpdateCoinAIData();
+        return Ok(count);
     }
 
     [HttpGet]

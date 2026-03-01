@@ -1,5 +1,5 @@
 ﻿using FMS_Collection.Core.Common;
-using FMS_Collection.Core.Entities;
+using FMS_Collection.Core.Entities.ConfigEntities;
 using FMS_Collection.Core.Interfaces;
 using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
@@ -71,7 +71,7 @@ namespace FMS_Collection.Application.Services
         }
         //=> 
 
-        public async Task<ServiceResponse<List<Account>>> GetAllAccountsAsync()
+        public async Task<ServiceResponse<List<Accounts>>> GetAllAccountsAsync()
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetAllAccountsAsync(),
@@ -79,7 +79,7 @@ namespace FMS_Collection.Application.Services
             );
         }
         //=> 
-        public async Task<ServiceResponse<List<Relation>>> GetAllRelationsAsync()
+        public async Task<ServiceResponse<List<Relations>>> GetAllRelationsAsync()
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetAllRelationsAsync(),
@@ -87,10 +87,18 @@ namespace FMS_Collection.Application.Services
             );
         }
         //=> 
-        public async Task<ServiceResponse<List<OccasionType>>> GetAllOccasionTypesAsync()
+        public async Task<ServiceResponse<List<OccasionTypes>>> GetAllOccasionTypesAsync()
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetAllOccasionTypesAsync(),
+                FMS_Collection.Core.Constants.Constants.Messages.OccasionTypesFetchedSuccessfully
+            );
+        }
+
+        public async Task<ServiceResponse<List<TransactionSubCategories>>> GetAllTransactionSubCategoriesAsync()
+        {
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetAllTransactionSubCategoriesAsync(),
                 FMS_Collection.Core.Constants.Constants.Messages.OccasionTypesFetchedSuccessfully
             );
         }

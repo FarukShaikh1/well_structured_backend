@@ -18,9 +18,14 @@ namespace FMS_Collection.Core.Response
         public decimal? BreadthOfNote { get; set; }
         public string? Speciality { get; set; }
         public string? Description { get; set; }
+        public string? ExtractedText { get; set; }
+        public string? GeneratedDescription { get; set; }
         public string? ImagePath { get; set; }
+        public string? ImagePathSasUrl { get; set; }
         public string? ThumbnailPath { get; set; }
+        public string? ThumbnailPathSasUrl { get; set; }
         public string? CurrencySymbol { get; set; }
+        public string? CurrencyLanguages { get; set; }
         public string? RupeeSymbol { get; set; }
         public bool? IsVerified { get; set; }
     }

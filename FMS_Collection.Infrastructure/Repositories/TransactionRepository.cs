@@ -4,7 +4,6 @@ using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
 using FMS_Collection.Infrastructure.Data;
 using Microsoft.Data.SqlClient;
-using System.Collections.Generic;
 using System.Data;
 //using System.Transactions;
 
@@ -19,9 +18,9 @@ namespace FMS_Collection.Infrastructure.Repositories
             _dbFactory = dbFactory;
         }
 
-        public async Task<List<Transaction>> GetAllAsync()
+        public async Task<List<Transactions>> GetAllAsync()
         {
-            var Transactions = new List<Transaction>();
+            var Transactions = new List<Transactions>();
             using var conn = _dbFactory.CreateConnection();
             using var cmd = new SqlCommand("Transaction_GetAll", conn)
             {
@@ -33,7 +32,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                Transactions.Add(new Transaction
+                Transactions.Add(new Transactions
                 {
                     Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
                     AccountId = reader["AccountId"] != DBNull.Value ? (Guid?)reader["AccountId"] : null,
@@ -85,6 +84,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                     Income = reader["Income"] != DBNull.Value ? (decimal?)reader["Income"] : null,
                     Expense = reader["Expense"] != DBNull.Value ? (decimal?)reader["Expense"] : null,
                     Description = reader["Description"]?.ToString(),
+                    SubCategoryName = reader["SubCategoryName"]?.ToString(),
                     Purpose = reader["Purpose"]?.ToString(),
                     AccountName = reader["AccountName"]?.ToString(),
                 });
@@ -106,9 +106,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.CommandTimeout = 120;
                 cmd.Parameters.Add(new SqlParameter("@in_FromDate", SqlDbType.Date) { Value = filter.FromDate });
                 cmd.Parameters.Add(new SqlParameter("@in_ToDate", SqlDbType.Date) { Value = filter.ToDate });
-                cmd.Parameters.Add(new SqlParameter("@in_SourceOrReason", SqlDbType.VarChar) { Value = filter.SourceOrReason });
-                cmd.Parameters.Add(new SqlParameter("@in_MinAmount", SqlDbType.Decimal) { Value = filter.MinAmount });
-                cmd.Parameters.Add(new SqlParameter("@in_MaxAmount", SqlDbType.Decimal) { Value = filter.MaxAmount });
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
                 await conn.OpenAsync();
 
@@ -123,11 +120,12 @@ namespace FMS_Collection.Infrastructure.Repositories
                         SourceOrReason = reader.IsDBNull(reader.GetOrdinal("SourceOrReason")) ? null : reader.GetString(reader.GetOrdinal("SourceOrReason")),
                         Purpose = reader.IsDBNull(reader.GetOrdinal("Purpose")) ? null : reader.GetString(reader.GetOrdinal("Purpose")),
                         Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString(reader.GetOrdinal("Description")),
+                        SubCategoryName = reader.IsDBNull(reader.GetOrdinal("SubCategoryName")) ? null : reader.GetString(reader.GetOrdinal("SubCategoryName")),
                     };
                     for (int i = 0; i < reader.FieldCount; i++)
                     {
                         var column = reader.GetName(i);
-                        if (column != "TransactionGroupId" && column != "TransactionDate" && column != "SourceOrReason" && column != "Purpose" && column != "Description")
+                        if (column.Contains("_Amount") || column.Contains("_Balance") || column.Contains("_Category"))
                         {
                             row.AccountData[column] = reader.IsDBNull(i) ? null : reader.GetValue(i);
                         }
@@ -156,9 +154,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.CommandTimeout = 120;
                 cmd.Parameters.Add(new SqlParameter("@in_FromDate", SqlDbType.Date) { Value = filter.FromDate });
                 cmd.Parameters.Add(new SqlParameter("@in_ToDate", SqlDbType.Date) { Value = filter.ToDate });
-                cmd.Parameters.Add(new SqlParameter("@in_SourceOrReason", SqlDbType.VarChar) { Value = filter.SourceOrReason });
-                cmd.Parameters.Add(new SqlParameter("@in_MinAmount", SqlDbType.Decimal) { Value = filter.MinAmount });
-                cmd.Parameters.Add(new SqlParameter("@in_MaxAmount", SqlDbType.Decimal) { Value = filter.MaxAmount });
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
                 await conn.OpenAsync();
 
@@ -216,6 +211,100 @@ namespace FMS_Collection.Infrastructure.Repositories
                         LastDate = reader["LastDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["LastDate"])) : (DateOnly?)null,
                         SourceOrReason = reader["SourceOrReason"] != DBNull.Value ? reader["SourceOrReason"].ToString() : null,
                         Description = reader["Descriptions"] != DBNull.Value ? reader["Descriptions"].ToString() : null,
+                        SubCategoryName = reader["SubCategoryName"] != DBNull.Value ? reader["SubCategoryName"].ToString() : null,
+                        TakenAmount = reader["TakenAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TakenAmount"]) : (decimal?)null,
+                        GivenAmount = reader["GivenAmount"] != DBNull.Value ? Convert.ToDecimal(reader["GivenAmount"]) : (decimal?)null,
+                        TotalAmount = reader["TotalAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TotalAmount"]) : (decimal?)null,
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+
+            }
+
+            return Transactions;
+        }
+
+        public async Task<List<BudgetWiseTransactionReportResponse>> GetBudgetWiseReportAsync(TransactionFilterRequest filter, Guid userId)
+        {
+            var Transactions = new List<BudgetWiseTransactionReportResponse>();
+            try
+            {
+                using var conn = _dbFactory.CreateConnection();
+                using var cmd = new SqlCommand("TransactionCategoryWiseReport_WithBudget", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.CommandTimeout = 600;
+                cmd.Parameters.Add(new SqlParameter("@in_FromDate", SqlDbType.Date) { Value = filter.FromDate });
+                cmd.Parameters.Add(new SqlParameter("@in_ToDate", SqlDbType.Date) { Value = filter.ToDate });
+                cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
+                await conn.OpenAsync();
+
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    Transactions.Add(new BudgetWiseTransactionReportResponse
+                    {
+                        CategoryName = reader["CategoryName"] != DBNull.Value ? reader["CategoryName"].ToString() : null,
+
+                        BudgetAmount = reader["BudgetAmount"] != DBNull.Value ? Convert.ToDecimal(reader["BudgetAmount"]) : (decimal?)null,
+                        TotalExpense = reader["TotalExpense"] != DBNull.Value ? Convert.ToDecimal(reader["TotalExpense"]) : (decimal?)null,
+                        RemainingBudget = reader["RemainingBudget"] != DBNull.Value ? Convert.ToDecimal(reader["RemainingBudget"]) : (decimal?)null,
+                        IsOverSpent = reader["IsOverSpent"] != DBNull.Value ? Convert.ToBoolean(reader["IsOverSpent"]) : (bool?)null,
+                        BudgetMonths = reader["BudgetMonths"] != DBNull.Value ? Convert.ToInt16(reader["BudgetMonths"]) : (Int16?)null,
+
+
+                        FirstDate = reader["FirstDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["FirstDate"])) : (DateOnly?)null,
+                        LastDate = reader["LastDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["LastDate"])) : (DateOnly?)null,
+                        SourceOrReason = reader["SourceOrReason"] != DBNull.Value ? reader["SourceOrReason"].ToString() : null,
+                        //SubCategoryName = reader["SubCategoryName"] != DBNull.Value ? reader["SubCategoryName"].ToString() : null,
+
+                        TakenAmount = reader["TakenAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TakenAmount"]) : (decimal?)null,
+                        GivenAmount = reader["GivenAmount"] != DBNull.Value ? Convert.ToDecimal(reader["GivenAmount"]) : (decimal?)null,
+                        TotalAmount = reader["TotalAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TotalAmount"]) : (decimal?)null,
+
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+
+            }
+
+            return Transactions;
+        }
+
+        public async Task<List<TransactionReportResponse>> GetCategoryWiseReportAsync(TransactionFilterRequest filter, Guid userId)
+        {
+            var Transactions = new List<TransactionReportResponse>();
+            try
+            {
+                using var conn = _dbFactory.CreateConnection();
+                using var cmd = new SqlCommand("TransactionCategoryWiseReport_Get", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.CommandTimeout = 600;
+                cmd.Parameters.Add(new SqlParameter("@in_FromDate", SqlDbType.Date) { Value = filter.FromDate });
+                cmd.Parameters.Add(new SqlParameter("@in_ToDate", SqlDbType.Date) { Value = filter.ToDate });
+                cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
+                await conn.OpenAsync();
+
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    Transactions.Add(new TransactionReportResponse
+                    {
+                        FirstDate = reader["FirstDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["FirstDate"])) : (DateOnly?)null,
+                        LastDate = reader["LastDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["LastDate"])) : (DateOnly?)null,
+                        SourceOrReason = reader["SourceOrReason"] != DBNull.Value ? reader["SourceOrReason"].ToString() : null,
+                        SubCategoryName = reader["SubCategoryName"] != DBNull.Value ? reader["SubCategoryName"].ToString() : null,
                         TakenAmount = reader["TakenAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TakenAmount"]) : (decimal?)null,
                         GivenAmount = reader["GivenAmount"] != DBNull.Value ? Convert.ToDecimal(reader["GivenAmount"]) : (decimal?)null,
                         TotalAmount = reader["TotalAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TotalAmount"]) : (decimal?)null,
@@ -256,6 +345,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                             TransactionDate = reader["TransactionDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["TransactionDate"])) : (DateOnly?)null,
                             SourceOrReason = reader["SourceOrReason"]?.ToString(),
                             Description = reader["Description"]?.ToString(),
+                            SubCategoryId = reader["SubCategoryId"] as Guid?,
                             Purpose = reader["Purpose"]?.ToString(),
                         };
                     }
@@ -329,6 +419,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.AddWithValue("@in_SourceOrReason", request.SourceOrReason ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_Description", request.Description ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_Purpose", request.Purpose ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@in_SubCategoryId", request.TransactionCategoryId ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_UserId", userId);
 
                 var tvpParam = new SqlParameter("@in_Splits", SqlDbType.Structured)
@@ -370,6 +461,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 cmd.Parameters.AddWithValue("@in_SourceOrReason", request.SourceOrReason ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_Description", request.Description ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_Purpose", request.Purpose ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@in_SubCategoryId", request.TransactionCategoryId ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_UserId", userId);
 
                 var tvpParam = new SqlParameter("@in_Splits", SqlDbType.Structured)

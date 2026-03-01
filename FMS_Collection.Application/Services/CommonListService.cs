@@ -117,7 +117,7 @@ namespace FMS_Collection.Application.Services
         }
         
 
-        public async Task<ServiceResponse<List<CountryWithCurrency>>> GetCountryListAsync()
+        public async Task<ServiceResponse<List<CountryWithCurrencies>>> GetCountryListAsync()
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetCountryListAsync(),

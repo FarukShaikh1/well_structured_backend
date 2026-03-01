@@ -54,6 +54,22 @@ public class TransactionController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPost]
+    [Route("GetBudgetWiseReport")]
+    public async Task<IActionResult> GetBudgetWiseReport(TransactionFilterRequest filter, Guid userId)
+    {
+        var response = await _service.GetBudgetWiseReportAsync(filter, userId);
+        return Ok(response);
+    }
+
+    [HttpPost]
+    [Route("GetCategoryWiseReport")]
+    public async Task<IActionResult> GetCategoryWiseReport(TransactionFilterRequest filter, Guid userId)
+    {
+        var response = await _service.GetCategoryWiseReportAsync(filter, userId);
+        return Ok(response);
+    }
+
     [HttpGet]
     [Route("GetDetails")]
     public async Task<IActionResult> GetDetails(Guid TransactionId, Guid userId)
@@ -82,7 +98,7 @@ public class TransactionController : ControllerBase
     [Route("Update")]
     public async Task<IActionResult> Update(TransactionRequest Transaction, Guid userId)
     {
-        var response = await _service.UpdateTransactionAsync(Transaction,userId);
+        var response = await _service.UpdateTransactionAsync(Transaction, userId);
         return Ok(response);
     }
 

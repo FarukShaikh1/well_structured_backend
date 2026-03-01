@@ -102,9 +102,12 @@ namespace FMS_Collection.Infrastructure.Repositories
                         BreadthOfNote = reader.IsDBNull(reader.GetOrdinal("BreadthOfNote")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("BreadthOfNote")),
                         Speciality = reader.IsDBNull(reader.GetOrdinal("Speciality")) ? null : reader.GetString(reader.GetOrdinal("Speciality")),
                         Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString(reader.GetOrdinal("Description")),
+                        ExtractedText = reader.IsDBNull(reader.GetOrdinal("ExtractedText")) ? null : reader.GetString(reader.GetOrdinal("ExtractedText")),
+                        GeneratedDescription = reader.IsDBNull(reader.GetOrdinal("GeneratedDescription")) ? null : reader.GetString(reader.GetOrdinal("GeneratedDescription")),
                         ImagePath = reader.IsDBNull(reader.GetOrdinal("ImagePath")) ? null : reader.GetString(reader.GetOrdinal("ImagePath")),
                         ThumbnailPath = reader.IsDBNull(reader.GetOrdinal("ThumbnailPath")) ? null : reader.GetString(reader.GetOrdinal("ThumbnailPath")),
                         CurrencySymbol = reader.IsDBNull(reader.GetOrdinal("CurrencySymbol")) ? null : reader.GetString(reader.GetOrdinal("CurrencySymbol")),
+                        CurrencyLanguages = reader.IsDBNull(reader.GetOrdinal("CurrencyLanguages")) ? null : reader.GetString(reader.GetOrdinal("CurrencyLanguages")),
                         RupeeSymbol = reader.IsDBNull(reader.GetOrdinal("RupeeSymbol")) ? null : reader.GetString(reader.GetOrdinal("RupeeSymbol")),
                         IsVerified = reader.IsDBNull(reader.GetOrdinal("IsVerified")) ? (bool?)null : reader.GetBoolean(reader.GetOrdinal("IsVerified"))
                     });
@@ -191,6 +194,8 @@ namespace FMS_Collection.Infrastructure.Repositories
                         LengthOfNote = reader.IsDBNull(reader.GetOrdinal("LengthOfNote")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("LengthOfNote")),
                         BreadthOfNote = reader.IsDBNull(reader.GetOrdinal("BreadthOfNote")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("BreadthOfNote")),
                         Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString(reader.GetOrdinal("Description")),
+                        ExtractedText = reader.IsDBNull(reader.GetOrdinal("ExtractedText")) ? null : reader.GetString(reader.GetOrdinal("ExtractedText")),
+                        GeneratedDescription = reader.IsDBNull(reader.GetOrdinal("GeneratedDescription")) ? null : reader.GetString(reader.GetOrdinal("GeneratedDescription")),
                         AssetId = reader.IsDBNull(reader.GetOrdinal("AssetId")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("AssetId")),
                         AssetType = reader.IsDBNull(reader.GetOrdinal("AssetType")) ? null : reader.GetString(reader.GetOrdinal("AssetType")),
                         ImagePath = reader.IsDBNull(reader.GetOrdinal("ImagePath")) ? null : reader.GetString(reader.GetOrdinal("ImagePath")),
@@ -289,11 +294,30 @@ namespace FMS_Collection.Infrastructure.Repositories
                     return reader.GetBoolean("IsSuccess");
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
             return false;
+        }
+
+        public async Task UpdateCoinAIData(Guid? id,string extractedText,string generatedDescription,decimal estimatedValue,decimal predictedFutureValue,float predictionConfidence)
+        {
+
+            using var conn = _dbFactory.CreateConnection();
+            using var cmd = new SqlCommand("usp_UpdateCoinAIData", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            cmd.Parameters.AddWithValue("@Id", id);
+            cmd.Parameters.AddWithValue("@ExtractedText", (object)extractedText ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@GeneratedDescription", (object)generatedDescription ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@EstimatedCollectorValue", estimatedValue);
+            cmd.Parameters.AddWithValue("@PredictedFutureValue", predictedFutureValue);
+            cmd.Parameters.AddWithValue("@PredictionConfidence", predictionConfidence);
+
+            conn.Open();
+            cmd.ExecuteNonQuery();
         }
 
         private void CoinNoteCollectionRequestParameters(SqlCommand cmd, CoinNoteCollectionRequest coinnotecollection, Guid userId)

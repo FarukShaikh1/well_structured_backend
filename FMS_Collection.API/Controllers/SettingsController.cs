@@ -93,4 +93,12 @@ public class SettingsController : ControllerBase
         var result = await _service.GetAllOccasionTypesAsync();
         return Ok(result);
     }
+
+    [HttpGet]
+    [Route("GetTransactionSubCategoryAll")]
+    public async Task<IActionResult> GetTransactionSubCategoryAll()
+    {
+        var result = await _service.GetAllOccasionTypesAsync();
+        return Ok(result);
+    }
 }
