@@ -17,10 +17,10 @@ namespace FMS_Collection.Infrastructure.Repositories
             _dbFactory = dbFactory;
         }
 
-        public async Task<List<Asset>> GetAllAsync()
+        public async Task<List<Assets>> GetAllAsync()
         {
 
-            var assets = new List<Asset>();
+            var assets = new List<Assets>();
             try
             {
                 using var conn = _dbFactory.CreateConnection();
@@ -34,7 +34,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    assets.Add(new Asset
+                    assets.Add(new Assets
                     {
                         Id = reader.GetGuid(reader.GetOrdinal("Id")),
                         AssetType = reader.GetString(reader.GetOrdinal("AssetType")),
@@ -129,7 +129,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
         }
 
-        public async Task UpdateAsync(AssetRequest asset, Guid userId)
+        public async Task<Guid?> UpdateAsync(AssetRequest asset, Guid userId)
         {
             try
             {
@@ -143,6 +143,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 AssetRequestParameters(cmd, asset, userId);
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
+                return (Guid?)asset.Id;
             }
             catch (Exception ex)
             {

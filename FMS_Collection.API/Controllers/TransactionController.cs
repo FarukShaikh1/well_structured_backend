@@ -55,6 +55,14 @@ public class TransactionController : ControllerBase
     }
 
     [HttpPost]
+    [Route("GetBudgetWiseReport")]
+    public async Task<IActionResult> GetBudgetWiseReport(TransactionFilterRequest filter, Guid userId)
+    {
+        var response = await _service.GetBudgetWiseReportAsync(filter, userId);
+        return Ok(response);
+    }
+
+    [HttpPost]
     [Route("GetCategoryWiseReport")]
     public async Task<IActionResult> GetCategoryWiseReport(TransactionFilterRequest filter, Guid userId)
     {

@@ -7,7 +7,7 @@
         public DateTime? ModifiedOn { get; set; }
         public Guid? CreatedBy { get; set; }
         public Guid? ModifiedBy { get; set; }
-    public string? CreatedByName { get; set; }
-    public string? ModifiedByName { get; set; }
-  }
+        public string? CreatedByName { get; set; }
+        public string? ModifiedByName { get; set; }
+    }
 }

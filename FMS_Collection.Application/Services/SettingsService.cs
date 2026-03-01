@@ -71,7 +71,7 @@ namespace FMS_Collection.Application.Services
         }
         //=> 
 
-        public async Task<ServiceResponse<List<Account>>> GetAllAccountsAsync()
+        public async Task<ServiceResponse<List<Accounts>>> GetAllAccountsAsync()
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetAllAccountsAsync(),
@@ -79,7 +79,7 @@ namespace FMS_Collection.Application.Services
             );
         }
         //=> 
-        public async Task<ServiceResponse<List<Relation>>> GetAllRelationsAsync()
+        public async Task<ServiceResponse<List<Relations>>> GetAllRelationsAsync()
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetAllRelationsAsync(),
@@ -87,7 +87,7 @@ namespace FMS_Collection.Application.Services
             );
         }
         //=> 
-        public async Task<ServiceResponse<List<OccasionType>>> GetAllOccasionTypesAsync()
+        public async Task<ServiceResponse<List<OccasionTypes>>> GetAllOccasionTypesAsync()
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetAllOccasionTypesAsync(),
@@ -95,7 +95,7 @@ namespace FMS_Collection.Application.Services
             );
         }
 
-        public async Task<ServiceResponse<List<TransactionSubCategory>>> GetAllTransactionSubCategoriesAsync()
+        public async Task<ServiceResponse<List<TransactionSubCategories>>> GetAllTransactionSubCategoriesAsync()
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetAllTransactionSubCategoriesAsync(),

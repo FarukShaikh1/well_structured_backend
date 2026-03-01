@@ -15,5 +15,6 @@ namespace FMS_Collection.Core.Response
         public bool? Delete { get; set; }
         public bool? Download { get; set; }
         public bool? Upload { get; set; }
+        public bool? Approve { get; set; }
     }
 }

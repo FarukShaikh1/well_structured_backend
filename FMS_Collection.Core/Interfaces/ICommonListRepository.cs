@@ -24,6 +24,6 @@ namespace FMS_Collection.Core.Interfaces
 
         Task<bool> DeleteCommonListAsync(Guid CommonId, Guid userId);
         Task<bool> DeleteCommonListItemAsync(Guid CommonId, Guid userId);
-        Task<List<CountryWithCurrency>> GetCountryListAsync();
+        Task<List<CountryWithCurrencies>> GetCountryListAsync();
     }
 }

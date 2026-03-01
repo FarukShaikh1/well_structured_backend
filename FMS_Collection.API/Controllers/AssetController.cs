@@ -64,14 +64,18 @@ public class AssetController : ControllerBase
         {
             if (file != null && assetId != null)
             {
-                await _service.UpdateFile(file, userId, assetId, documentType);
+                var response = await _service.UpdateFile(file, userId, assetId, documentType);
+                return Ok(response);
             }
             else if (file != null && assetId == null)
             {
                 var response = await _service.SaveFile(file, documentType, userId, false);
                 return Ok(response);
             }
-            return Ok();
+            else
+            {
+                return BadRequest();
+            }
         }
         catch (Exception ex)
         {

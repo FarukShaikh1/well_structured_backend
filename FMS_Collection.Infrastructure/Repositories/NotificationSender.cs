@@ -2,27 +2,30 @@ using FMS_Collection.Core.Common;
 using FMS_Collection.Core.Interfaces;
 using System.Net;
 using System.Net.Mail;
+using Microsoft.Extensions.Hosting;
+
 namespace FMS_Collection.Infrastructure.Repositories
 {
     public class NotificationSender : INotificationSender
     {
         string _emailPassword;
-        public NotificationSender()
+        string _senderEmail;
+        private readonly IHostEnvironment _env;
+
+        public NotificationSender(IHostEnvironment env)
         {
-            _emailPassword =
-                  Environment.GetEnvironmentVariable("MailConfigEmailPassword")
-                                ?? throw new ArgumentNullException(
-                                    nameof(_emailPassword),
-                                    "Missing environment variable: MailConfigEmailPassword");
+            _emailPassword = AppSettings.EmailPassword;
+            _senderEmail = AppSettings.SenderEmail;
+            _env = env;
         }
 
-        public async Task SendEmailAsync(string toEmail, string subject, string body)
+        public async Task SendEmailAsync(string toEmail, string subject, string body, bool isBodyHtml = true)
         {
             try
             {
                 using var smtp = new SmtpClient(AppSettings.SmtpHost, AppSettings.SmtpPort) // Example: smtp.gmail.com, port 587
                 {
-                    Credentials = new NetworkCredential(AppSettings.SenderEmail, _emailPassword),
+                    Credentials = new NetworkCredential(_senderEmail, _emailPassword),
                     EnableSsl = true // use true for Gmail, Outlook, most providers
                 };
 
@@ -30,7 +33,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     Subject = subject,
                     Body = body,
-                    IsBodyHtml = true // set false if plain text only
+                    IsBodyHtml = isBodyHtml // set false if plain text only
                 };
 
                 await smtp.SendMailAsync(message);
@@ -41,6 +44,18 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
         }
 
+        public async Task<string> GetTemplateAsync(string templateName, Dictionary<string, string> values)
+        {
+            var path = Path.Combine(_env.ContentRootPath, "EmailTemplates", templateName);
+            var template = await File.ReadAllTextAsync(path);
+
+            foreach (var kv in values)
+            {
+                template = template.Replace($"{{{{{kv.Key}}}}}", kv.Value);
+            }
+
+            return template;
+        }
 
         public Task SendSmsAsync(string toPhone, string message)
         {

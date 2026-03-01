@@ -1,6 +1,6 @@
 ﻿namespace FMS_Collection.Core.Response
 {
-    public class LoginResponse 
+    public class LoginResponse
     {
         public Guid? Id { get; set; }
         public string? FirstName { get; set; }
@@ -16,9 +16,13 @@
         public DateTime? SpecialOccasionDate { get; set; }
         public Guid? RoleId { get; set; }
         public string? RoleName { get; set; }
-        public bool IsDeleted{ get; set; }
+        public bool IsDeleted { get; set; }
         public bool IsLocked { get; set; }
         public string? ErrorMessage { get; set; }
+        public string? ImagePathSasUrl { get; set; }
+        public string? ThumbnailPathSasUrl { get; set; }
+        public string? ImagePath { get; set; }
+        public string? ThumbnailPath { get; set; }
         //public List<Guid>? AccessibleModuleIds { get; set; }
     }
 }

@@ -17,9 +17,9 @@ namespace FMS_Collection.Infrastructure.Repositories
             _dbFactory = dbFactory;
         }
 
-        public async Task<List<Role>> GetAllAsync()
+        public async Task<List<Roles>> GetAllAsync()
         {
-            var roles = new List<Role>();
+            var roles = new List<Roles>();
             try
             {
                 using var conn = _dbFactory.CreateConnection();
@@ -33,7 +33,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    roles.Add(new Role
+                    roles.Add(new Roles
                     {
                         RoleId = reader.GetGuid(reader.GetOrdinal("Id")),
                         RoleName = reader.GetString(reader.GetOrdinal("RoleName")),

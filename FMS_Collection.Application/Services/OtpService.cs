@@ -1,4 +1,4 @@
-using FMS_Collection.Core.Common;
+﻿using FMS_Collection.Core.Common;
 using FMS_Collection.Core.Constants;
 using FMS_Collection.Core.Interfaces;
 using FMS_Collection.Core.Request;
@@ -10,12 +10,14 @@ namespace FMS_Collection.Application.Services
         private readonly IOtpRepository _otpRepository;
         private readonly INotificationSender _sender;
         private readonly IUserRepository _userRepository;
+        private readonly IErrorRepository _errorRepository;
 
-        public OtpService(IOtpRepository otpStore, INotificationSender sender, IUserRepository users)
+        public OtpService(IOtpRepository otpStore, INotificationSender sender, IUserRepository users, IErrorRepository errorRepository)
         {
             _otpRepository = otpStore;
             _sender = sender;
             _userRepository = users;
+            _errorRepository = errorRepository;
         }
 
         public async Task<ServiceResponse<bool>> SendAsync(SendOtpRequest request)
@@ -32,13 +34,40 @@ namespace FMS_Collection.Application.Services
                 var expiresOn = DateTime.Now.AddMinutes(30);
                 await _otpRepository.SetAsync(key, otp, request.Purpose, expiresOn, user.Id);
 
-                var subject = "Your OTP Code";
-                var message = $"Your OTP is {otp}. It will expire in 30 minutes.";
+                // ---------- EMAIL ----------
                 if (!string.IsNullOrWhiteSpace(user.EmailAddress))
-                    await _sender.SendEmailAsync(user.EmailAddress, subject, message);
-                if (!string.IsNullOrWhiteSpace(user.MobileNumber))
-                    await _sender.SendSmsAsync(user.MobileNumber, message);
+                {
+                    var templateValues = new Dictionary<string, string>
+                    {
+                        { "EmailAddress", user.EmailAddress ?? "Your Email Address" },
+                        { "UserName", user.FirstName ?? "User" },
+                        { "Otp", otp },
+                        { "Purpose", request.Purpose },
+                        { "AppUrl", AppSettings.SiteLiveUrl },
+                        { "ExpiryMinutes", "30" },
+                        { "Year", DateTime.Now.Year.ToString() }
+                    };
+                    string subject = "Your OTP From FMS Collection";
 
+                    var htmlBody = await _sender.GetTemplateAsync(
+                        "OtpEmail.html",
+                        templateValues
+                    );
+
+                    await _sender.SendEmailAsync(
+                        user.EmailAddress,
+                        subject,
+                        htmlBody,
+                        isBodyHtml: true
+                    );
+                }
+
+                // ---------- SMS ----------
+                if (!string.IsNullOrWhiteSpace(user.MobileNumber))
+                {
+                    var smsMessage = $"Your OTP is {otp}. It is valid for 30 minutes.";
+                    await _sender.SendSmsAsync(user.MobileNumber, smsMessage);
+                }
                 return true;
             }, Constants.Messages.OtpSentSuccessfully);
         }
@@ -47,45 +76,50 @@ namespace FMS_Collection.Application.Services
         {
             return await ServiceExecutor.ExecuteAsync(async () =>
             {
-                // Get user by email
-                var user = await _userRepository.GetUserDetailsAsync(null, emailAddress);
-                if (user?.Id == null)
-                    throw new Exception("User not found.");
+                try
+                {
+                    // Get user by email
+                    var user = await _userRepository.GetUserDetailsAsync(null, emailAddress);
+                    if (user?.Id == null)
+                        throw new Exception("User not found.");
 
-                string purpose = "Welcome new user";
-                // Build OTP key
-                var key = BuildKey(user.Id.Value, user.EmailAddress ?? "", purpose);
+                    string purpose = "Welcome new user";
+                    // Build OTP key
+                    var key = BuildKey(user.Id.Value, user.EmailAddress ?? "", purpose);
 
-                // OTP expiration (optional)
-                DateTime expiresOn = DateTime.UtcNow.AddMinutes(24000);
+                    // OTP expiration (optional)
+                    DateTime expiresOn = DateTime.Now.AddMinutes(24000);
 
-                // Save OTP
-                await _otpRepository.SetAsync(key, "", purpose, expiresOn, user.Id.Value);
+                    // Save OTP
+                    await _otpRepository.SetAsync(key, "", purpose, expiresOn, user.Id.Value);
 
-                // Email subject and body
-                var subject = "Welcome to FMS Collection";
-                var message =
-                $@"Hello {user.FirstName},
+                    // Email subject and body
+                    var subject = "Welcome to FMS Collection 🎉";
 
-                Welcome to FMS Collection!
+                    var body = await _sender.GetTemplateAsync(
+                    "WelcomeEmail.html",
+                    new Dictionary<string, string>
+                    {
+                        { "FirstName", user.FirstName ?? "User" },
+                        { "EmailAddress", user.EmailAddress ?? "your email address" },
+                        { "Password", planePassword },
+                        { "LoginUrl", AppSettings.SiteLiveUrl },
+                        { "Year", DateTime.Now.Year.ToString() }
+                    });
 
-                Your temporary password is: **{planePassword}**
-
-                You can log in using this planePassword.  
-                Click below to get started:
-                https://mango-forest-01dff1b00.3.azurestaticapps.net/
-
-                Regards,
-                FMS Collection Team";
-
-                // Send email
-                if (!string.IsNullOrWhiteSpace(user.EmailAddress))
-                    await _sender.SendEmailAsync(user.EmailAddress, subject, message);
-
+                    // Send email
+                    if (!string.IsNullOrWhiteSpace(user.EmailAddress))
+                        await _sender.SendEmailAsync(user.EmailAddress, subject, body);
+                }
+                catch (Exception ex)
+                {
+                    await _errorRepository.AddErrorLog(ex, "Error", Guid.Empty);
+                }
                 return true;
 
             }, Constants.Messages.WelcomeInviteSentSuccessfully);
         }
+
 
         public async Task<ServiceResponse<bool>> VerifyAsync(VerifyOtpRequest request)
         {

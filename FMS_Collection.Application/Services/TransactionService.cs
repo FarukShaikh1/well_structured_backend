@@ -15,7 +15,7 @@ namespace FMS_Collection.Application.Services
             _repository = repository;
         }
 
-        public async Task<ServiceResponse<List<Transaction>>> GetAllTransactionsAsync()
+        public async Task<ServiceResponse<List<Transactions>>> GetAllTransactionsAsync()
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetAllAsync(),
@@ -48,6 +48,14 @@ namespace FMS_Collection.Application.Services
         {
             return await ServiceExecutor.ExecuteAsync(
                 () => _repository.GetTransactionReportAsync(filter, userId),
+                FMS_Collection.Core.Constants.Constants.Messages.TransactionReportFetchedSuccessfully
+            );
+        }
+
+        public async Task<ServiceResponse<List<BudgetWiseTransactionReportResponse>>> GetBudgetWiseReportAsync(TransactionFilterRequest filter, Guid userId)
+        {
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetBudgetWiseReportAsync(filter, userId),
                 FMS_Collection.Core.Constants.Constants.Messages.TransactionReportFetchedSuccessfully
             );
         }

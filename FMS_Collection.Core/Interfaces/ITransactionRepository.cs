@@ -13,11 +13,12 @@ namespace FMS_Collection.Core.Interfaces
 {
     public interface ITransactionRepository
     {
-        Task<List<Transaction>> GetAllAsync();
+        Task<List<Transactions>> GetAllAsync();
         Task<List<TransactionListResponse>> GetTransactionListAsync(TransactionFilterRequest filter, Guid userId);
         Task<List<TransactionSummaryResponse>> GetTransactionSummaryAsync(TransactionFilterRequest filter, Guid userId);
         Task<List<TransactionSummaryResponse>> GetBalanceSummaryAsync(TransactionFilterRequest filter, Guid userId);
         Task<List<TransactionReportResponse>> GetTransactionReportAsync(TransactionFilterRequest filter, Guid userId);
+        Task<List<BudgetWiseTransactionReportResponse>> GetBudgetWiseReportAsync(TransactionFilterRequest filter, Guid userId);
         Task<List<TransactionReportResponse>> GetCategoryWiseReportAsync(TransactionFilterRequest filter, Guid userId);
         Task<TransactionDetailsResponse> GetTransactionDetailsAsync(Guid TransactionId, Guid userId);
         Task<List<TransactionSuggestionList>> GetTransactionSuggestionListAsync(Guid userId);

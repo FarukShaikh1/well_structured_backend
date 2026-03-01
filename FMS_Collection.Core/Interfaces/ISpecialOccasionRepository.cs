@@ -12,7 +12,7 @@ namespace FMS_Collection.Core.Interfaces
 {
     public interface ISpecialOccasionRepository
     {
-        Task<List<SpecialOccasion>> GetAllAsync();
+        Task<List<SpecialOccasions>> GetAllAsync();
         Task<List<SpecialOccasionListResponse>> GetDayListAsync(Guid userId);
         Task<SpecialOccasionDetailsResponse> GetDayDetailsAsync(Guid dayId, Guid userId);
         Task<SpecialOccasionDetailsResponse> AddAsync(SpecialOccasionRequest day, Guid userId);

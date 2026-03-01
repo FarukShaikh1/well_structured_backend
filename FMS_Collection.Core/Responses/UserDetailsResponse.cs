@@ -11,6 +11,7 @@ namespace FMS_Collection.Core.Response
         public string? Password { get; set; }
         public string? EmailAddress { get; set; }
         public Guid? RoleId { get; set; }
+        public string? RoleName { get; set; }
         public DateOnly? Birthdate { get; set; }
         public string? MobileNumber { get; set; }
         public int? FailedLoginCount { get; set; }
