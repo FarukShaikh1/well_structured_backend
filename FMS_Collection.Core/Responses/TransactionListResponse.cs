@@ -12,6 +12,7 @@ namespace FMS_Collection.Core.Response
         public decimal? Income { get; set; }
         public decimal? Expense { get; set; }
         public string? Description { get; set; }
+        public string? SubCategoryName { get; set; }
         public string? Purpose { get; set; }
     }
 }

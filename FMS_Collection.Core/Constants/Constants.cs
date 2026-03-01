@@ -121,7 +121,7 @@
         {
             public const string None = "None";
             public const string SuperAdmin = "Super Admin";
-            public const string SystemAdmin = "System Admin";
+            public const string Admin = "Admin";
             public const string GroupAdmin = "Group Admin";
             public const string Supervisor = "Supervisor";
             public const string Person = "Person";

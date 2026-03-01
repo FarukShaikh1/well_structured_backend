@@ -7,6 +7,7 @@ namespace FMS_Collection.Core.Response
     {
         public Guid? Id { get; set; }
         public Guid? TransactionGroupId { get; set; }
+        public Guid? SubCategoryId { get; set; }
         public DateOnly? TransactionDate { get; set; }
         public string? SourceOrReason { get; set; }
         public string? Description { get; set; }

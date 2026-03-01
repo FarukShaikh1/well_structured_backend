@@ -113,4 +113,84 @@ public class HashAlgorithm
         tdes.Clear();
         return Encoding.UTF8.GetString(resultArray);
     }
+
+    public static (byte[] CipherText, byte[] IV) EncryptSecure(
+        string plainText,
+        byte[] key)
+    {
+        using var aes = Aes.Create();
+        aes.KeySize = 256;
+        aes.Mode = CipherMode.CBC;
+        aes.Padding = PaddingMode.PKCS7;
+        aes.Key = key;
+
+        aes.GenerateIV(); // 🔥 NEW IV every time
+
+        using var encryptor = aes.CreateEncryptor();
+        byte[] plainBytes = Encoding.UTF8.GetBytes(plainText);
+        byte[] cipherText = encryptor.TransformFinalBlock(
+            plainBytes, 0, plainBytes.Length);
+
+        return (cipherText, aes.IV);
+    }
+
+    public static string DecryptSecure(
+    byte[] cipherText,
+    byte[] key,
+    byte[] iv)
+    {
+        using var aes = Aes.Create();
+        aes.KeySize = 256;
+        aes.Mode = CipherMode.CBC;
+        aes.Padding = PaddingMode.PKCS7;
+        aes.Key = key;
+        aes.IV = iv;
+
+        using var decryptor = aes.CreateDecryptor();
+        byte[] plainBytes = decryptor.TransformFinalBlock(
+            cipherText, 0, cipherText.Length);
+
+        return Encoding.UTF8.GetString(plainBytes);
+    }
+
+
+    public static string ApplyPattern(string input, int shift = 5)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        // Step 1: reverse case
+        char[] chars = input
+            .Select(c =>
+                char.IsLetter(c)
+                    ? (char.IsUpper(c) ? char.ToLower(c) : char.ToUpper(c))
+                    : c)
+            .ToArray();
+
+        // Step 2: swap odd-even positions
+        for (int i = 0; i < chars.Length - 1; i += 2)
+        {
+            (chars[i], chars[i + 1]) = (chars[i + 1], chars[i]);
+        }
+
+        // Step 3: reverse full string
+        Array.Reverse(chars);
+        string reversedWord = new string(chars);
+
+        const int min = 32;   // space
+        const int max = 126;  // ~
+
+        return new string(reversedWord.Select(c =>
+        {
+            if (c < min || c > max)
+                return c;
+
+            int shifted = c + shift;
+            if (shifted > max)
+                shifted = min + (shifted - max - 1);
+
+            return (char)shifted;
+        }).ToArray());
+    }
+
 }

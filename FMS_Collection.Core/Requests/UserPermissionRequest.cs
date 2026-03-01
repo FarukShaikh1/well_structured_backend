@@ -1,6 +1,6 @@
 ﻿namespace FMS_Collection.Core.Request
 {
-    public class UserPermissionRequest  
+    public class UserPermissionRequest
     {
         public Guid? UserId { get; set; }
         public Guid? ModuleId { get; set; }
@@ -10,5 +10,6 @@
         public bool? Delete { get; set; }
         public bool? Download { get; set; }
         public bool? Upload { get; set; }
+        public bool? Approve { get; set; }
     }
 }

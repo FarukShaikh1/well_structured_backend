@@ -374,9 +374,9 @@ namespace FMS_Collection.Infrastructure.Repositories
             return true;
         }
 
-        public async Task<List<CountryWithCurrency>> GetCountryListAsync()
+        public async Task<List<CountryWithCurrencies>> GetCountryListAsync()
         {
-            var Commons = new List<CountryWithCurrency>();
+            var Commons = new List<CountryWithCurrencies>();
             try
             {
                 using var conn = _dbFactory.CreateConnection();
@@ -390,7 +390,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    Commons.Add(new CountryWithCurrency
+                    Commons.Add(new CountryWithCurrencies
                     {
                         Id = reader.GetInt64(reader.GetOrdinal("Id")),
                         Country = reader.GetString(reader.GetOrdinal("CountryName")),

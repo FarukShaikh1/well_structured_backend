@@ -17,6 +17,7 @@ namespace FMS_Collection.Core.Interfaces
         Task<CoinNoteCollectionDetailsResponse> GetCoinNoteCollectionDetailsAsync(Guid coinNoteCollectionId, Guid userId);
         Task<Guid> AddAsync(CoinNoteCollectionRequest coinnotecollection, Guid coinNoteCollectionId);
         Task<bool> UpdateAsync(CoinNoteCollectionRequest coinnotecollection, Guid coinNoteCollectionId);
+        Task UpdateCoinAIData(Guid? id, string extractedText, string generatedDescription, decimal estimatedValue, decimal predictedFutureValue, float predictionConfidence);
         Task<bool> DeleteAsync(Guid coinNoteCollectionId, Guid userId);
         Task<List<CoinNoteCollectionSummaryResponse>> GetSummaryAsync();
     }

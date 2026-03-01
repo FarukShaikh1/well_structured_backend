@@ -18,9 +18,9 @@ namespace FMS_Collection.Infrastructure.Repositories
             _dbFactory = dbFactory;
         }
 
-        public async Task<List<SpecialOccasion>> GetAllAsync()
+        public async Task<List<SpecialOccasions>> GetAllAsync()
         {
-            var days = new List<SpecialOccasion>();
+            var days = new List<SpecialOccasions>();
             try
             {
                 using var conn = _dbFactory.CreateConnection();
@@ -34,7 +34,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    days.Add(new SpecialOccasion
+                    days.Add(new SpecialOccasions
                     {
                         Id = reader.GetGuid(reader.GetOrdinal("Id")),
                         specialOccasionDate = reader.IsDBNull(reader.GetOrdinal("specialOccasionDate")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("specialOccasionDate")),

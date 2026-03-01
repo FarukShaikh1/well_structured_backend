@@ -20,7 +20,11 @@ builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IOtpRepository, OtpRepository>();
+builder.Services.AddSingleton<IErrorRepository, ErrorRepository>();
 builder.Services.AddScoped<INotificationSender, NotificationSender>();
+builder.Services.AddScoped<IRoutineRepository, RoutineRepository>();
+builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
+builder.Services.AddScoped<ICredentialRepository, CredentialRepository>();
 
 builder.Services.AddScoped<AssetService>();
 builder.Services.AddScoped<CoinNoteCollectionService>();

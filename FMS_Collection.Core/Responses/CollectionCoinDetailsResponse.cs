@@ -18,6 +18,8 @@ namespace FMS_Collection.Core.Response
         public decimal? LengthOfNote { get; set; }
         public decimal? BreadthOfNote { get; set; }
         public string? Description { get; set; }
+        public string? ExtractedText { get; set; }
+        public string? GeneratedDescription { get; set; }
         public Guid? AssetId { get; set; }
         public string? AssetType { get; set; }
 

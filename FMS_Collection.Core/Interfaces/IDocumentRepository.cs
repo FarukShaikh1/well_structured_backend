@@ -7,7 +7,7 @@ namespace FMS_Collection.Core.Interfaces
 {
     public interface IDocumentRepository
     {
-        Task<List<Document>> GetAllAsync();
+        Task<List<Documents>> GetAllAsync();
         Task<List<DocumentListResponse>> GetDocumentListAsync(Guid userId);
         Task<DocumentDetailsResponse> GetDocumentDetailsAsync(Guid DocumentId);
         Task<Guid> AddAsync(DocumentRequest Document, Guid DocumentId);

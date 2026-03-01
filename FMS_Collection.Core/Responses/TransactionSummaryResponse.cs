@@ -10,6 +10,7 @@ namespace FMS_Collection.Core.Response
         public string? SourceOrReason { get; set; }
         public string? Purpose { get; set; }
         public string? Description { get; set; }
+        public string? SubCategoryName { get; set; }
         public Dictionary<string, object?> AccountData { get; set; } = new();
     }
 }

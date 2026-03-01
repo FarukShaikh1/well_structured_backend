@@ -1,4 +1,4 @@
-﻿using FMS_Collection.Core.Entities;
+﻿using FMS_Collection.Core.Entities.ConfigEntities;
 using FMS_Collection.Core.Interfaces;
 using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
@@ -266,9 +266,9 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
         }
 
-        public async Task<List<Account>> GetAllAccountsAsync()
+        public async Task<List<Accounts>> GetAllAccountsAsync()
         {
-            var Accounts = new List<Account>();
+            var Accounts = new List<Accounts>();
             try
             {
                 using var conn = _dbFactory.CreateConnection();
@@ -282,7 +282,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    Accounts.Add(new Account
+                    Accounts.Add(new Accounts
                     {
                         Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
                         AccountName = reader["AccountName"]?.ToString(),
@@ -305,9 +305,9 @@ namespace FMS_Collection.Infrastructure.Repositories
             return Accounts;
         }
 
-        public async Task<List<Relation>> GetAllRelationsAsync()
+        public async Task<List<Relations>> GetAllRelationsAsync()
         {
-            var Relations = new List<Relation>();
+            var Relations = new List<Relations>();
             try
             {
                 using var conn = _dbFactory.CreateConnection();
@@ -321,7 +321,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    Relations.Add(new Relation
+                    Relations.Add(new Relations
                     {
                         Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
                         RelationName = reader["RelationName"]?.ToString(),
@@ -344,9 +344,9 @@ namespace FMS_Collection.Infrastructure.Repositories
             return Relations;
         }
 
-        public async Task<List<OccasionType>> GetAllOccasionTypesAsync()
+        public async Task<List<OccasionTypes>> GetAllOccasionTypesAsync()
         {
-            var OccasionTypes = new List<OccasionType>();
+            var OccasionTypes = new List<OccasionTypes>();
             try
             {
                 using var conn = _dbFactory.CreateConnection();
@@ -360,7 +360,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    OccasionTypes.Add(new OccasionType
+                    OccasionTypes.Add(new OccasionTypes
                     {
                         Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
                         OccasionTypeName = reader["OccasionTypeName"]?.ToString(),
@@ -381,6 +381,45 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
 
             return OccasionTypes;
+        }
+
+        public async Task<List<TransactionSubCategories>> GetAllTransactionSubCategoriesAsync()
+        {
+            var transactionSubCategories = new List<TransactionSubCategories>();
+            try
+            {
+                using var conn = _dbFactory.CreateConnection();
+                using var cmd = new SqlCommand("OccasionType_GetAll", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.CommandTimeout = 600;
+                await conn.OpenAsync();
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    transactionSubCategories.Add(new TransactionSubCategories
+                    {
+                        Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
+                        SubCategoryName = reader["SubCategoryName"]?.ToString(),
+                        Description = reader["Description"]?.ToString(),
+                        DisplayOrder = reader["DisplayOrder"] != DBNull.Value ? (int?)reader["DisplayOrder"] : null,
+                        IsActive = reader["IsActive"] != DBNull.Value ? (bool?)reader["IsActive"] : null,
+                        CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
+                        CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
+                        ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
+                        ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null,
+                        IsDeleted = reader["IsDeleted"] != DBNull.Value ? (bool?)reader["IsDeleted"] : null
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+            }
+
+            return transactionSubCategories;
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿// API/Controllers/DocumentController.cs
-using Microsoft.AspNetCore.Mvc;
 using FMS_Collection.Application.Services;
+using FMS_Collection.Core.Common;
 using FMS_Collection.Core.Request;
-using FMS_Collection.Core.Constants;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FMS_Collection.API.Controllers;
 [ApiController]
@@ -93,7 +93,7 @@ public class DocumentController : ControllerBase
   public async Task<IActionResult> GetSasUrl(Guid documentId)
   {
     var response = await _service.GetDocumentDetailsAsync(documentId);
-    var result = _assetService.GetSasUrl("project-attachments", response.Data.OriginalPath);
+    var result = _assetService.GetSasUrl(AppSettings.AzureStorageContainerName, response.Data.OriginalPath);
     return Ok(result);
   }
 }
