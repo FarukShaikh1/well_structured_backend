@@ -189,7 +189,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                         SpecialOccasionDate = reader["SpecialOccasionDate"] != DBNull.Value ? (DateTime?)reader["SpecialOccasionDate"] : null,
                         IsOtpRequired = reader["IsOtpRequired"] != DBNull.Value && Convert.ToBoolean(reader["IsOtpRequired"]),
                         IsDeleted = reader["IsDeleted"] != DBNull.Value && Convert.ToBoolean(reader["IsDeleted"]),
-                        IsLocked = reader["IsLocked"] != DBNull.Value && Convert.ToBoolean(reader["IsLocked"]),
+                        //IsLocked = reader["IsLocked"] != DBNull.Value && Convert.ToBoolean(reader["IsLocked"]),
                         RoleId = reader["RoleId"] != DBNull.Value ? (Guid?)reader["RoleId"] : null,
                         RoleName = reader["RoleName"] != DBNull.Value ? reader["RoleName"].ToString() : null,
                         ImagePath = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : null,
