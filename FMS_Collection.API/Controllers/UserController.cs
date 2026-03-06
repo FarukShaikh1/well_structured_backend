@@ -1,98 +1,116 @@
 ﻿// API/Controllers/UserController.cs
-using Microsoft.AspNetCore.Mvc;
+using FMS_Collection.API.Authorization;
 using FMS_Collection.Application.Services;
 using FMS_Collection.Core.Request;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Security.Claims;
 
 namespace FMS_Collection.API.Controllers;
+
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
-public class UserController : ControllerBase
+[Produces("application/json")]
+public class UserController(UserService service) : ControllerBase
 {
-    private readonly UserService _service;
+    private Guid CurrentUserId =>
+        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-    public UserController(UserService service)
+    [HttpGet("list")]
+    [RequirePermission("User.View")]
+    public async Task<IActionResult> GetList()
     {
-        _service = service;
-    }
-
-    [HttpGet]
-    [Route("GetAll")]
-    public async Task<IActionResult> GetAll()
-    {
-        var result = await _service.GetAllUsersAsync();
+        var result = await service.GetUserListAsync(CurrentUserId);
         return Ok(result);
     }
 
-    [HttpGet]
-    [Route("GetList")]
-    public async Task<IActionResult> GetList(Guid accessedBy)
-    {
-        var result = await _service.GetUserListAsync(accessedBy);
-        return Ok(result);
-    }
-
-    [HttpGet]
-    [Route("GetDetails")]
+    [HttpGet("{userId:guid}")]
+    [RequirePermission("User.View")]
     public async Task<IActionResult> GetDetails(Guid userId)
     {
-        var result = await _service.GetUserDetailsAsync(userId);
+        var result = await service.GetUserDetailsAsync(userId);
         return Ok(result);
     }
 
     [HttpPost]
-    [Route("Add")]
-    public async Task<IActionResult> Add(UserRequest user, Guid createdBy)
+    [RequirePermission("User.Create")]
+    public async Task<IActionResult> Add([FromBody] UserRequest user)
     {
-        await _service.AddUserAsync(user, createdBy);
+        await service.AddUserAsync(user, CurrentUserId);
         return Ok();
     }
 
-    [HttpPost]
-    [Route("Update")]
-    public async Task<IActionResult> Update(UserRequest user, Guid updatedBy)
+    [HttpPut]
+    [RequirePermission("User.Update")]
+    public async Task<IActionResult> Update([FromBody] UserRequest user)
     {
-        await _service.UpdateUserAsync(user, updatedBy);
+        await service.UpdateUserAsync(user, CurrentUserId);
         return Ok();
     }
 
-    [HttpGet]
-    [Route("Delete")]
+    [HttpDelete("{userId:guid}")]
+    [RequirePermission("User.Delete")]
     public async Task<IActionResult> Delete(Guid userId)
     {
-        await _service.DeleteUserAsync(userId);
+        var result = await service.DeleteUserAsync(userId);
+        return Ok(result);
+    }
+
+    [HttpGet("{userId:guid}/permissions")]
+    [RequirePermission("User.View")]
+    public async Task<IActionResult> GetUserPermission(Guid userId)
+    {
+        var result = await service.GetUserPermissionListAsync(userId);
+        return Ok(result);
+    }
+
+    [HttpPost("{userId:guid}/permissions")]
+    [RequirePermission("User.Update")]
+    public async Task<IActionResult> UpdateUserPermission(Guid userId, [FromBody] UserPermissionRequest userPermission)
+    {
+        var result = await service.UpdateUserPermissionAsync(userPermission, CurrentUserId);
+        return Ok(result);
+    }
+
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePassword request)
+    {
+        // Extract userId from JWT — never trust request body for identity
+        var response = await service.ChangePassword(request.OldPassword, request.NewPassword, CurrentUserId, CurrentUserId);
+        return Ok(new { response.Data.IsSuccess, response.Data.Message });
+    }
+
+    // ── Auth endpoints — unauthenticated ──────────────────────────────────────
+    [HttpPost("login")]
+    [AllowAnonymous]
+    [EnableRateLimiting("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+    {
+        var result = await service.LoginAsync(loginRequest);
+        return Ok(result);
+    }
+
+    [HttpPost("refresh-token")]
+    [AllowAnonymous]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
+    {
+        var result = await service.RefreshTokenAsync(request);
+        return Ok(result);
+    }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout([FromBody] RefreshTokenRequest request)
+    {
+        await service.LogoutAsync(request.RefreshToken, CurrentUserId);
         return Ok();
     }
 
-    [HttpPost]
-    [Route("Login")]
-    public async Task<IActionResult> Login(LoginRequest user)
+    [HttpGet("modules")]
+    public async Task<IActionResult> GetModuleList()
     {
-        var result = await _service.GetLoginDetails(user);
+        var result = await service.GetModuleListAsync();
         return Ok(result);
     }
-
-    [HttpGet]
-    [Route("GetUserPermission")]
-    public async Task<IActionResult> GetUserPermission(Guid userId)
-    {
-        var result = await _service.GetUserPermissionListAsync(userId);
-        return Ok(result);
-    }
-
-    [HttpPost]
-    [Route("UpdateUserPermission")]
-    public async Task<IActionResult> UpdateUserPermission(UserPermissionRequest userPermission, Guid userId)
-    {
-        var result = await _service.UpdateUserPermissionAsync(userPermission, userId);
-        return Ok(result);
-    }
-
-    [HttpPost]
-    [Route("ChangePassword")]
-    public async Task<IActionResult> ChangePassword(ChangePassword request)
-    {
-        var response = await _service.ChangePassword(request.OldPassword, request.NewPassword, request.UserId, request.ModifiedBy);
-        return Ok(new { Success = response.Data.IsSuccess, Message = response.Data.Message });
-    }
-
 }

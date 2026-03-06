@@ -1,74 +1,60 @@
 ﻿// API/Controllers/NotificationController.cs
-using Microsoft.AspNetCore.Mvc;
 using FMS_Collection.Application.Services;
 using FMS_Collection.Core.Request;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FMS_Collection.API.Controllers;
+
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
-public class NotificationController : ControllerBase
+[Produces("application/json")]
+public class NotificationController(NotificationService service) : ControllerBase
 {
-    private readonly NotificationService _service;
-
-    public NotificationController(NotificationService service)
-    {
-        _service = service;
-    }
+    private Guid CurrentUserId =>
+        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     [HttpGet]
-    [Route("GetAll")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetList()
     {
-        var result = await _service.GetAllNotificationsAsync();
+        var result = await service.GetNotificationListAsync(CurrentUserId);
         return Ok(result);
     }
 
-    [HttpGet]
-    [Route("GetList")]
-    public async Task<IActionResult> GetList(Guid userId)
-    {
-        var result = await _service.GetNotificationListAsync(userId);
-        return Ok(result);
-    }
-
-
-    [HttpPost]
-    [Route("GetSummary")]
+    [HttpGet("summary")]
     public async Task<IActionResult> GetSummary()
     {
-        var result = await _service.GetSummaryAsync();
+        var result = await service.GetSummaryAsync();
         return Ok(result);
     }
 
-    [HttpGet]
-    [Route("GetDetails")]
-    public async Task<IActionResult> GetDetails(Guid NotificationId, Guid userId)
+    [HttpGet("{notificationId:guid}")]
+    public async Task<IActionResult> GetDetails(Guid notificationId)
     {
-        var result = await _service.GetNotificationDetailsAsync(NotificationId, userId);
-        return Ok(result);
-    }
-
-    [HttpPost]
-    [Route("Add")]
-    public async Task<IActionResult> Add(NotificationRequest Notification, Guid userId)
-    {
-        var result = await _service.AddNotificationAsync(Notification, userId);
+        var result = await service.GetNotificationDetailsAsync(notificationId, CurrentUserId);
         return Ok(result);
     }
 
     [HttpPost]
-    [Route("Update")]
-    public async Task<IActionResult> Update(NotificationRequest Notification, Guid userId)
+    public async Task<IActionResult> Add([FromBody] NotificationRequest notification)
     {
-        var result = await _service.UpdateNotificationAsync(Notification, userId);
+        var result = await service.AddNotificationAsync(notification, CurrentUserId);
         return Ok(result);
     }
 
-    [HttpGet]
-    [Route("Delete")]
-    public async Task<IActionResult> Delete(Guid NotificationId, Guid userId)
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] NotificationRequest notification)
     {
-        var result = await _service.DeleteNotificationAsync(NotificationId, userId);
+        var result = await service.UpdateNotificationAsync(notification, CurrentUserId);
+        return Ok(result);
+    }
+
+    [HttpDelete("{notificationId:guid}")]
+    public async Task<IActionResult> Delete(Guid notificationId)
+    {
+        var result = await service.DeleteNotificationAsync(notificationId, CurrentUserId);
         return Ok(result);
     }
 }

@@ -1,4 +1,4 @@
-﻿using FMS_Collection.Core.Entities;
+using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Interfaces;
 using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
@@ -25,9 +25,9 @@ namespace FMS_Collection.Infrastructure.Repositories
                 using var conn = _dbFactory.CreateConnection();
                 using var cmd = new SqlCommand("User_GetAll", conn)
                 {
-                    CommandType = CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure,
+                    CommandTimeout = 120
                 };
-                cmd.CommandTimeout = 120;
                 await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
@@ -52,7 +52,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                         RoleId = reader["RoleId"] != DBNull.Value ? (Guid?)reader["RoleId"] : null
                     });
                 }
-
             }
             catch (Exception ex)
             {
@@ -70,10 +69,9 @@ namespace FMS_Collection.Infrastructure.Repositories
                 using var conn = _dbFactory.CreateConnection();
                 using var cmd = new SqlCommand("User_Get", conn)
                 {
-                    CommandType = CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure,
+                    CommandTimeout = 120
                 };
-                cmd.CommandTimeout = 120;
-
                 await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
@@ -102,7 +100,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             return users;
         }
 
-        public async Task<UserDetailsResponse> GetUserDetailsAsync(Guid? userId, string? emailId)
+        public async Task<UserDetailsResponse> GetUserDetailsAsync(Guid? userId, string? emailId = null)
         {
             var result = new UserDetailsResponse();
             try
@@ -112,16 +110,15 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-                // Both parameters exist in the SP now
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier)
                 {
                     Value = (object?)userId ?? DBNull.Value
                 });
-
                 cmd.Parameters.Add(new SqlParameter("@in_EmailId", SqlDbType.VarChar, 200)
                 {
                     Value = (object?)emailId ?? DBNull.Value
                 });
+
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
@@ -159,6 +156,104 @@ namespace FMS_Collection.Infrastructure.Repositories
             return result;
         }
 
+        public async Task<LoginResponse> GetLoginDetails(LoginRequest user)
+        {
+            var result = new LoginResponse();
+            try
+            {
+                using var conn = _dbFactory.CreateConnection();
+                using var cmd = new SqlCommand("UserLogin_Details_Get", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.Parameters.Add(new SqlParameter("@in_UserName", SqlDbType.VarChar) { Value = user.UserName });
+                // Password passed for SP compatibility; service layer re-verifies using PBKDF2
+                cmd.Parameters.Add(new SqlParameter("@in_Password", SqlDbType.VarChar) { Value = user.Password ?? (object)DBNull.Value });
+
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    result = new LoginResponse
+                    {
+                        Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
+                        FirstName = reader["FirstName"] != DBNull.Value ? reader["FirstName"].ToString() : null,
+                        LastName = reader["LastName"] != DBNull.Value ? reader["LastName"].ToString() : null,
+                        UserName = reader["UserName"] != DBNull.Value ? reader["UserName"].ToString() : null,
+                        EmailAddress = reader["EmailAddress"] != DBNull.Value ? reader["EmailAddress"].ToString() : null,
+                        MobileNumber = reader["MobileNumber"] != DBNull.Value ? reader["MobileNumber"].ToString() : null,
+                        Password = reader["Password"] != DBNull.Value ? reader["Password"].ToString() : null,
+                        PasswordLastChangeDate = reader["PasswordLastChangeDate"] != DBNull.Value ? (DateTime?)reader["PasswordLastChangeDate"] : null,
+                        FailedLoginCount = reader["FailedLoginCount"] != DBNull.Value ? (int?)reader["FailedLoginCount"] : null,
+                        LockExpiryDate = reader["LockExpiryDate"] != DBNull.Value ? (DateTime?)reader["LockExpiryDate"] : null,
+                        SpecialOccasionDate = reader["SpecialOccasionDate"] != DBNull.Value ? (DateTime?)reader["SpecialOccasionDate"] : null,
+                        IsOtpRequired = reader["IsOtpRequired"] != DBNull.Value && Convert.ToBoolean(reader["IsOtpRequired"]),
+                        IsDeleted = reader["IsDeleted"] != DBNull.Value && Convert.ToBoolean(reader["IsDeleted"]),
+                        IsLocked = reader["IsLocked"] != DBNull.Value && Convert.ToBoolean(reader["IsLocked"]),
+                        RoleId = reader["RoleId"] != DBNull.Value ? (Guid?)reader["RoleId"] : null,
+                        RoleName = reader["RoleName"] != DBNull.Value ? reader["RoleName"].ToString() : null,
+                        ImagePath = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : null,
+                        ThumbnailPath = reader["ThumbnailPath"] != DBNull.Value ? reader["ThumbnailPath"].ToString() : null,
+                        IsSuperAdmin = reader["IsSuperAdmin"] != DBNull.Value && Convert.ToBoolean(reader["IsSuperAdmin"])
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+            }
+
+            return result;
+        }
+
+        /// <summary>Loads login-style user data by userId — used during JWT refresh token rotation.</summary>
+        public async Task<LoginResponse?> GetUserLoginDataAsync(Guid userId)
+        {
+            LoginResponse? result = null;
+            try
+            {
+                using var conn = _dbFactory.CreateConnection();
+                using var cmd = new SqlCommand("User_GetLoginDataById", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
+
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    result = new LoginResponse
+                    {
+                        Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
+                        FirstName = reader["FirstName"] != DBNull.Value ? reader["FirstName"].ToString() : null,
+                        LastName = reader["LastName"] != DBNull.Value ? reader["LastName"].ToString() : null,
+                        UserName = reader["UserName"] != DBNull.Value ? reader["UserName"].ToString() : null,
+                        EmailAddress = reader["EmailAddress"] != DBNull.Value ? reader["EmailAddress"].ToString() : null,
+                        MobileNumber = reader["MobileNumber"] != DBNull.Value ? reader["MobileNumber"].ToString() : null,
+                        Password = reader["Password"] != DBNull.Value ? reader["Password"].ToString() : null,
+                        FailedLoginCount = reader["FailedLoginCount"] != DBNull.Value ? (int?)reader["FailedLoginCount"] : null,
+                        LockExpiryDate = reader["LockExpiryDate"] != DBNull.Value ? (DateTime?)reader["LockExpiryDate"] : null,
+                        SpecialOccasionDate = reader["SpecialOccasionDate"] != DBNull.Value ? (DateTime?)reader["SpecialOccasionDate"] : null,
+                        IsOtpRequired = reader["IsOtpRequired"] != DBNull.Value && Convert.ToBoolean(reader["IsOtpRequired"]),
+                        IsDeleted = reader["IsDeleted"] != DBNull.Value && Convert.ToBoolean(reader["IsDeleted"]),
+                        IsLocked = reader["IsLocked"] != DBNull.Value && Convert.ToBoolean(reader["IsLocked"]),
+                        RoleId = reader["RoleId"] != DBNull.Value ? (Guid?)reader["RoleId"] : null,
+                        RoleName = reader["RoleName"] != DBNull.Value ? reader["RoleName"].ToString() : null,
+                        ImagePath = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : null,
+                        ThumbnailPath = reader["ThumbnailPath"] != DBNull.Value ? reader["ThumbnailPath"].ToString() : null,
+                        IsSuperAdmin = reader["IsSuperAdmin"] != DBNull.Value && Convert.ToBoolean(reader["IsSuperAdmin"])
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+            }
+
+            return result;
+        }
+
         public async Task<Guid> AddAsync(UserRequest request, Guid userId)
         {
             try
@@ -169,25 +264,10 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
 
-                cmd.Parameters.Add(new SqlParameter("@in_PersonId", SqlDbType.UniqueIdentifier)
-                {
-                    Value = request.SpecialOccasionId
-                });
-
-                cmd.Parameters.Add(new SqlParameter("@in_Email", SqlDbType.NVarChar, 100)
-                {
-                    Value = request.EmailAddress
-                });
-
-                cmd.Parameters.Add(new SqlParameter("@in_Password", SqlDbType.VarChar, 100)
-                {
-                    Value = request.Password
-                });
-
-                cmd.Parameters.Add(new SqlParameter("@in_CreatedBy", SqlDbType.UniqueIdentifier)
-                {
-                    Value = userId
-                });
+                cmd.Parameters.Add(new SqlParameter("@in_PersonId", SqlDbType.UniqueIdentifier) { Value = request.SpecialOccasionId });
+                cmd.Parameters.Add(new SqlParameter("@in_Email", SqlDbType.NVarChar, 100) { Value = request.EmailAddress });
+                cmd.Parameters.Add(new SqlParameter("@in_Password", SqlDbType.VarChar, 100) { Value = request.Password });
+                cmd.Parameters.Add(new SqlParameter("@in_CreatedBy", SqlDbType.UniqueIdentifier) { Value = userId });
 
                 var outIdParam = new SqlParameter("@out_Id", SqlDbType.UniqueIdentifier)
                 {
@@ -202,9 +282,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception(
-                    string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex),
-                ex);
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
             }
         }
 
@@ -217,7 +295,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
@@ -236,8 +313,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-
-                cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
 
                 await conn.OpenAsync();
@@ -248,11 +323,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                 throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
             }
             return true;
-        }
-
-        private void AddUserRequestParameters(SqlCommand cmd, UserRequest user, Guid userId)
-        {
-
         }
 
         public async Task<bool> UpdateUserPermissionAsync(UserPermissionRequest userPermission, Guid userId)
@@ -284,70 +354,23 @@ namespace FMS_Collection.Infrastructure.Repositories
             return true;
         }
 
-        public async Task<LoginResponse> GetLoginDetails(LoginRequest user)
-        {
-            var result = new LoginResponse();
-            try
-            {
-                using var conn = _dbFactory.CreateConnection();
-                using var cmd = new SqlCommand("UserLogin_Details_Get", conn)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
-                cmd.Parameters.Add(new SqlParameter("@in_UserName", SqlDbType.VarChar) { Value = user.UserName });
-                cmd.Parameters.Add(new SqlParameter("@in_Password", SqlDbType.VarChar) { Value = user.Password });
-
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
-                {
-                    result = new LoginResponse
-                    {
-                        Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
-                        FirstName = reader["FirstName"] != DBNull.Value ? reader["FirstName"].ToString() : null,
-                        LastName = reader["LastName"] != DBNull.Value ? reader["LastName"].ToString() : null,
-                        UserName = reader["UserName"] != DBNull.Value ? reader["UserName"].ToString() : null,
-                        EmailAddress = reader["EmailAddress"] != DBNull.Value ? reader["EmailAddress"].ToString() : null,
-                        MobileNumber = reader["MobileNumber"] != DBNull.Value ? reader["MobileNumber"].ToString() : null,
-                        Password = reader["Password"] != DBNull.Value ? reader["Password"].ToString() : null,
-                        PasswordLastChangeDate = reader["PasswordLastChangeDate"] != DBNull.Value ? (DateTime?)reader["PasswordLastChangeDate"] : null,
-                        FailedLoginCount = reader["FailedLoginCount"] != DBNull.Value ? (int?)reader["FailedLoginCount"] : null,
-                        LockExpiryDate = reader["LockExpiryDate"] != DBNull.Value ? (DateTime?)reader["LockExpiryDate"] : null,
-                        SpecialOccasionDate = reader["SpecialOccasionDate"] != DBNull.Value ? (DateTime?)reader["SpecialOccasionDate"] : null,
-                        IsOtpRequired = reader["IsOtpRequired"] != DBNull.Value && Convert.ToBoolean(reader["IsOtpRequired"]),
-                        IsDeleted = reader["IsDeleted"] != DBNull.Value && Convert.ToBoolean(reader["IsDeleted"]),
-                        RoleId = reader["RoleId"] != DBNull.Value ? (Guid?)reader["RoleId"] : null,
-                        RoleName = reader["RoleName"] != DBNull.Value ? reader["RoleName"].ToString() : null,
-                        ImagePath = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : null,
-                        ThumbnailPath = reader["ThumbnailPath"] != DBNull.Value ? reader["ThumbnailPath"].ToString() : null
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
-            }
-
-            return result;
-        }
-
         public async Task<List<ModuleListResponse>> GetModuleListAsync()
         {
-            var users = new List<ModuleListResponse>();
+            var modules = new List<ModuleListResponse>();
             try
             {
                 using var conn = _dbFactory.CreateConnection();
                 using var cmd = new SqlCommand("Module_Get", conn)
                 {
-                    CommandType = CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure,
+                    CommandTimeout = 120
                 };
-                cmd.CommandTimeout = 120;
                 await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    users.Add(new ModuleListResponse
+                    modules.Add(new ModuleListResponse
                     {
                         Id = reader.GetGuid(reader.GetOrdinal("Id")),
                         ModuleName = reader["ModuleName"] as string,
@@ -364,27 +387,27 @@ namespace FMS_Collection.Infrastructure.Repositories
                 throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
             }
 
-            return users;
+            return modules;
         }
 
         public async Task<List<UserPermissionResponse>> GetUserPermissionListAsync(Guid UserId)
         {
-            var users = new List<UserPermissionResponse>();
+            var permissions = new List<UserPermissionResponse>();
             try
             {
                 using var conn = _dbFactory.CreateConnection();
                 using var cmd = new SqlCommand("UserPermission_Get", conn)
                 {
-                    CommandType = CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure,
+                    CommandTimeout = 120
                 };
                 cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = UserId });
-                cmd.CommandTimeout = 120;
                 await conn.OpenAsync();
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    users.Add(new UserPermissionResponse
+                    permissions.Add(new UserPermissionResponse
                     {
                         Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
                         ModuleId = reader["ModuleId"] != DBNull.Value ? (Guid?)reader["ModuleId"] : null,
@@ -411,7 +434,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                 throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
             }
 
-            return users;
+            return permissions;
         }
 
         public async Task<bool> UpdatePasswordHashAsync(Guid? userId, string newPasswordHash)
@@ -423,32 +446,18 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-
-                // ✅ Input parameters
                 cmd.Parameters.AddWithValue("@in_UserId", (object?)userId ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_NewPassword", newPasswordHash ?? (object)DBNull.Value);
 
-                // ✅ Output parameters
-                var outIsSuccess = new SqlParameter("@out_IsSuccess", SqlDbType.Bit)
-                {
-                    Direction = ParameterDirection.Output
-                };
-
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
-
-                // ✅ Extract output parameter values
-                bool isSuccess = outIsSuccess.Value != DBNull.Value && (bool)outIsSuccess.Value;
-
-                return isSuccess;
+                return true;
             }
             catch (Exception ex)
             {
-                throw new Exception(
-                    string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
             }
         }
-
 
         public async Task<(bool IsSuccess, string Message)> ChangePasswordHashAsync(string oldPasswordHash, string newPasswordHash, Guid? userId, Guid? modifiedBy)
         {
@@ -459,30 +468,19 @@ namespace FMS_Collection.Infrastructure.Repositories
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-
-                // ✅ Input parameters
                 cmd.Parameters.AddWithValue("@in_UserId", (object?)userId ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_OldPassword", oldPasswordHash ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@in_NewPassword", newPasswordHash ?? (object)DBNull.Value);
-                cmd.Parameters.AddWithValue("@in_ModifiedBy", modifiedBy);
+                cmd.Parameters.AddWithValue("@in_ModifiedBy", (object?)modifiedBy ?? DBNull.Value);
 
-                // ✅ Output parameters
-                var outIsSuccess = new SqlParameter("@out_IsSuccess", SqlDbType.Bit)
-                {
-                    Direction = ParameterDirection.Output
-                };
+                var outIsSuccess = new SqlParameter("@out_IsSuccess", SqlDbType.Bit) { Direction = ParameterDirection.Output };
+                var outMessage = new SqlParameter("@out_Message", SqlDbType.NVarChar, 200) { Direction = ParameterDirection.Output };
                 cmd.Parameters.Add(outIsSuccess);
-
-                var outMessage = new SqlParameter("@out_Message", SqlDbType.NVarChar, 200)
-                {
-                    Direction = ParameterDirection.Output
-                };
                 cmd.Parameters.Add(outMessage);
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
 
-                // ✅ Extract output parameter values
                 bool isSuccess = outIsSuccess.Value != DBNull.Value && (bool)outIsSuccess.Value;
                 string message = outMessage.Value?.ToString() ?? string.Empty;
 
@@ -490,8 +488,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception(
-                    string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
             }
         }
     }

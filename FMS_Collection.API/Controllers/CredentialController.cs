@@ -1,123 +1,59 @@
-﻿using FMS_Collection.Core.Common;
+﻿using FMS_Collection.API.Authorization;
 using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Security.Claims;
+
+namespace FMS_Collection.API.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
-public class CredentialController : ControllerBase
+[Produces("application/json")]
+public class CredentialController(ICredentialRepository credentialRepository) : ControllerBase
 {
-    private readonly ICredentialRepository _credentialRepository;
+    private Guid CurrentUserId =>
+        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-    public CredentialController(ICredentialRepository credentialRepository)
+    [HttpGet]
+    [RequirePermission("Credential.View")]
+    public async Task<IActionResult> GetList()
     {
-        _credentialRepository = credentialRepository;
-    }
-
-    // ==============================
-    // GET: api/credential
-    // ==============================
-    [HttpGet("GetAll")]
-    public async Task<ActionResult<List<Credential>>> GetAll()
-    {
-        var result = await _credentialRepository.GetAllAsync();
+        var result = await credentialRepository.GetByUserAsync(CurrentUserId);
         return Ok(result);
     }
 
-    // ==============================
-    // GET: api/credential/user/{userId}
-    // ==============================
-    [HttpGet("GetList")]
-    public async Task<ActionResult<List<Credential>>> GetByUser(Guid userId)
+    [HttpGet("{credentialId:guid}")]
+    [RequirePermission("Credential.View")]
+    public async Task<IActionResult> GetDetails(Guid credentialId)
     {
-        if (userId == Guid.Empty)
-            return BadRequest("Invalid UserId");
-
-        var result = await _credentialRepository.GetByUserAsync(userId);
+        var result = await credentialRepository.GetDetailsAsync(credentialId);
+        if (result == null) return NotFound();
         return Ok(result);
     }
 
-    // ==============================
-    // GET: api/credential/{credentialId}
-    // ==============================
-    [HttpGet("Details/{credentialId}")]
-    public async Task<ActionResult<Credential>> GetDetails(Guid credentialId)
+    [HttpPost]
+    [RequirePermission("Credential.Create")]
+    public async Task<IActionResult> Add([FromBody] Credential credential)
     {
-        if (credentialId == Guid.Empty)
-            return BadRequest("Invalid CredentialId");
-
-        var result = await _credentialRepository.GetDetailsAsync(credentialId);
-
-        if (result == null)
-            return NotFound("Credential not found");
-
-        return Ok(result);
-    }
-
-    // ==============================
-    // POST: api/credential
-    // ==============================
-    [HttpPost("Add")]
-    public async Task<ActionResult<Guid>> Add([FromBody] Credential credential)
-    {
-        if (credential == null)
-            return BadRequest("Credential data is required");
-
-        if (credential.UserId == Guid.Empty)
-            return BadRequest("UserId is required");
-
-        // TODO: Replace with Logged-in UserId
-        Guid loggedInUserId = credential.UserId;
-
-        var newId = await _credentialRepository.AddAsync(credential, loggedInUserId);
+        var newId = await credentialRepository.AddAsync(credential, CurrentUserId);
         return Ok(newId);
     }
 
-    // ==============================
-    // PUT: api/credential/{credentialId}
-    // ==============================
-    [HttpPut("Update")]
-    public async Task<ActionResult> Update([FromBody] Credential credential)
+    [HttpPut]
+    [RequirePermission("Credential.Update")]
+    public async Task<IActionResult> Update([FromBody] Credential credential)
     {
-        if (credential == null)
-            return BadRequest("Credential data is required");
-
-        if (credential.Id == Guid.Empty)
-            return BadRequest("Invalid CredentialId");
-
-        // TODO: Replace with Logged-in UserId
-        Guid loggedInUserId = credential.UserId;
-
-        await _credentialRepository.UpdateAsync(credential, loggedInUserId);
-        return Ok(new
-        {
-            success = true,
-            message = "Credential updated successfully"
-        });
+        await credentialRepository.UpdateAsync(credential, CurrentUserId);
+        return Ok();
     }
 
-    // ==============================
-    // PUT: api/credential/{credentialId}
-    // ==============================
-    [HttpGet("Delete")]
-    public async Task<ActionResult> Delete(Guid credentialId, Guid UserId)
+    [HttpDelete("{credentialId:guid}")]
+    [RequirePermission("Credential.Delete")]
+    public async Task<IActionResult> Delete(Guid credentialId)
     {
-
-        if (credentialId == Guid.Empty)
-            return BadRequest("Invalid CredentialId");
-
-        // TODO: Replace with Logged-in UserId
-        Guid loggedInUserId = UserId;
-
-        await _credentialRepository.DeleteAsync(credentialId, loggedInUserId);
-        return Ok(new
-        {
-            success = true,
-            message = "Credential Entry Deleted successfully."
-        });
+        await credentialRepository.DeleteAsync(credentialId, CurrentUserId);
+        return Ok();
     }
-
 }

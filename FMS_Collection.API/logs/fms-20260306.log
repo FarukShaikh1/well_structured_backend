@@ -1,0 +1,75 @@
+2026-03-06 10:54:49.155 +05:30 [INF] Starting FMS Collection API
+2026-03-06 10:54:51.258 +05:30 [INF] User profile is available. Using 'C:\Users\faruk.shaikh\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-06 10:54:51.797 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44386/_framework/aspnetcore-browser-refresh.js - null null
+2026-03-06 10:54:51.797 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44386/_vs/browserLink - null null
+2026-03-06 10:54:51.900 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44386/_framework/aspnetcore-browser-refresh.js - 200 16521 application/javascript; charset=utf-8 122.6274ms
+2026-03-06 10:54:51.956 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-06 10:54:51.958 +05:30 [INF] Hosting environment: Development
+2026-03-06 10:54:51.958 +05:30 [INF] Content root path: C:\Learning_Purpose_Projects\MyPersonalProject\backend\FMS_Collection.API
+2026-03-06 10:54:52.119 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44386/_vs/browserLink - 200 null text/javascript; charset=UTF-8 346.194ms
+2026-03-06 10:54:52.174 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44386/swagger/v1/swagger.json - null null
+2026-03-06 10:54:52.246 +05:30 [INF] HTTP GET /swagger/v1/swagger.json started | TraceId: 00-b7f240bd0fe391d314725c621435cd98-6d19b29c8a320af5-00 | IP: ::1
+2026-03-06 10:54:52.441 +05:30 [INF] HTTP GET /swagger/v1/swagger.json responded 200 in 185.7261 ms
+2026-03-06 10:54:52.448 +05:30 [INF] HTTP GET /swagger/v1/swagger.json completed | Status: 200 | Duration: 207ms | User: anonymous | TraceId: 00-b7f240bd0fe391d314725c621435cd98-6d19b29c8a320af5-00
+2026-03-06 10:54:52.453 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44386/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 279.6191ms
+2026-03-06 10:55:37.758 +05:30 [INF] Request starting HTTP/2 POST https://localhost:44386/api/User/login - application/json 73
+2026-03-06 10:55:37.772 +05:30 [INF] HTTP POST /api/User/login started | TraceId: 00-18c71e9ce6715f33402cd4efaf6e473c-14f86d12d437bfe5-00 | IP: ::1
+2026-03-06 10:55:37.777 +05:30 [INF] CORS policy execution failed.
+2026-03-06 10:55:37.777 +05:30 [INF] Request origin https://localhost:44386 does not have permission to access the resource.
+2026-03-06 10:55:37.937 +05:30 [INF] Executing endpoint 'FMS_Collection.API.Controllers.UserController.Login (FMS_Collection.API)'
+2026-03-06 10:55:37.963 +05:30 [INF] Route matched with {action = "Login", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(FMS_Collection.Core.Request.LoginRequest) on controller FMS_Collection.API.Controllers.UserController (FMS_Collection.API).
+2026-03-06 10:55:55.228 +05:30 [ERR] Login failed for user farukshaikh908@gmail.com
+System.Exception: An error occurred. actual error is :Microsoft.Data.SqlClient.SqlException (0x80131904): A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 26 - Error Locating Server/Instance Specified)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, DbConnectionPool pool, Func`3 accessTokenCallback)
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.WaitForPendingOpen()
+--- End of stack trace from previous location ---
+   at FMS_Collection.Infrastructure.Repositories.UserRepository.GetLoginDetails(LoginRequest user) in C:\Learning_Purpose_Projects\MyPersonalProject\backend\FMS_Collection.Infrastructure\Repositories\UserRepository.cs:line 173
+ClientConnectionId:00000000-0000-0000-0000-000000000000
+Error Number:-1,State:0,Class:20
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 26 - Error Locating Server/Instance Specified)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, DbConnectionPool pool, Func`3 accessTokenCallback)
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.WaitForPendingOpen()
+--- End of stack trace from previous location ---
+   at FMS_Collection.Infrastructure.Repositories.UserRepository.GetLoginDetails(LoginRequest user) in C:\Learning_Purpose_Projects\MyPersonalProject\backend\FMS_Collection.Infrastructure\Repositories\UserRepository.cs:line 173
+ClientConnectionId:00000000-0000-0000-0000-000000000000
+Error Number:-1,State:0,Class:20
+   --- End of inner exception stack trace ---
+   at FMS_Collection.Infrastructure.Repositories.UserRepository.GetLoginDetails(LoginRequest user) in C:\Learning_Purpose_Projects\MyPersonalProject\backend\FMS_Collection.Infrastructure\Repositories\UserRepository.cs:line 203
+   at FMS_Collection.Application.Services.UserService.LoginAsync(LoginRequest request) in C:\Learning_Purpose_Projects\MyPersonalProject\backend\FMS_Collection.Application\Services\UserService.cs:line 31
+2026-03-06 10:55:55.237 +05:30 [INF] Executing OkObjectResult, writing value of type 'FMS_Collection.Core.Common.ServiceResponse`1[[FMS_Collection.Core.Response.AuthResponse, FMS_Collection.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-06 10:55:55.258 +05:30 [INF] Executed action FMS_Collection.API.Controllers.UserController.Login (FMS_Collection.API) in 17291.995ms
+2026-03-06 10:55:55.259 +05:30 [INF] Executed endpoint 'FMS_Collection.API.Controllers.UserController.Login (FMS_Collection.API)'
+2026-03-06 10:55:55.262 +05:30 [INF] HTTP POST /api/User/login responded 200 in 17489.7534 ms
+2026-03-06 10:55:55.262 +05:30 [INF] HTTP POST /api/User/login completed | Status: 200 | Duration: 17490ms | User: anonymous | TraceId: 00-18c71e9ce6715f33402cd4efaf6e473c-14f86d12d437bfe5-00
+2026-03-06 10:55:55.263 +05:30 [INF] Request finished HTTP/2 POST https://localhost:44386/api/User/login - 200 null application/json; charset=utf-8 17505.2226ms
+2026-03-06 10:56:40.369 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44386/api/User/list - null null
+2026-03-06 10:56:40.383 +05:30 [INF] HTTP GET /api/User/list started | TraceId: 00-c046ac895ed85940845f45080e54cf34-c0763d1b8b40e7c0-00 | IP: ::1
+2026-03-06 10:56:40.451 +05:30 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+FMS_Collection.API.Authorization.PermissionRequirement
+2026-03-06 10:56:40.460 +05:30 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-06 10:56:40.461 +05:30 [INF] HTTP GET /api/User/list responded 401 in 77.3350 ms
+2026-03-06 10:56:40.461 +05:30 [INF] HTTP GET /api/User/list completed | Status: 401 | Duration: 77ms | User: anonymous | TraceId: 00-c046ac895ed85940845f45080e54cf34-c0763d1b8b40e7c0-00
+2026-03-06 10:56:40.464 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44386/api/User/list - 401 null null 94.9394ms

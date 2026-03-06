@@ -1,99 +1,86 @@
 ﻿// API/Controllers/DocumentController.cs
+using FMS_Collection.API.Authorization;
 using FMS_Collection.Application.Services;
 using FMS_Collection.Core.Common;
 using FMS_Collection.Core.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FMS_Collection.API.Controllers;
+
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
-public class DocumentController : ControllerBase
+[Produces("application/json")]
+public class DocumentController(DocumentService service, AssetService assetService) : ControllerBase
 {
-  private readonly DocumentService _service;
-  private readonly AssetService _assetService;
+    private Guid CurrentUserId =>
+        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-  public DocumentController(DocumentService service, AssetService assetService)
-  {
-    _service = service;
-    _assetService = assetService;
-  }
+    [HttpGet]
+    [RequirePermission("Document.View")]
+    public async Task<IActionResult> GetList()
+    {
+        var result = await service.GetDocumentListAsync(CurrentUserId);
+        return Ok(result);
+    }
 
-  [HttpGet]
-  [Route("GetAll")]
-  public async Task<IActionResult> GetAll()
-  {
-    var result = await _service.GetAllDocumentsAsync();
-    return Ok(result);
-  }
+    [HttpGet("{documentId:guid}")]
+    [RequirePermission("Document.View")]
+    public async Task<IActionResult> GetDetails(Guid documentId)
+    {
+        var result = await service.GetDocumentDetailsAsync(documentId);
+        return Ok(result);
+    }
 
-  [HttpGet]
-  [Route("GetList")]
-  public async Task<IActionResult> GetList(Guid userId)
-  {
-    var result = await _service.GetDocumentListAsync(userId);
-    return Ok(result);
-  }
+    [HttpPost("upload")]
+    [RequirePermission("Document.Upload")]
+    public async Task<IActionResult> UploadDocument([FromForm] DocumentRequest document)
+    {
+        if (document?.file == null)
+            return BadRequest("No file uploaded.");
 
+        var assetId = await assetService.UploadDocument(document, CurrentUserId);
+        if (!assetId.HasValue || assetId.Value == Guid.Empty)
+            return BadRequest("Issue in uploading file.");
 
-  [HttpGet]
-  [Route("GetDetails")]
-  public async Task<IActionResult> GetDetails(Guid documentId)
-  {
-    var result = await _service.GetDocumentDetailsAsync(documentId);
-    return Ok(result);
-  }
+        document.AssetId = assetId;
+        var result = await service.AddDocumentAsync(document, CurrentUserId);
+        return Ok(result);
+    }
 
-  [HttpPost]
-  [Route("UploadDocument")]
-  public async Task<IActionResult> UploadDocument([FromForm] DocumentRequest document, Guid userId)
-  {
-    if (document == null || document.file == null)
-      return BadRequest("No file uploaded.");
+    [HttpGet("{documentId:guid}/download-url")]
+    [RequirePermission("Document.Download")]
+    public async Task<IActionResult> GetDownloadUrl(Guid documentId)
+    {
+        var response = await service.GetDocumentDetailsAsync(documentId);
+        var url = await service.GetDownloadSasUrl(response.Data!.OriginalPath, response.Data.DocumentName);
+        return Ok(url);
+    }
 
-    // Upload file to asset storage
-    var assetId = await _assetService.UploadDocument(document, userId);
+    [HttpPut]
+    [RequirePermission("Document.Update")]
+    public async Task<IActionResult> Update([FromBody] DocumentRequest document)
+    {
+        var result = await service.UpdateDocumentAsync(document, CurrentUserId);
+        return Ok(result);
+    }
 
-    if (!assetId.HasValue || assetId.Value == Guid.Empty)
-      return BadRequest("Issue in uploading file.");
+    [HttpDelete("{documentId:guid}")]
+    [RequirePermission("Document.Delete")]
+    public async Task<IActionResult> Delete(Guid documentId)
+    {
+        var result = await service.DeleteDocumentAsync(documentId, CurrentUserId);
+        return Ok(result);
+    }
 
-    // Set AssetId so service can save it
-    document.AssetId = assetId;
-
-    // Save document record
-    var result = await _service.AddDocumentAsync(document, userId);
-
-    return Ok(result);
-  }
-
-  [HttpGet("GetDownloadUrl")]
-  public IActionResult GetDownloadUrl(string blobPath, string fileName)
-  {
-    var url = _service.GetDownloadSasUrl(blobPath, fileName);
-    return Ok(url.Result);
-  }
-
-  [HttpPost]
-  [Route("Update")]
-  public async Task<IActionResult> Update(DocumentRequest Document, Guid userId)
-  {
-    var result = await _service.UpdateDocumentAsync(Document, userId);
-    return Ok(result);
-  }
-
-  [HttpGet]
-  [Route("Delete")]
-  public async Task<IActionResult> Delete(Guid DocumentId, Guid userId)
-  {
-    var result = await _service.DeleteDocumentAsync(DocumentId, userId);
-    return Ok(result);
-  }
-
-  [HttpGet]
-  [Route("GetSasUrl")]
-  public async Task<IActionResult> GetSasUrl(Guid documentId)
-  {
-    var response = await _service.GetDocumentDetailsAsync(documentId);
-    var result = _assetService.GetSasUrl(AppSettings.AzureStorageContainerName, response.Data.OriginalPath);
-    return Ok(result);
-  }
+    [HttpGet("{documentId:guid}/sas-url")]
+    [RequirePermission("Document.View")]
+    public async Task<IActionResult> GetSasUrl(Guid documentId)
+    {
+        var response = await service.GetDocumentDetailsAsync(documentId);
+        var result = assetService.GetSasUrl(AppSettings.AzureStorageContainerName, response.Data!.OriginalPath);
+        return Ok(result);
+    }
 }

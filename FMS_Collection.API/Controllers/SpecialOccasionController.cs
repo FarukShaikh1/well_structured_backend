@@ -1,66 +1,59 @@
-﻿// API/Controllers/DayController.cs
-using Microsoft.AspNetCore.Mvc;
+﻿// API/Controllers/SpecialOccasionController.cs
+using FMS_Collection.API.Authorization;
 using FMS_Collection.Application.Services;
 using FMS_Collection.Core.Request;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FMS_Collection.API.Controllers;
+
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
-public class SpecialOccasionController : ControllerBase
+[Produces("application/json")]
+public class SpecialOccasionController(SpecialOccasionService service) : ControllerBase
 {
-    private readonly SpecialOccasionService _service;
-
-    public SpecialOccasionController(SpecialOccasionService service)
-    {
-        _service = service;
-    }
+    private Guid CurrentUserId =>
+        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     [HttpGet]
-    [Route("GetAll")]
-    public async Task<IActionResult> GetAll()
+    [RequirePermission("SpecialOccasion.View")]
+    public async Task<IActionResult> GetList()
     {
-        var result = await _service.GetAllDaysAsync();
+        var result = await service.GetDayListAsync(CurrentUserId);
         return Ok(result);
     }
 
-    [HttpGet]
-    [Route("GetList")]
-    public async Task<IActionResult> GetList(Guid userId)
+    [HttpGet("{dayId:guid}")]
+    [RequirePermission("SpecialOccasion.View")]
+    public async Task<IActionResult> GetDetails(Guid dayId)
     {
-        var result = await _service.GetDayListAsync(userId);
-        return Ok(result);
-    }
-
-    [HttpGet]
-    [Route("GetDetails")]
-    public async Task<IActionResult> GetDetails(Guid dayId, Guid userId)
-    {
-        var result = await _service.GetDayDetailsAsync(dayId, userId);
+        var result = await service.GetDayDetailsAsync(dayId, CurrentUserId);
         return Ok(result);
     }
 
     [HttpPost]
-    [Route("Add")]
-    public async Task<IActionResult> Add([FromBody] SpecialOccasionRequest specialOccasionRequest, Guid userId)
+    [RequirePermission("SpecialOccasion.Create")]
+    public async Task<IActionResult> Add([FromBody] SpecialOccasionRequest request)
     {
-        var result = await _service.AddDayAsync(specialOccasionRequest, userId);
-
+        var result = await service.AddDayAsync(request, CurrentUserId);
         return Ok(result);
     }
 
-    [HttpPost]
-    [Route("Update")]
-    public async Task<IActionResult> Update([FromBody] SpecialOccasionRequest specialOccasionRequest, Guid userId)
+    [HttpPut]
+    [RequirePermission("SpecialOccasion.Update")]
+    public async Task<IActionResult> Update([FromBody] SpecialOccasionRequest request)
     {
-        var result = await _service.UpdateDayAsync(specialOccasionRequest, userId);
+        var result = await service.UpdateDayAsync(request, CurrentUserId);
         return Ok(result);
     }
 
-    [HttpGet]
-    [Route("Delete")]
-    public async Task<IActionResult> Delete(Guid dayId, Guid userId)
+    [HttpDelete("{dayId:guid}")]
+    [RequirePermission("SpecialOccasion.Delete")]
+    public async Task<IActionResult> Delete(Guid dayId)
     {
-        var result = await _service.DeleteDayAsync(dayId, userId);
+        var result = await service.DeleteDayAsync(dayId, CurrentUserId);
         return Ok(result);
     }
 }

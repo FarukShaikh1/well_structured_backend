@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,9 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- ADO.NET SQL Server driver -->
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.0-preview1.25120.4" />
-    <!--<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0-preview.5.25277.114" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0-preview.5.25277.114" />-->
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.2" />
+
+    <!-- JWT token generation (used by TokenService) -->
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.9.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.9.0" />
+
+    <!-- Options pattern (IOptions<JwtSettings>) -->
   </ItemGroup>
 
   <ItemGroup>

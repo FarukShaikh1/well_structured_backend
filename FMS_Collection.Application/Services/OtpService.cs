@@ -11,13 +11,15 @@ namespace FMS_Collection.Application.Services
         private readonly INotificationSender _sender;
         private readonly IUserRepository _userRepository;
         private readonly IErrorRepository _errorRepository;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public OtpService(IOtpRepository otpStore, INotificationSender sender, IUserRepository users, IErrorRepository errorRepository)
+        public OtpService(IOtpRepository otpStore, INotificationSender sender, IUserRepository users, IErrorRepository errorRepository, IPasswordHasher passwordHasher)
         {
             _otpRepository = otpStore;
             _sender = sender;
             _userRepository = users;
             _errorRepository = errorRepository;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<ServiceResponse<bool>> SendAsync(SendOtpRequest request)
@@ -172,10 +174,9 @@ namespace FMS_Collection.Application.Services
                 var user = await _userRepository.GetUserDetailsAsync(null, request.EmailId);
                 if (user == null) throw new Exception("User not found");
 
-                // Hash password using existing algorithm
-                var hasher = new Core.Common.HashAlgorithm();
-                var newHash = hasher.GetHash(request.NewPassword);
-                _userRepository.UpdatePasswordHashAsync(user.Id, newHash);
+                // Hash password using PBKDF2-SHA512
+                var newHash = _passwordHasher.Hash(request.NewPassword);
+                await _userRepository.UpdatePasswordHashAsync(user.Id, newHash);
 
                 return true;
             }, Constants.Messages.PasswordResetSuccessful);

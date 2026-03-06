@@ -23,6 +23,6 @@
         public string? ThumbnailPathSasUrl { get; set; }
         public string? ImagePath { get; set; }
         public string? ThumbnailPath { get; set; }
-        //public List<Guid>? AccessibleModuleIds { get; set; }
+        public bool IsSuperAdmin { get; set; }
     }
 }
