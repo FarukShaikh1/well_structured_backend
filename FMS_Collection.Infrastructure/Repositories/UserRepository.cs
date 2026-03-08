@@ -167,8 +167,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.Parameters.Add(new SqlParameter("@in_UserName", SqlDbType.VarChar) { Value = user.UserName });
-                // Password passed for SP compatibility; service layer re-verifies using PBKDF2
-                cmd.Parameters.Add(new SqlParameter("@in_Password", SqlDbType.VarChar) { Value = user.Password ?? (object)DBNull.Value });
 
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
@@ -189,7 +187,7 @@ namespace FMS_Collection.Infrastructure.Repositories
                         SpecialOccasionDate = reader["SpecialOccasionDate"] != DBNull.Value ? (DateTime?)reader["SpecialOccasionDate"] : null,
                         IsOtpRequired = reader["IsOtpRequired"] != DBNull.Value && Convert.ToBoolean(reader["IsOtpRequired"]),
                         IsDeleted = reader["IsDeleted"] != DBNull.Value && Convert.ToBoolean(reader["IsDeleted"]),
-                        //IsLocked = reader["IsLocked"] != DBNull.Value && Convert.ToBoolean(reader["IsLocked"]),
+                        IsLocked = reader["IsLocked"] != DBNull.Value && Convert.ToBoolean(reader["IsLocked"]),
                         RoleId = reader["RoleId"] != DBNull.Value ? (Guid?)reader["RoleId"] : null,
                         RoleName = reader["RoleName"] != DBNull.Value ? reader["RoleName"].ToString() : null,
                         ImagePath = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : null,

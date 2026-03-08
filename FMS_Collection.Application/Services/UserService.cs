@@ -48,13 +48,14 @@ namespace FMS_Collection.Application.Services
                     passwordHasher.VerifyLegacySha1(request.Password, loginData.Password));
 
                 if (!passwordValid)
+                    //Add some code to set FailedLoginCount=FailedLoginCount+1
                     return ServiceResponse<AuthResponse>.Fail(Constants.Messages.InvalidUserOrPassword, 401);
 
                 // Silently upgrade legacy SHA1 hash to PBKDF2
                 if (loginData.Password != null && passwordHasher.VerifyLegacySha1(request.Password, loginData.Password))
                 {
                     var newHash = passwordHasher.Hash(request.Password);
-                    await repository.UpdatePasswordHashAsync(loginData.Id, newHash);
+                    //await repository.UpdatePasswordHashAsync(loginData.Id, newHash);
                     logger.LogInformation("Upgraded legacy password hash for user {UserId}", loginData.Id);
                 }
 

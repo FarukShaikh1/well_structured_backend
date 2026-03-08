@@ -17,7 +17,7 @@ public class BudgetController(IBudgetRepository budgetRepository) : ControllerBa
         Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     [HttpGet]
-    [RequirePermission("Budget.View")]
+    [RequirePermission("Transaction.View")]
     public async Task<IActionResult> GetList()
     {
         var result = await budgetRepository.GetByUserAsync(CurrentUserId);
@@ -25,7 +25,7 @@ public class BudgetController(IBudgetRepository budgetRepository) : ControllerBa
     }
 
     [HttpGet("{budgetId:guid}")]
-    [RequirePermission("Budget.View")]
+    [RequirePermission("Transaction.View")]
     public async Task<IActionResult> GetDetails(Guid budgetId)
     {
         var result = await budgetRepository.GetDetailsAsync(budgetId);
@@ -34,7 +34,7 @@ public class BudgetController(IBudgetRepository budgetRepository) : ControllerBa
     }
 
     [HttpPost]
-    [RequirePermission("Budget.Create")]
+    [RequirePermission("Transaction.Create")]
     public async Task<IActionResult> Add([FromBody] Budget budget)
     {
         var newId = await budgetRepository.AddAsync(budget, CurrentUserId);
@@ -42,7 +42,7 @@ public class BudgetController(IBudgetRepository budgetRepository) : ControllerBa
     }
 
     [HttpPut]
-    [RequirePermission("Budget.Update")]
+    [RequirePermission("Transaction.Update")]
     public async Task<IActionResult> Update([FromBody] Budget budget)
     {
         await budgetRepository.UpdateAsync(budget, CurrentUserId);
@@ -50,7 +50,7 @@ public class BudgetController(IBudgetRepository budgetRepository) : ControllerBa
     }
 
     [HttpDelete("{budgetId:guid}")]
-    [RequirePermission("Budget.Delete")]
+    [RequirePermission("Transaction.Delete")]
     public async Task<IActionResult> Delete(Guid budgetId)
     {
         await budgetRepository.DeleteAsync(budgetId, CurrentUserId);
