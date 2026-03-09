@@ -66,9 +66,9 @@ public class UserController(UserService service) : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("{userId:guid}/permissions")]
+    [HttpPost("permissions")]
     [RequirePermission("User.Update")]
-    public async Task<IActionResult> UpdateUserPermission(Guid userId, [FromBody] UserPermissionRequest userPermission)
+    public async Task<IActionResult> UpdateUserPermission([FromBody] UserPermissionRequest userPermission)
     {
         var result = await service.UpdateUserPermissionAsync(userPermission, CurrentUserId);
         return Ok(result);

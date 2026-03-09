@@ -1,6 +1,8 @@
 ﻿using FMS_Collection.API.Authorization;
 using FMS_Collection.Application.Services;
+using FMS_Collection.Core.Common;
 using FMS_Collection.Core.Request;
+using FMS_Collection.Core.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -26,9 +28,17 @@ public class SettingsController(SettingsService service) : ControllerBase
 
     [HttpGet("config/active")]
     [RequirePermission("Settings.View")]
-    public async Task<IActionResult> GetActiveConfigList([FromQuery] string config)
+    public async Task<IActionResult> GetActiveConfigList([FromQuery] string config, string? userId)
     {
-        var result = await service.GetActiveConfigListAsync(CurrentUserId, config);
+        ServiceResponse<List<ConfigurationResponse>> result = new ServiceResponse<List<ConfigurationResponse>>();
+        if (!string.IsNullOrEmpty(userId) && Guid.TryParse(userId, out Guid selectedUserId))
+        {
+            result = await service.GetActiveConfigListAsync(selectedUserId, config);
+        }
+        else
+        {
+            result = await service.GetActiveConfigListAsync(CurrentUserId, config);
+        }
         return Ok(result);
     }
 
@@ -42,9 +52,17 @@ public class SettingsController(SettingsService service) : ControllerBase
 
     [HttpPost("config")]
     [RequirePermission("Settings.Create")]
-    public async Task<IActionResult> AddConfig([FromBody] ConfigurationRequest request, [FromQuery] string config)
+    public async Task<IActionResult> AddConfig([FromBody] ConfigurationRequest request, [FromQuery] string config, string? userId)
     {
-        var result = await service.AddConfigAsync(request, CurrentUserId, config);
+        ServiceResponse<Guid> result = new ServiceResponse<Guid>();
+        if (!string.IsNullOrEmpty(userId) && Guid.TryParse(userId, out Guid selectedUserId))
+        {
+            result = await service.AddConfigAsync(request, selectedUserId, config);
+        }
+        else
+        {
+            result = await service.AddConfigAsync(request, CurrentUserId, config);
+        }
         return Ok(result);
     }
 

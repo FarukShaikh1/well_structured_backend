@@ -60,7 +60,7 @@ public class TransactionController(TransactionService service) : ControllerBase
     [RequirePermission("Transaction.View")]
     public async Task<IActionResult> GetCategoryWiseReport([FromBody] TransactionFilterRequest filter)
     {
-        var response = await service.GetCategoryWiseReportAsync(filter, CurrentUserId);
+        var response = await service.GetBudgetWiseReportAsync(filter, CurrentUserId);
         return Ok(response);
     }
 

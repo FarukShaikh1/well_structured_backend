@@ -46,7 +46,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             using var conn = dbFactory.CreateConnection();
             using var cmd = new SqlCommand("RefreshToken_Revoke", conn) { CommandType = CommandType.StoredProcedure };
             cmd.Parameters.Add(new SqlParameter("@in_Token", SqlDbType.NVarChar, 512) { Value = token });
-            cmd.Parameters.Add(new SqlParameter("@in_RevokedOn", SqlDbType.DateTime2) { Value = DateTime.UtcNow });
+            cmd.Parameters.Add(new SqlParameter("@in_Reason", SqlDbType.NVarChar, 512) { Value = "Some Error" });
             await conn.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
         }
