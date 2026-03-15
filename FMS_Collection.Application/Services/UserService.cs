@@ -241,9 +241,15 @@ namespace FMS_Collection.Application.Services
         private async Task<AuthResponse> BuildAuthResponseAsync(LoginResponse loginData)
         {
             Guid userId = loginData.Id!.Value;
-
-            var permissions = await permissionRepository.GetPermissionNamesByRoleAsync(loginData.RoleId ?? Guid.Empty);
-
+            List<string> permissions;
+            if (loginData.RoleName.Equals(Constants.Roles.SuperAdmin))
+            {
+                permissions = await permissionRepository.GetPermissionNamesByRoleAsync(loginData.RoleId ?? Guid.Empty);
+            }
+            else
+            {
+                permissions = await permissionRepository.GetPermissionNamesByUserAsync(loginData.Id ?? Guid.Empty);
+            }
             string accessToken = tokenService.GenerateAccessToken(
                 userId,
                 loginData.EmailAddress ?? string.Empty,

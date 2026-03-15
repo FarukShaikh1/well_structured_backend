@@ -38,8 +38,21 @@ namespace FMS_Collection.Infrastructure.Repositories
         {
             var list = new List<string>();
             using var conn = dbFactory.CreateConnection();
-            using var cmd = new SqlCommand("Permission_GetNamesByRole", conn) { CommandType = CommandType.StoredProcedure };
+            using var cmd = new SqlCommand("Permission_GetByRole", conn) { CommandType = CommandType.StoredProcedure };
             cmd.Parameters.Add(new SqlParameter("@in_RoleId", SqlDbType.UniqueIdentifier) { Value = roleId });
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+                list.Add(reader["PermissionName"].ToString()!);
+            return list;
+        }
+
+        public async Task<List<string>> GetPermissionNamesByUserAsync(Guid UserId)
+        {
+            var list = new List<string>();
+            using var conn = dbFactory.CreateConnection();
+            using var cmd = new SqlCommand("Permission_GetByUser", conn) { CommandType = CommandType.StoredProcedure };
+            cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = UserId });
             await conn.OpenAsync();
             using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())

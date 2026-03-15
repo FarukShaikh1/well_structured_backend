@@ -9,6 +9,7 @@ namespace FMS_Collection.Core.Interfaces
         Task<List<PermissionResponse>> GetAllAsync();
         Task<List<PermissionResponse>> GetByRoleAsync(Guid roleId);
         Task<List<string>> GetPermissionNamesByRoleAsync(Guid roleId);
+        Task<List<string>> GetPermissionNamesByUserAsync(Guid userId);
         Task<Guid> AddAsync(PermissionRequest request, Guid createdBy);
         Task UpdateAsync(Guid permissionId, PermissionRequest request, Guid updatedBy);
         Task DeleteAsync(Guid permissionId);

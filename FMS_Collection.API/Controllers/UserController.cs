@@ -58,9 +58,16 @@ public class UserController(UserService service) : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("{userId:guid}/permissions")]
-    [RequirePermission("User.View")]
+    [HttpGet("permissions/{userId:guid}")]
+    //[RequirePermission("User.View")]
     public async Task<IActionResult> GetUserPermission(Guid userId)
+    {
+        var result = await service.GetUserPermissionListAsync(userId);
+        return Ok(result);
+    }
+
+    [HttpGet("permissionsForMenu/{userId:guid}")]
+    public async Task<IActionResult> GetUserPermissionForMenu(Guid userId)
     {
         var result = await service.GetUserPermissionListAsync(userId);
         return Ok(result);
