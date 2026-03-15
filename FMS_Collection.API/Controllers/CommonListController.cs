@@ -1,121 +1,127 @@
-﻿// API/Controllers/CommonListController.cs
-using Microsoft.AspNetCore.Mvc;
+// API/Controllers/CommonListController.cs
+using FMS_Collection.API.Authorization;
 using FMS_Collection.Application.Services;
 using FMS_Collection.Core.Request;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FMS_Collection.API.Controllers;
-[ApiController]
-[Route("api/[controller]")]
-public class CommonListController : ControllerBase
-{
-    private readonly CommonListService _service;
 
-    public CommonListController(CommonListService service)
-    {
-        _service = service;
-    }
+[ApiController]
+[Authorize]
+[Route("api/[controller]")]
+[Produces("application/json")]
+public class CommonListController(CommonListService service) : ControllerBase
+{
+    private Guid CurrentUserId =>
+        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+    // ── CommonList endpoints ──────────────────────────────────────────────────
 
     [HttpGet]
-    [Route("GetAll")]
+    [RequirePermission("CommonList.View")]
     public async Task<IActionResult> GetAll()
     {
-        var result = await _service.GetAllCommonListAsync();
+        var result = await service.GetAllCommonListAsync();
         return Ok(result);
     }
 
-    [HttpGet]
-    [Route("GetCommonListItemAll")]
-    public async Task<IActionResult> GetCommonListItemAll()
+    [HttpGet("{commonListId:guid}")]
+    [RequirePermission("CommonList.View")]
+    public async Task<IActionResult> GetDetails(Guid commonListId)
     {
-        var result = await _service.GetAllCommonListItemAsync();
+        var result = await service.GetCommonListDetailsAsync(commonListId);
         return Ok(result);
     }
 
-    [HttpGet]
-    [Route("GetCommonList")]
+    [HttpPost]
+    [RequirePermission("CommonList.Create")]
+    public async Task<IActionResult> Add([FromBody] CommonListRequest request)
+    {
+        await service.AddCommonListAsync(request, CurrentUserId);
+        return Ok();
+    }
+
+    [HttpPut]
+    [RequirePermission("CommonList.Update")]
+    public async Task<IActionResult> Update([FromBody] CommonListRequest request)
+    {
+        await service.UpdateCommonListAsync(request, CurrentUserId);
+        return Ok();
+    }
+
+    [HttpDelete("{commonListId:guid}")]
+    [RequirePermission("CommonList.Delete")]
+    public async Task<IActionResult> Delete(Guid commonListId)
+    {
+        await service.DeleteCommonListAsync(commonListId, CurrentUserId);
+        return Ok();
+    }
+
+    // ── CommonListItem endpoints ──────────────────────────────────────────────
+
+    [HttpGet("items")]
+    [RequirePermission("CommonList.View")]
+    public async Task<IActionResult> GetAllItems()
+    {
+        var result = await service.GetAllCommonListItemAsync();
+        return Ok(result);
+    }
+
+    [HttpGet("{commonListId:guid}/items")]
+    [RequirePermission("CommonList.View")]
+    public async Task<IActionResult> GetItems(Guid commonListId)
+    {
+        var result = await service.GetCommonListItemAsync(commonListId);
+        return Ok(result);
+    }
+
+    [HttpGet("items/{itemId:guid}")]
+    [RequirePermission("CommonList.View")]
+    public async Task<IActionResult> GetItemDetails(Guid itemId)
+    {
+        var result = await service.GetCommonListDetailsAsync(itemId);
+        return Ok(result);
+    }
+
+    [HttpPost("items")]
+    [RequirePermission("CommonList.Create")]
+    public async Task<IActionResult> AddItem([FromBody] CommonListItemRequest request)
+    {
+        await service.AddCommonListItemAsync(request, CurrentUserId);
+        return Ok();
+    }
+
+    [HttpPut("items")]
+    [RequirePermission("CommonList.Update")]
+    public async Task<IActionResult> UpdateItem([FromBody] CommonListItemRequest request)
+    {
+        await service.UpdateCommonListItemAsync(request, CurrentUserId);
+        return Ok();
+    }
+
+    [HttpDelete("items/{itemId:guid}")]
+    [RequirePermission("CommonList.Delete")]
+    public async Task<IActionResult> DeleteItem(Guid itemId)
+    {
+        await service.DeleteCommonListItemAsync(itemId, CurrentUserId);
+        return Ok();
+    }
+
+    // ── Reference data — no permission guard needed (read-only lookup data) ──
+
+    [HttpGet("common")]
     public async Task<IActionResult> GetCommonList()
     {
-        var result = await _service.GetCommonListAsync();
+        var result = await service.GetCommonListAsync();
         return Ok(result);
     }
 
-    [HttpGet]
-    [Route("GetCountryList")]
+    [HttpGet("countries")]
     public async Task<IActionResult> GetCountryList()
     {
-        var result = await _service.GetCountryListAsync();
+        var result = await service.GetCountryListAsync();
         return Ok(result);
-    }
-
-    [HttpGet]
-    [Route("GetCommonListItem")]
-    public async Task<IActionResult> GetCommonListItem(Guid CommonListId)
-    {
-        var result = await _service.GetCommonListItemAsync(CommonListId);
-        return Ok(result);
-    }
-
-    [HttpGet]
-    [Route("GetCommonListDetails")]
-    public async Task<IActionResult> GetCommonListDetails(Guid CommonId)
-    {
-        var result = await _service.GetCommonListDetailsAsync(CommonId);
-        return Ok(result);
-    }
-
-    [HttpGet]
-    [Route("GetCommonListItemDetails")]
-    public async Task<IActionResult> GetCommonListItemDetails(Guid CommonId)
-    {
-        var result = await _service.GetCommonListDetailsAsync(CommonId);
-        return Ok(result);
-    }
-
-    [HttpPost]
-    [Route("AddCommonList")]
-    public async Task<IActionResult> AddCommonList(CommonListRequest Common, Guid createdBy)
-    {
-        await _service.AddCommonListAsync(Common, createdBy);
-        return Ok();
-    }
-
-    [HttpPost]
-    [Route("AddCommonListItem")]
-    public async Task<IActionResult> AddCommonListItem(CommonListItemRequest Common, Guid createdBy)
-    {
-        await _service.AddCommonListItemAsync(Common, createdBy);
-        return Ok();
-    }
-
-    [HttpPost]
-    [Route("UpdateCommonList")]
-    public async Task<IActionResult> UpdateCommonList(CommonListRequest Common, Guid updatedBy)
-    {
-        await _service.UpdateCommonListAsync(Common, updatedBy);
-        return Ok();
-    }
-
-    [HttpPost]
-    [Route("UpdateCommonListItem")]
-    public async Task<IActionResult> UpdateCommonListItem(CommonListItemRequest Common, Guid userId)
-    {
-        await _service.UpdateCommonListItemAsync(Common, userId);
-        return Ok();
-    }
-
-    [HttpGet]
-    [Route("DeleteCommonList")]
-    public async Task<IActionResult> DeleteCommonList(Guid CommonId, Guid userId)
-    {
-        await _service.DeleteCommonListAsync(CommonId, userId);
-        return Ok();
-    }
-
-    [HttpGet]
-    [Route("DeleteICommonListItem")]
-    public async Task<IActionResult> DeleteCommonListItem(Guid CommonId, Guid userId)
-    {
-        await _service.DeleteCommonListItemAsync(CommonId, userId);
-        return Ok();
     }
 }

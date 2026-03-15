@@ -1,4 +1,4 @@
-﻿
+
 using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
@@ -19,5 +19,7 @@ namespace FMS_Collection.Core.Interfaces
         Task<List<UserPermissionResponse>> GetUserPermissionListAsync(Guid UserId);
         Task<bool> UpdatePasswordHashAsync(Guid? userId, string newPasswordHash);
         Task<(bool IsSuccess, string Message)> ChangePasswordHashAsync(string oldPasswordHash, string newPasswordHash, Guid? userId, Guid? modifiedBy);
+        /// <summary>Returns login-style data (role, permissions, images) by userId — used during token refresh.</summary>
+        Task<LoginResponse?> GetUserLoginDataAsync(Guid userId);
     }
 }

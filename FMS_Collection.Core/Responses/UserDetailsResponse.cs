@@ -9,6 +9,8 @@ namespace FMS_Collection.Core.Response
         public string? LastName { get; set; }
         public string? UserName { get; set; }
         public string? Password { get; set; }
+        public string? PasswordHash { get; set; }
+        public bool? IsSuperAdmin { get; set; }
         public string? EmailAddress { get; set; }
         public Guid? RoleId { get; set; }
         public string? RoleName { get; set; }

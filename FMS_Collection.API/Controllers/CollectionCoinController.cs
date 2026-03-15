@@ -1,82 +1,75 @@
 ﻿// API/Controllers/CoinNoteCollectionController.cs
-using Microsoft.AspNetCore.Mvc;
+using FMS_Collection.API.Authorization;
 using FMS_Collection.Application.Services;
 using FMS_Collection.Core.Request;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FMS_Collection.API.Controllers;
+
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
-public class CoinNoteCollectionController : ControllerBase
+[Produces("application/json")]
+public class CoinNoteCollectionController(CoinNoteCollectionService service) : ControllerBase
 {
-    private readonly CoinNoteCollectionService _service;
-
-    public CoinNoteCollectionController(CoinNoteCollectionService service)
-    {
-        _service = service;
-    }
+    private Guid CurrentUserId =>
+        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     [HttpGet]
-    [Route("GetAll")]
-    public async Task<IActionResult> GetAll()
+    [RequirePermission("Collection.View")]
+    public async Task<IActionResult> GetList()
     {
-        var result = await _service.GetAllCoinNoteCollectionsAsync();
+        var result = await service.GetCoinNoteCollectionListAsync(CurrentUserId);
         return Ok(result);
     }
 
-    [HttpGet]
-    [Route("GetList")]
-    public async Task<IActionResult> GetList(Guid userId)
-    {
-        var result = await _service.GetCoinNoteCollectionListAsync(userId);
-        return Ok(result);
-    }
-
-
-    [HttpGet]
-    [Route("GetSummary")]
+    [HttpGet("summary")]
+    [RequirePermission("Collection.View")]
     public async Task<IActionResult> GetSummary()
     {
-        var result = await _service.GetSummaryAsync();
+        var result = await service.GetSummaryAsync();
         return Ok(result);
     }
 
-    [HttpGet]
-    [Route("GetDetails")]
-    public async Task<IActionResult> GetDetails(Guid coinNoteCollectionId, Guid userId)
+    [HttpGet("{coinNoteCollectionId:guid}")]
+    [RequirePermission("Collection.View")]
+    public async Task<IActionResult> GetDetails(Guid coinNoteCollectionId)
     {
-        var result = await _service.GetCoinNoteCollectionDetailsAsync(coinNoteCollectionId, userId);
+        var result = await service.GetCoinNoteCollectionDetailsAsync(coinNoteCollectionId, CurrentUserId);
         return Ok(result);
     }
 
     [HttpPost]
-    [Route("Add")]
-    public async Task<IActionResult> Add([FromBody] CoinNoteCollectionRequest coinNoteCollectionRequest, Guid userId)
+    [RequirePermission("Collection.Create")]
+    public async Task<IActionResult> Add([FromBody] CoinNoteCollectionRequest request)
     {
-        var result = await _service.AddCoinNoteCollectionAsync(coinNoteCollectionRequest, userId);
+        var result = await service.AddCoinNoteCollectionAsync(request, CurrentUserId);
         return Ok(result);
     }
 
-    [HttpPost]
-    [Route("Update")]
-    public async Task<IActionResult> Update([FromBody] CoinNoteCollectionRequest coinNoteCollectionRequest, Guid userId)
+    [HttpPut]
+    [RequirePermission("Collection.Update")]
+    public async Task<IActionResult> Update([FromBody] CoinNoteCollectionRequest request)
     {
-        var result = await _service.UpdateCoinNoteCollectionAsync(coinNoteCollectionRequest, userId);
+        var result = await service.UpdateCoinNoteCollectionAsync(request, CurrentUserId);
         return Ok(result);
     }
 
-    [HttpPost]
-    [Route("UpdateCoinAIData")]
+    [HttpPost("update-ai-data")]
+    [RequirePermission("Collection.Update")]
     public async Task<IActionResult> UpdateCoinAIData()
     {
-        int count = await _service.UpdateCoinAIData();
+        int count = await service.UpdateCoinAIData();
         return Ok(count);
     }
 
-    [HttpGet]
-    [Route("Delete")]
-    public async Task<IActionResult> Delete(Guid coinNoteCollectionId, Guid userId)
+    [HttpDelete("{coinNoteCollectionId:guid}")]
+    [RequirePermission("Collection.Delete")]
+    public async Task<IActionResult> Delete(Guid coinNoteCollectionId)
     {
-        var result = await _service.DeleteCoinNoteCollectionAsync(coinNoteCollectionId, userId);
+        var result = await service.DeleteCoinNoteCollectionAsync(coinNoteCollectionId, CurrentUserId);
         return Ok(result);
     }
 }

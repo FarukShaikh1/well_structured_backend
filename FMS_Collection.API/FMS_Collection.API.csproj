@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -8,7 +8,26 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <!-- JWT Bearer authentication -->
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.15" />
+
+        <!-- Swagger with JWT badge in UI -->
         <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.1" />
+
+        <!-- Serilog structured logging -->
+        <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+        <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+
+        <!-- Health checks — SQL Server probe -->
+        <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="8.0.2" />
+
+        <!-- FluentValidation auto-registration -->
+        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2" />
+
+        <!-- Rate limiting is built-in to ASP.NET Core 8 (no extra package needed) -->
     </ItemGroup>
 
     <ItemGroup>
@@ -16,6 +35,7 @@
         <ProjectReference Include="..\FMS_Collection.Core\FMS_Collection.Core.csproj" />
         <ProjectReference Include="..\FMS_Collection.Infrastructure\FMS_Collection.Infrastructure.csproj" />
     </ItemGroup>
+
     <ItemGroup>
         <Content Include="EmailTemplates\**\*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

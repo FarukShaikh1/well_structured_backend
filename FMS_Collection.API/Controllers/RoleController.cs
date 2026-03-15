@@ -1,65 +1,59 @@
 ﻿// API/Controllers/RoleController.cs
-using Microsoft.AspNetCore.Mvc;
+using FMS_Collection.API.Authorization;
 using FMS_Collection.Application.Services;
 using FMS_Collection.Core.Request;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FMS_Collection.API.Controllers;
+
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
-public class RoleController : ControllerBase
+[Produces("application/json")]
+public class RoleController(RoleService service) : ControllerBase
 {
-    private readonly RoleService _service;
-
-    public RoleController(RoleService service)
-    {
-        _service = service;
-    }
+    private Guid CurrentUserId =>
+        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     [HttpGet]
-    [Route("GetAll")]
-    public async Task<IActionResult> GetAll()
-    {
-        var result = await _service.GetAllRolesAsync();
-        return Ok(result);
-    }
-
-    [HttpGet]
-    [Route("GetList")]
+    [RequirePermission("Role.View")]
     public async Task<IActionResult> GetList()
     {
-        var result = await _service.GetRoleListAsync();
+        var result = await service.GetRoleListAsync();
         return Ok(result);
     }
 
-    [HttpGet]
-    [Route("GetDetails")]
+    [HttpGet("{roleId:guid}")]
+    [RequirePermission("Role.View")]
     public async Task<IActionResult> GetDetails(Guid roleId)
     {
-        var result = await _service.GetRoleDetailsAsync(roleId);
+        var result = await service.GetRoleDetailsAsync(roleId);
         return Ok(result);
     }
 
     [HttpPost]
-    [Route("Add")]
-    public async Task<IActionResult> Add(RoleRequest role, Guid userId)
+    [RequirePermission("Role.Create")]
+    public async Task<IActionResult> Add([FromBody] RoleRequest role)
     {
-        await _service.AddRoleAsync(role, userId);
+        await service.AddRoleAsync(role, CurrentUserId);
         return Ok();
     }
 
-    [HttpPost]
-    [Route("Update")]
-    public async Task<IActionResult> Update(RoleRequest role, Guid userId)
+    [HttpPut]
+    [RequirePermission("Role.Update")]
+    public async Task<IActionResult> Update([FromBody] RoleRequest role)
     {
-        await _service.UpdateRoleAsync(role, userId);
+        await service.UpdateRoleAsync(role, CurrentUserId);
         return Ok();
     }
 
-    [HttpGet]
-    [Route("Delete")]
-    public async Task<IActionResult> Delete(Guid roleId, Guid userId)
+    [HttpDelete("{roleId:guid}")]
+    [RequirePermission("Role.Delete")]
+    public async Task<IActionResult> Delete(Guid roleId)
     {
-        await _service.DeleteRoleAsync(roleId, userId);
+        await service.DeleteRoleAsync(roleId, CurrentUserId);
         return Ok();
     }
 }
