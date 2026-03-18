@@ -238,13 +238,13 @@ try
     });
 
     app.UseResponseCompression();
-
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI(c =>
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "FMS Collection API v1"));
-    }
+    
+    //if (app.Environment.IsDevelopment())
+    //{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "FMS Collection API v1"));
+    //}
 
     app.UseCors("FrontendPolicy");
     app.UseRateLimiter();

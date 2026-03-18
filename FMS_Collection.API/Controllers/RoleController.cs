@@ -1,4 +1,4 @@
-﻿// API/Controllers/RoleController.cs
+// API/Controllers/RoleController.cs
 using FMS_Collection.API.Authorization;
 using FMS_Collection.Application.Services;
 using FMS_Collection.Core.Request;
@@ -21,39 +21,74 @@ public class RoleController(RoleService service) : ControllerBase
     [RequirePermission("Role.View")]
     public async Task<IActionResult> GetList()
     {
-        var result = await service.GetRoleListAsync();
-        return Ok(result);
+        try
+        {
+            var result = await service.GetRoleListAsync();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpGet("{roleId:guid}")]
     [RequirePermission("Role.View")]
     public async Task<IActionResult> GetDetails(Guid roleId)
     {
-        var result = await service.GetRoleDetailsAsync(roleId);
-        return Ok(result);
+        try
+        {
+            var result = await service.GetRoleDetailsAsync(roleId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpPost]
     [RequirePermission("Role.Create")]
     public async Task<IActionResult> Add([FromBody] RoleRequest role)
     {
-        await service.AddRoleAsync(role, CurrentUserId);
-        return Ok();
+        try
+        {
+            await service.AddRoleAsync(role, CurrentUserId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpPut]
     [RequirePermission("Role.Update")]
     public async Task<IActionResult> Update([FromBody] RoleRequest role)
     {
-        await service.UpdateRoleAsync(role, CurrentUserId);
-        return Ok();
+        try
+        {
+            await service.UpdateRoleAsync(role, CurrentUserId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpDelete("{roleId:guid}")]
     [RequirePermission("Role.Delete")]
     public async Task<IActionResult> Delete(Guid roleId)
     {
-        await service.DeleteRoleAsync(roleId, CurrentUserId);
-        return Ok();
+        try
+        {
+            await service.DeleteRoleAsync(roleId, CurrentUserId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 }

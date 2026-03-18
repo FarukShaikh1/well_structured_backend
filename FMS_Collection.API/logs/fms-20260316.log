@@ -1,0 +1,52 @@
+2026-03-16 10:02:26.046 +05:30 [INF] Starting FMS Collection API
+2026-03-16 10:02:31.669 +05:30 [INF] User profile is available. Using 'C:\Users\faruk.shaikh\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-16 10:02:33.215 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-16 10:02:33.216 +05:30 [INF] Hosting environment: Development
+2026-03-16 10:02:33.216 +05:30 [INF] Content root path: C:\Learning_Purpose_Projects\MyPersonalProject\backend\FMS_Collection.API
+2026-03-16 10:02:33.217 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44386/swagger/v1/swagger.json - null null
+2026-03-16 10:02:33.344 +05:30 [INF] HTTP GET /swagger/v1/swagger.json started | TraceId: 00-15e80b314ffb6c844cd5a5d74691665f-c8dcf09decffc637-00 | IP: ::1
+2026-03-16 10:02:33.954 +05:30 [INF] HTTP GET /swagger/v1/swagger.json responded 200 in 595.9588 ms
+2026-03-16 10:02:33.967 +05:30 [INF] HTTP GET /swagger/v1/swagger.json completed | Status: 200 | Duration: 638ms | User: anonymous | TraceId: 00-15e80b314ffb6c844cd5a5d74691665f-c8dcf09decffc637-00
+2026-03-16 10:02:33.985 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44386/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 780.5337ms
+2026-03-16 10:03:36.977 +05:30 [INF] Request starting HTTP/2 POST https://localhost:44386/api/User/login - application/json 73
+2026-03-16 10:03:37.033 +05:30 [INF] HTTP POST /api/User/login started | TraceId: 00-ca787d428e131200f55b23fe055317b0-eacc23c213ddc58e-00 | IP: ::1
+2026-03-16 10:03:37.062 +05:30 [INF] CORS policy execution failed.
+2026-03-16 10:03:37.063 +05:30 [INF] Request origin https://localhost:44386 does not have permission to access the resource.
+2026-03-16 10:03:37.465 +05:30 [INF] Executing endpoint 'FMS_Collection.API.Controllers.UserController.Login (FMS_Collection.API)'
+2026-03-16 10:03:37.579 +05:30 [INF] Route matched with {action = "Login", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(FMS_Collection.Core.Request.LoginRequest) on controller FMS_Collection.API.Controllers.UserController (FMS_Collection.API).
+2026-03-16 10:03:43.418 +05:30 [INF] Upgraded legacy password hash for user "c3d0a1d1-78f3-4128-8c22-c394ad7f55e5"
+2026-03-16 10:03:44.595 +05:30 [INF] Executing OkObjectResult, writing value of type 'FMS_Collection.Core.Common.ServiceResponse`1[[FMS_Collection.Core.Response.AuthResponse, FMS_Collection.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-16 10:03:44.649 +05:30 [INF] Executed action FMS_Collection.API.Controllers.UserController.Login (FMS_Collection.API) in 7062.4581ms
+2026-03-16 10:03:44.650 +05:30 [INF] Executed endpoint 'FMS_Collection.API.Controllers.UserController.Login (FMS_Collection.API)'
+2026-03-16 10:03:44.655 +05:30 [INF] HTTP POST /api/User/login responded 200 in 7620.3023 ms
+2026-03-16 10:03:44.656 +05:30 [INF] HTTP POST /api/User/login completed | Status: 200 | Duration: 7622ms | User: anonymous | TraceId: 00-ca787d428e131200f55b23fe055317b0-eacc23c213ddc58e-00
+2026-03-16 10:03:44.660 +05:30 [INF] Request finished HTTP/2 POST https://localhost:44386/api/User/login - 200 null application/json; charset=utf-8 7685.8107ms
+2026-03-16 10:04:14.767 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44386/api/Budget - null null
+2026-03-16 10:04:14.774 +05:30 [INF] HTTP GET /api/Budget started | TraceId: 00-abb8f85987006187ce30f68f7d431c6e-622828478627f7c6-00 | IP: ::1
+2026-03-16 10:04:14.977 +05:30 [INF] Executing endpoint 'FMS_Collection.API.Controllers.BudgetController.GetList (FMS_Collection.API)'
+2026-03-16 10:04:14.982 +05:30 [INF] Route matched with {action = "GetList", controller = "Budget"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetList() on controller FMS_Collection.API.Controllers.BudgetController (FMS_Collection.API).
+2026-03-16 10:04:15.312 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[FMS_Collection.Core.Response.BudgetResponse, FMS_Collection.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-16 10:04:15.354 +05:30 [INF] Executed action FMS_Collection.API.Controllers.BudgetController.GetList (FMS_Collection.API) in 372.3212ms
+2026-03-16 10:04:15.354 +05:30 [INF] Executed endpoint 'FMS_Collection.API.Controllers.BudgetController.GetList (FMS_Collection.API)'
+2026-03-16 10:04:15.355 +05:30 [INF] HTTP GET /api/Budget responded 200 in 579.1255 ms
+2026-03-16 10:04:15.355 +05:30 [INF] HTTP GET /api/Budget completed | Status: 200 | Duration: 581ms | User: c3d0a1d1-78f3-4128-8c22-c394ad7f55e5 | TraceId: 00-abb8f85987006187ce30f68f7d431c6e-622828478627f7c6-00
+2026-03-16 10:04:15.355 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44386/api/Budget - 200 null application/json; charset=utf-8 588.1771ms
+2026-03-16 10:21:06.135 +05:30 [INF] Starting FMS Collection API
+2026-03-16 10:21:08.582 +05:30 [INF] User profile is available. Using 'C:\Users\faruk.shaikh\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-16 10:21:09.418 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44386/swagger/v1/swagger.json - null null
+2026-03-16 10:21:09.505 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-16 10:21:09.508 +05:30 [INF] Hosting environment: Development
+2026-03-16 10:21:09.508 +05:30 [INF] Content root path: C:\Learning_Purpose_Projects\MyPersonalProject\backend\FMS_Collection.API
+2026-03-16 10:21:09.572 +05:30 [INF] HTTP GET /swagger/v1/swagger.json started | TraceId: 00-72dbd2f494564ae94f4c180f622434bf-3e27bee0a28c0bfa-00 | IP: ::1
+2026-03-16 10:21:09.907 +05:30 [INF] HTTP GET /swagger/v1/swagger.json responded 200 in 329.9832 ms
+2026-03-16 10:21:09.913 +05:30 [INF] HTTP GET /swagger/v1/swagger.json completed | Status: 200 | Duration: 351ms | User: anonymous | TraceId: 00-72dbd2f494564ae94f4c180f622434bf-3e27bee0a28c0bfa-00
+2026-03-16 10:21:09.919 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44386/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 536.057ms
+2026-03-16 10:26:29.567 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44386/api/CoinNoteCollection - null null
+2026-03-16 10:26:29.581 +05:30 [INF] HTTP GET /api/CoinNoteCollection started | TraceId: 00-894d1c3461cbbe38bcbb37fb03ef04f2-98085e101f4e1701-00 | IP: ::1
+2026-03-16 10:26:29.831 +05:30 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+FMS_Collection.API.Authorization.PermissionRequirement
+2026-03-16 10:26:29.841 +05:30 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-16 10:26:29.841 +05:30 [INF] HTTP GET /api/CoinNoteCollection responded 401 in 259.3013 ms
+2026-03-16 10:26:29.841 +05:30 [INF] HTTP GET /api/CoinNoteCollection completed | Status: 401 | Duration: 260ms | User: anonymous | TraceId: 00-894d1c3461cbbe38bcbb37fb03ef04f2-98085e101f4e1701-00
+2026-03-16 10:26:29.848 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44386/api/CoinNoteCollection - 401 null null 281.1276ms

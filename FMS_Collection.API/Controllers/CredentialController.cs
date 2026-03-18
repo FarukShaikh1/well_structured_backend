@@ -1,4 +1,4 @@
-﻿using FMS_Collection.API.Authorization;
+using FMS_Collection.API.Authorization;
 using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -20,40 +20,75 @@ public class CredentialController(ICredentialRepository credentialRepository) : 
     [RequirePermission("Credential.View")]
     public async Task<IActionResult> GetList()
     {
-        var result = await credentialRepository.GetByUserAsync(CurrentUserId);
-        return Ok(result);
+        try
+        {
+            var result = await credentialRepository.GetByUserAsync(CurrentUserId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpGet("{credentialId:guid}")]
     [RequirePermission("Credential.View")]
     public async Task<IActionResult> GetDetails(Guid credentialId)
     {
-        var result = await credentialRepository.GetDetailsAsync(credentialId);
-        if (result == null) return NotFound();
-        return Ok(result);
+        try
+        {
+            var result = await credentialRepository.GetDetailsAsync(credentialId);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpPost]
     [RequirePermission("Credential.Create")]
     public async Task<IActionResult> Add([FromBody] Credential credential)
     {
-        var newId = await credentialRepository.AddAsync(credential, CurrentUserId);
-        return Ok(newId);
+        try
+        {
+            var newId = await credentialRepository.AddAsync(credential, CurrentUserId);
+            return Ok(newId);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpPut]
     [RequirePermission("Credential.Update")]
     public async Task<IActionResult> Update([FromBody] Credential credential)
     {
-        await credentialRepository.UpdateAsync(credential, CurrentUserId);
-        return Ok();
+        try
+        {
+            await credentialRepository.UpdateAsync(credential, CurrentUserId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpDelete("{credentialId:guid}")]
     [RequirePermission("Credential.Delete")]
     public async Task<IActionResult> Delete(Guid credentialId)
     {
-        await credentialRepository.DeleteAsync(credentialId, CurrentUserId);
-        return Ok();
+        try
+        {
+            await credentialRepository.DeleteAsync(credentialId, CurrentUserId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 }

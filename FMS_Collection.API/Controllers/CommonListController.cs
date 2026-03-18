@@ -9,7 +9,6 @@ using System.Security.Claims;
 namespace FMS_Collection.API.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class CommonListController(CommonListService service) : ControllerBase
@@ -20,93 +19,176 @@ public class CommonListController(CommonListService service) : ControllerBase
     // ── CommonList endpoints ──────────────────────────────────────────────────
 
     [HttpGet]
-    [RequirePermission("CommonList.View")]
+    //[RequirePermission("CommonList.View")]
     public async Task<IActionResult> GetAll()
     {
-        var result = await service.GetAllCommonListAsync();
-        return Ok(result);
+        try
+        {
+            var result = await service.GetAllCommonListAsync();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpGet("{commonListId:guid}")]
-    [RequirePermission("CommonList.View")]
+    //[RequirePermission("CommonList.View")]
     public async Task<IActionResult> GetDetails(Guid commonListId)
     {
-        var result = await service.GetCommonListDetailsAsync(commonListId);
-        return Ok(result);
+        try
+        {
+            var result = await service.GetCommonListDetailsAsync(commonListId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
+    [Authorize]
     [HttpPost]
     [RequirePermission("CommonList.Create")]
     public async Task<IActionResult> Add([FromBody] CommonListRequest request)
     {
-        await service.AddCommonListAsync(request, CurrentUserId);
-        return Ok();
+        try
+        {
+            await service.AddCommonListAsync(request, CurrentUserId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
+    [Authorize]
     [HttpPut]
     [RequirePermission("CommonList.Update")]
     public async Task<IActionResult> Update([FromBody] CommonListRequest request)
     {
-        await service.UpdateCommonListAsync(request, CurrentUserId);
-        return Ok();
+        try
+        {
+            await service.UpdateCommonListAsync(request, CurrentUserId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
+    [Authorize]
     [HttpDelete("{commonListId:guid}")]
     [RequirePermission("CommonList.Delete")]
     public async Task<IActionResult> Delete(Guid commonListId)
     {
-        await service.DeleteCommonListAsync(commonListId, CurrentUserId);
-        return Ok();
+        try
+        {
+            await service.DeleteCommonListAsync(commonListId, CurrentUserId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     // ── CommonListItem endpoints ──────────────────────────────────────────────
 
     [HttpGet("items")]
-    [RequirePermission("CommonList.View")]
+    //[RequirePermission("CommonList.View")]
     public async Task<IActionResult> GetAllItems()
     {
-        var result = await service.GetAllCommonListItemAsync();
-        return Ok(result);
+        try
+        {
+            var result = await service.GetAllCommonListItemAsync();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
-    [HttpGet("{commonListId:guid}/items")]
-    [RequirePermission("CommonList.View")]
+    [HttpGet("items/{commonListId:guid}")]
+    //[RequirePermission("CommonList.View")]
     public async Task<IActionResult> GetItems(Guid commonListId)
     {
-        var result = await service.GetCommonListItemAsync(commonListId);
-        return Ok(result);
+        try
+        {
+            var result = await service.GetCommonListItemAsync(commonListId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
-    [HttpGet("items/{itemId:guid}")]
-    [RequirePermission("CommonList.View")]
+    [HttpGet("itemdetails/{itemId:guid}")]
+    //[RequirePermission("CommonList.View")]
     public async Task<IActionResult> GetItemDetails(Guid itemId)
     {
-        var result = await service.GetCommonListDetailsAsync(itemId);
-        return Ok(result);
+        try
+        {
+            var result = await service.GetCommonListDetailsAsync(itemId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
+    [Authorize]
     [HttpPost("items")]
     [RequirePermission("CommonList.Create")]
     public async Task<IActionResult> AddItem([FromBody] CommonListItemRequest request)
     {
-        await service.AddCommonListItemAsync(request, CurrentUserId);
-        return Ok();
+        try
+        {
+            await service.AddCommonListItemAsync(request, CurrentUserId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
+    [Authorize]
     [HttpPut("items")]
     [RequirePermission("CommonList.Update")]
     public async Task<IActionResult> UpdateItem([FromBody] CommonListItemRequest request)
     {
-        await service.UpdateCommonListItemAsync(request, CurrentUserId);
-        return Ok();
+        try
+        {
+            await service.UpdateCommonListItemAsync(request, CurrentUserId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
+    [Authorize]
     [HttpDelete("items/{itemId:guid}")]
     [RequirePermission("CommonList.Delete")]
     public async Task<IActionResult> DeleteItem(Guid itemId)
     {
-        await service.DeleteCommonListItemAsync(itemId, CurrentUserId);
-        return Ok();
+        try
+        {
+            await service.DeleteCommonListItemAsync(itemId, CurrentUserId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     // ── Reference data — no permission guard needed (read-only lookup data) ──
@@ -114,14 +196,28 @@ public class CommonListController(CommonListService service) : ControllerBase
     [HttpGet("common")]
     public async Task<IActionResult> GetCommonList()
     {
-        var result = await service.GetCommonListAsync();
-        return Ok(result);
+        try
+        {
+            var result = await service.GetCommonListAsync();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpGet("countries")]
     public async Task<IActionResult> GetCountryList()
     {
-        var result = await service.GetCountryListAsync();
-        return Ok(result);
+        try
+        {
+            var result = await service.GetCountryListAsync();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 }
