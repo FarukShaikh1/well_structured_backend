@@ -62,15 +62,20 @@ try
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
+                // Skip issuer/audience validation when the config value is empty —
+                // avoids SecurityTokenInvalidIssuerException on Azure where env vars
+                // may not be set and empty-string validation behaves unexpectedly.
+                ValidateIssuer = !string.IsNullOrEmpty(jwtSettings.Issuer),
+                ValidateAudience = !string.IsNullOrEmpty(jwtSettings.Audience),
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtSettings.Issuer,
                 ValidAudience = jwtSettings.Audience,
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
-                ClockSkew = TimeSpan.FromSeconds(30)
+                // 5 minutes is the safe standard for cloud deployments where
+                // instances may have small clock differences (30 seconds was too tight).
+                ClockSkew = TimeSpan.FromMinutes(5)
             };
             options.Events = new JwtBearerEvents
             {
@@ -79,6 +84,33 @@ try
                     if (ctx.Exception is SecurityTokenExpiredException)
                         ctx.Response.Headers["Token-Expired"] = "true";
                     return Task.CompletedTask;
+                },
+                // Return a JSON body for 401 so the Angular interceptor can parse it.
+                OnChallenge = async ctx =>
+                {
+                    ctx.HandleResponse();
+                    ctx.Response.StatusCode = 401;
+                    ctx.Response.ContentType = "application/problem+json";
+                    var body = JsonSerializer.Serialize(new
+                    {
+                        status = 401,
+                        title = "Unauthorized",
+                        detail = "Authentication required. Please log in."
+                    });
+                    await ctx.Response.WriteAsync(body);
+                },
+                // Return a JSON body for 403 so the Angular interceptor can parse it.
+                OnForbidden = async ctx =>
+                {
+                    ctx.Response.StatusCode = 403;
+                    ctx.Response.ContentType = "application/problem+json";
+                    var body = JsonSerializer.Serialize(new
+                    {
+                        status = 403,
+                        title = "Forbidden",
+                        detail = "You do not have permission to access this resource."
+                    });
+                    await ctx.Response.WriteAsync(body);
                 }
             };
         });
