@@ -17,26 +17,45 @@ public class OtpController(OtpService otpService) : ControllerBase
     [EnableRateLimiting("login")]
     public async Task<IActionResult> Send([FromBody] SendOtpRequest request)
     {
-        var result = await otpService.SendAsync(request);
-        return Ok(result);
+        try
+        {
+            var result = await otpService.SendAsync(request);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpPost("verify")]
     [EnableRateLimiting("login")]
     public async Task<IActionResult> Verify([FromBody] VerifyOtpRequest request)
     {
-        var result = await otpService.VerifyAsync(request);
-        return Ok(result);
+        try
+        {
+            var result = await otpService.VerifyAsync(request);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpPost("reset-password")]
     [EnableRateLimiting("login")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordWithOtpRequest request)
     {
-        var result = await otpService.ResetPasswordWithOtpAsync(request);
-        if (!result.Success) return BadRequest(result);
-        return Ok(result);
+        try
+        {
+            var result = await otpService.ResetPasswordWithOtpAsync(request);
+            if (!result.Success) return BadRequest(result);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 }
-
-

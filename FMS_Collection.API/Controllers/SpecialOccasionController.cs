@@ -1,4 +1,4 @@
-﻿// API/Controllers/SpecialOccasionController.cs
+// API/Controllers/SpecialOccasionController.cs
 using FMS_Collection.API.Authorization;
 using FMS_Collection.Application.Services;
 using FMS_Collection.Core.Request;
@@ -21,39 +21,74 @@ public class SpecialOccasionController(SpecialOccasionService service) : Control
     [RequirePermission("SpecialOccasion.View")]
     public async Task<IActionResult> GetList()
     {
-        var result = await service.GetDayListAsync(CurrentUserId);
-        return Ok(result);
+        try
+        {
+            var result = await service.GetDayListAsync(CurrentUserId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpGet("{dayId:guid}")]
     [RequirePermission("SpecialOccasion.View")]
     public async Task<IActionResult> GetDetails(Guid dayId)
     {
-        var result = await service.GetDayDetailsAsync(dayId, CurrentUserId);
-        return Ok(result);
+        try
+        {
+            var result = await service.GetDayDetailsAsync(dayId, CurrentUserId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpPost]
     [RequirePermission("SpecialOccasion.Create")]
     public async Task<IActionResult> Add([FromBody] SpecialOccasionRequest request)
     {
-        var result = await service.AddDayAsync(request, CurrentUserId);
-        return Ok(result);
+        try
+        {
+            var result = await service.AddDayAsync(request, CurrentUserId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpPut]
     [RequirePermission("SpecialOccasion.Update")]
     public async Task<IActionResult> Update([FromBody] SpecialOccasionRequest request)
     {
-        var result = await service.UpdateDayAsync(request, CurrentUserId);
-        return Ok(result);
+        try
+        {
+            var result = await service.UpdateDayAsync(request, CurrentUserId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpDelete("{dayId:guid}")]
     [RequirePermission("SpecialOccasion.Delete")]
     public async Task<IActionResult> Delete(Guid dayId)
     {
-        var result = await service.DeleteDayAsync(dayId, CurrentUserId);
-        return Ok(result);
+        try
+        {
+            var result = await service.DeleteDayAsync(dayId, CurrentUserId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 }

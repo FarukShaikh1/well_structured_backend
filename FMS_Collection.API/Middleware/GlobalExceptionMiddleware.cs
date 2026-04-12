@@ -40,8 +40,7 @@ namespace FMS_Collection.API.Middleware
             context.Response.ContentType = "application/problem+json";
             context.Response.StatusCode = statusCode;
 
-            // Only include error detail in non-production environments
-            string? detail = env.IsDevelopment() ? ex.Message : null;
+            string? detail = ex.Message;
 
             // Include validation errors if available
             Dictionary<string, string[]>? errors = null;

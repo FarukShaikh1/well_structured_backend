@@ -19,10 +19,13 @@ namespace FMS_Collection.API.Authorization
 
         public Task<AuthorizationPolicy?> GetPolicyAsync(string policyName)
         {
-            // Any policy name that doesn't contain a colon is treated as a permission
+            // Any policy name that doesn't contain a colon is treated as a permission.
+            // RequireAuthenticatedUser() ensures unauthenticated requests get 401 even
+            // when [Authorize] is not duplicated alongside [RequirePermission].
             if (!string.IsNullOrEmpty(policyName) && !policyName.Contains(':'))
             {
                 var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
                     .AddRequirements(new PermissionRequirement(policyName))
                     .Build();
                 return Task.FromResult<AuthorizationPolicy?>(policy);

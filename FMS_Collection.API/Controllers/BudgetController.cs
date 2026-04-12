@@ -1,4 +1,4 @@
-﻿using FMS_Collection.API.Authorization;
+using FMS_Collection.API.Authorization;
 using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -20,40 +20,75 @@ public class BudgetController(IBudgetRepository budgetRepository) : ControllerBa
     [RequirePermission("Transaction.View")]
     public async Task<IActionResult> GetList()
     {
-        var result = await budgetRepository.GetByUserAsync(CurrentUserId);
-        return Ok(result);
+        try
+        {
+            var result = await budgetRepository.GetByUserAsync(CurrentUserId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpGet("{budgetId:guid}")]
     [RequirePermission("Transaction.View")]
     public async Task<IActionResult> GetDetails(Guid budgetId)
     {
-        var result = await budgetRepository.GetDetailsAsync(budgetId);
-        if (result == null) return NotFound();
-        return Ok(result);
+        try
+        {
+            var result = await budgetRepository.GetDetailsAsync(budgetId);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpPost]
     [RequirePermission("Transaction.Create")]
     public async Task<IActionResult> Add([FromBody] Budget budget)
     {
-        var newId = await budgetRepository.AddAsync(budget, CurrentUserId);
-        return Ok(newId);
+        try
+        {
+            var newId = await budgetRepository.AddAsync(budget, CurrentUserId);
+            return Ok(newId);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpPut]
     [RequirePermission("Transaction.Update")]
     public async Task<IActionResult> Update([FromBody] Budget budget)
     {
-        await budgetRepository.UpdateAsync(budget, CurrentUserId);
-        return Ok();
+        try
+        {
+            await budgetRepository.UpdateAsync(budget, CurrentUserId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpDelete("{budgetId:guid}")]
     [RequirePermission("Transaction.Delete")]
     public async Task<IActionResult> Delete(Guid budgetId)
     {
-        await budgetRepository.DeleteAsync(budgetId, CurrentUserId);
-        return Ok();
+        try
+        {
+            await budgetRepository.DeleteAsync(budgetId, CurrentUserId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 }

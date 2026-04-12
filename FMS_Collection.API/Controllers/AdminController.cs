@@ -24,36 +24,71 @@ public class AdminController(AdminService service) : ControllerBase
     [HttpGet("permissions")]
     public async Task<IActionResult> GetAllPermissions()
     {
-        var result = await service.GetAllPermissionsAsync();
-        return Ok(result);
+        try
+        {
+            var result = await service.GetAllPermissionsAsync();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpGet("permissions/role/{roleId:guid}")]
     public async Task<IActionResult> GetPermissionsByRole(Guid roleId)
     {
-        var result = await service.GetPermissionsByRoleAsync(roleId);
-        return Ok(result);
+        try
+        {
+            var result = await service.GetPermissionsByRoleAsync(roleId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpPost("permissions")]
     public async Task<IActionResult> AddPermission([FromBody] PermissionRequest request)
     {
-        var result = await service.AddPermissionAsync(request, CurrentUserId);
-        return Ok(result);
+        try
+        {
+            var result = await service.AddPermissionAsync(request, CurrentUserId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpPut("permissions/{permissionId:guid}")]
     public async Task<IActionResult> UpdatePermission(Guid permissionId, [FromBody] PermissionRequest request)
     {
-        var result = await service.UpdatePermissionAsync(permissionId, request, CurrentUserId);
-        return Ok(result);
+        try
+        {
+            var result = await service.UpdatePermissionAsync(permissionId, request, CurrentUserId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpDelete("permissions/{permissionId:guid}")]
     public async Task<IActionResult> DeletePermission(Guid permissionId)
     {
-        var result = await service.DeletePermissionAsync(permissionId, CurrentUserId);
-        return Ok(result);
+        try
+        {
+            var result = await service.DeletePermissionAsync(permissionId, CurrentUserId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     // ── Role–Permission assignment ─────────────────────────────────────────────
@@ -61,15 +96,29 @@ public class AdminController(AdminService service) : ControllerBase
     [HttpPost("roles/permissions")]
     public async Task<IActionResult> AssignPermissionsToRole([FromBody] AssignRolePermissionsRequest request)
     {
-        var result = await service.AssignPermissionsToRoleAsync(request, CurrentUserId);
-        return Ok(result);
+        try
+        {
+            var result = await service.AssignPermissionsToRoleAsync(request, CurrentUserId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpDelete("roles/{roleId:guid}/permissions/{permissionId:guid}")]
     public async Task<IActionResult> RevokePermissionFromRole(Guid roleId, Guid permissionId)
     {
-        var result = await service.RevokePermissionFromRoleAsync(roleId, permissionId, CurrentUserId);
-        return Ok(result);
+        try
+        {
+            var result = await service.RevokePermissionFromRoleAsync(roleId, permissionId, CurrentUserId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     // ── Audit logs ────────────────────────────────────────────────────────────
@@ -81,8 +130,15 @@ public class AdminController(AdminService service) : ControllerBase
         [FromQuery] Guid? userId = null,
         [FromQuery] string? action = null)
     {
-        var result = await service.GetAuditLogsAsync(pageNumber, pageSize, userId, action);
-        return Ok(result);
+        try
+        {
+            var result = await service.GetAuditLogsAsync(pageNumber, pageSize, userId, action);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [HttpGet("audit-logs/count")]
@@ -90,7 +146,14 @@ public class AdminController(AdminService service) : ControllerBase
         [FromQuery] Guid? userId = null,
         [FromQuery] string? action = null)
     {
-        var result = await service.GetAuditLogCountAsync(userId, action);
-        return Ok(result);
+        try
+        {
+            var result = await service.GetAuditLogCountAsync(userId, action);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 }
