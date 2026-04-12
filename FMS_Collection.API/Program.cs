@@ -235,6 +235,7 @@ try
     builder.Services.AddScoped<INotificationSender, NotificationSender>();
     builder.Services.AddSingleton<IOtpRepository, OtpRepository>();
     builder.Services.AddSingleton<IErrorRepository, ErrorRepository>();
+    builder.Services.AddScoped<IFamilyRepository, FamilyRepository>();
 
     // ── Security services ─────────────────────────────────────────────────────
     builder.Services.AddScoped<ITokenService, TokenService>();
@@ -255,6 +256,7 @@ try
     builder.Services.AddScoped<OtpService>();
     builder.Services.AddScoped<AzureBlobService>();
     builder.Services.AddScoped<AdminService>();
+    builder.Services.AddScoped<FamilyService>();
 
     // ── Build app ─────────────────────────────────────────────────────────────
     var app = builder.Build();
