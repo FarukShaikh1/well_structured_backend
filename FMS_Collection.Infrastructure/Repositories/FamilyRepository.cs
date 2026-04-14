@@ -100,7 +100,6 @@ namespace FMS_Collection.Infrastructure.Repositories
                 CommandType    = CommandType.StoredProcedure,
                 CommandTimeout = 30
             };
-            cmd.Parameters.AddWithValue("@PersonId",        newId);
             cmd.Parameters.AddWithValue("@FirstName",       request.FirstName);
             cmd.Parameters.AddWithValue("@LastName",        request.LastName);
             cmd.Parameters.AddWithValue("@DateOfBirth",     (object?)request.DateOfBirth ?? DBNull.Value);

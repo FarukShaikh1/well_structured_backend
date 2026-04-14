@@ -71,7 +71,7 @@ public class DocumentController(DocumentService service, AssetService assetServi
         }
     }
 
-    [HttpGet("{documentId:guid}/download-url")]
+    [HttpGet("download-url/{documentId:guid}")]
     [RequirePermission("Document.Download")]
     public async Task<IActionResult> GetDownloadUrl(Guid documentId)
     {
