@@ -9,7 +9,7 @@ using System.Security.Claims;
 namespace FMS_Collection.API.Controllers;
 
 [ApiController]
-[Authorize]
+//[Authorize]
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class FamilyController(FamilyService service) : ControllerBase
@@ -21,7 +21,7 @@ public class FamilyController(FamilyService service) : ControllerBase
 
     /// <summary>Search persons by name (max 20 results).</summary>
     [HttpGet("search")]
-    [RequirePermission("Family.View")]
+    //[RequirePermission("Family.View")]
     public async Task<IActionResult> Search([FromQuery] string name)
     {
         try
@@ -42,7 +42,7 @@ public class FamilyController(FamilyService service) : ControllerBase
 
     /// <summary>Return full graph (nodes + edges) for a given root person.</summary>
     [HttpGet("{personId:guid}/graph")]
-    [RequirePermission("Family.View")]
+    //[RequirePermission("Family.View")]
     public async Task<IActionResult> GetGraph(Guid personId, [FromQuery] int maxDepth = 5)
     {
         try
@@ -57,7 +57,7 @@ public class FamilyController(FamilyService service) : ControllerBase
     }
 
     // ── Person CRUD ───────────────────────────────────────────────────────────
-
+    [Authorize]
     [HttpPost("person")]
     [RequirePermission("Family.Create")]
     public async Task<IActionResult> AddPerson([FromBody] FamilyPersonRequest request)
@@ -73,6 +73,7 @@ public class FamilyController(FamilyService service) : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPut("person")]
     [RequirePermission("Family.Update")]
     public async Task<IActionResult> UpdatePerson([FromBody] FamilyPersonRequest request)
@@ -93,6 +94,7 @@ public class FamilyController(FamilyService service) : ControllerBase
 
     // ── Relationship CRUD ─────────────────────────────────────────────────────
 
+    [Authorize]
     [HttpPost("relationship")]
     [RequirePermission("Family.Create")]
     public async Task<IActionResult> AddRelationship([FromBody] FamilyRelationshipRequest request)
@@ -108,6 +110,7 @@ public class FamilyController(FamilyService service) : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpDelete("relationship/{relationshipId:guid}")]
     [RequirePermission("Family.Delete")]
     public async Task<IActionResult> DeleteRelationship(Guid relationshipId)
