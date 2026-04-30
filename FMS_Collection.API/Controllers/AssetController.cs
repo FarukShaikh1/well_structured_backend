@@ -16,9 +16,9 @@ public class AssetController(AssetService service) : ControllerBase
 {
     private Guid CurrentUserId =>
         Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
+    [AllowAnonymous]
     [HttpGet("{assetId:guid}")]
-    [RequirePermission("Asset.View")]
+    //[RequirePermission("Asset.View")]
     public async Task<IActionResult> GetDetails(Guid assetId)
     {
         try
