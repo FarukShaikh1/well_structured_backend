@@ -227,6 +227,45 @@ namespace FMS_Collection.Infrastructure.Repositories
             return Transactions;
         }
 
+        public async Task<List<TransactionReportResponse>> GetEmergencyReturnReportAsync(Guid userId)
+        {
+            var Transactions = new List<TransactionReportResponse>();
+            try
+            {
+                using var conn = _dbFactory.CreateConnection();
+                using var cmd = new SqlCommand("EmergencyReturnReport_Get", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.CommandTimeout = 600;
+                cmd.Parameters.Add(new SqlParameter("@in_UserId", SqlDbType.UniqueIdentifier) { Value = userId });
+                await conn.OpenAsync();
+
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    Transactions.Add(new TransactionReportResponse
+                    {
+                        FirstDate = reader["FirstDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["FirstDate"])) : (DateOnly?)null,
+                        LastDate = reader["LastDate"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["LastDate"])) : (DateOnly?)null,
+                        SourceOrReason = reader["SourceOrReason"] != DBNull.Value ? reader["SourceOrReason"].ToString() : null,
+                        Description = reader["Descriptions"] != DBNull.Value ? reader["Descriptions"].ToString() : null,
+                        TakenAmount = reader["TakenAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TakenAmount"]) : (decimal?)null,
+                        GivenAmount = reader["GivenAmount"] != DBNull.Value ? Convert.ToDecimal(reader["GivenAmount"]) : (decimal?)null,
+                        TotalAmount = reader["TotalAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TotalAmount"]) : (decimal?)null,
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+
+            }
+
+            return Transactions;
+        }
+
         public async Task<List<BudgetWiseTransactionReportResponse>> GetBudgetWiseReportAsync(TransactionFilterRequest filter, Guid userId)
         {
             var Transactions = new List<BudgetWiseTransactionReportResponse>();

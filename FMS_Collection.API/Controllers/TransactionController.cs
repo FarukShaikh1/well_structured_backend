@@ -76,6 +76,21 @@ public class TransactionController(TransactionService service) : ControllerBase
         }
     }
 
+    [HttpGet("report/emergency-return")]
+    [RequirePermission("Transaction.View")]
+    public async Task<IActionResult> GetEmergencyReturnReport()
+    {
+        try
+        {
+            var response = await service.GetEmergencyReturnReportAsync(CurrentUserId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
+    }
+
     //[HttpPost("report/budget-wise")]
     //[RequirePermission("Transaction.View")]
     //public async Task<IActionResult> GetBudgetWiseReport([FromBody] TransactionFilterRequest filter)

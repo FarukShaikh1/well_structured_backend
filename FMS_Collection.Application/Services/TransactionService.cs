@@ -52,6 +52,14 @@ namespace FMS_Collection.Application.Services
             );
         }
 
+        public async Task<ServiceResponse<List<TransactionReportResponse>>> GetEmergencyReturnReportAsync(Guid userId)
+        {
+            return await ServiceExecutor.ExecuteAsync(
+                () => _repository.GetEmergencyReturnReportAsync(userId),
+                FMS_Collection.Core.Constants.Constants.Messages.TransactionReportFetchedSuccessfully
+            );
+        }
+
         public async Task<ServiceResponse<List<BudgetWiseTransactionReportResponse>>> GetBudgetWiseReportAsync(TransactionFilterRequest filter, Guid userId)
         {
             return await ServiceExecutor.ExecuteAsync(
