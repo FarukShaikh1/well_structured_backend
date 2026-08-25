@@ -78,7 +78,9 @@ public class DocumentController(DocumentService service, AssetService assetServi
         try
         {
             var response = await service.GetDocumentDetailsAsync(documentId);
-            var url = await service.GetDownloadSasUrl(response.Data!.OriginalPath, response.Data.DocumentName);
+            string extension = Path.GetExtension(response!.Data!.OriginalPath);
+
+            var url = await service.GetDownloadSasUrl(response.Data!.OriginalPath, response.Data.DocumentName+extension);
             return Ok(url);
         }
         catch (Exception ex)

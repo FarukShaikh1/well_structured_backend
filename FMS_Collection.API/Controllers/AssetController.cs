@@ -103,7 +103,8 @@ public class AssetController(AssetService service) : ControllerBase
     }
 
     [HttpGet("download")]
-    [RequirePermission("Asset.Download")]
+    //[RequirePermission("Asset.Download")]
+    [RequirePermission("Asset.View")]
     public async Task<IActionResult> DownloadFile([FromQuery] string imagePath)
     {
         try
@@ -124,12 +125,13 @@ public class AssetController(AssetService service) : ControllerBase
     }
 
     [HttpGet("download-folder")]
-    [RequirePermission("Asset.Download")]
-    public async Task<IActionResult> DownloadZip([FromQuery] string containerName, [FromQuery] string folderPath)
+    [RequirePermission("Asset.View")]
+    //[RequirePermission("Asset.Download")]
+    public async Task<IActionResult> DownloadZip([FromQuery] string folderPath)
     {
         try
         {
-            byte[] zipBytes = await service.DownloadFolderAsZipAsync(containerName, folderPath);
+            byte[] zipBytes = await service.DownloadFolderAsZipAsync(folderPath);
             if (zipBytes == null || zipBytes.Length == 0)
                 return NotFound("No files found in folder.");
 

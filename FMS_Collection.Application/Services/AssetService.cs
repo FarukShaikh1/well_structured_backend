@@ -234,9 +234,9 @@ namespace FMS_Collection.Application.Services
             return count;
         }
 
-        public async Task<byte[]> DownloadFolderAsZipAsync(string containerName, string folderPath)
+        public async Task<byte[]> DownloadFolderAsZipAsync(string folderPath)
         {
-            return await _blobService.DownloadFolderAsZipAsync(containerName, folderPath);
+            return await _blobService.DownloadFolderAsZipAsync(folderPath);
         }
 
         public async Task<byte[]> DownloadFileAsync(string blobPath)

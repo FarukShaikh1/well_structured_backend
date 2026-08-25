@@ -96,7 +96,7 @@ public class AzureBlobService
         return blobClient.GenerateSasUri(sasBuilder).ToString();
     }
 
-    public async Task<byte[]> DownloadFolderAsZipAsync(string containerName, string folderPath)
+    public async Task<byte[]> DownloadFolderAsZipAsync(string folderPath)
     {
         BlobContainerClient container = _blobServiceClient.GetBlobContainerClient(_containerName);
 
