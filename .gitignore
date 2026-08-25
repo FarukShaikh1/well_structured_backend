@@ -22,3 +22,8 @@
 /FMS_Collection.Core/bin/Release/net8.0
 /FMS_Collection.Infrastructure/bin/Release/net8.0
 /PublishedFolder
+/FMS_Collection.API/bin
+/FMS_Collection.Application/bin
+/FMS_Collection.Core/bin
+/FMS_Collection.Infrastructure/bin
+/FMS_Collection.Web/bin/Debug/net10.0
