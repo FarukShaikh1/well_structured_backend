@@ -231,6 +231,7 @@ try
     builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
     builder.Services.AddScoped<IRoutineRepository, RoutineRepository>();
     builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
+    builder.Services.AddScoped<IFoodMenuRepository, FoodMenuRepository>();
     builder.Services.AddScoped<ICredentialRepository, CredentialRepository>();
     builder.Services.AddScoped<INotificationSender, NotificationSender>();
     builder.Services.AddSingleton<IOtpRepository, OtpRepository>();
