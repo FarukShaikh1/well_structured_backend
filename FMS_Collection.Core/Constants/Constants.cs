@@ -133,6 +133,45 @@
             public const string PasswordReset = "password_reset";
             public const string Login = "Login";
         }
+
+        public struct EmailTemplateCodes
+        {
+            public const string OtpVerification = "OTP_VERIFICATION";
+
+            public const string RegistrationSubmitted = "REGISTRATION_SUBMITTED";
+
+            public const string EmailVerified = "EMAIL_VERIFIED";
+
+            public const string NewRegistrationAdmin = "NEW_REGISTRATION_ADMIN";
+
+            public const string RegistrationApproved = "REGISTRATION_APPROVED";
+
+            public const string RegistrationRejected = "REGISTRATION_REJECTED";
+
+            public const string PasswordResetOtp = "PASSWORD_RESET_OTP";
+
+            public const string PasswordChanged = "PASSWORD_CHANGED";
+
+            public const string AccountLocked = "ACCOUNT_LOCKED";
+
+            public const string LoginAlert = "LOGIN_ALERT";
+
+            public const string AccountActivated = "ACCOUNT_ACTIVATED";
+
+            public const string AccountDeactivated = "ACCOUNT_DEACTIVATED";
+
+            public const string RoleChanged = "ROLE_CHANGED";
+
+            public const string NewUserCreated = "NEW_USER_CREATED";
+
+            public const string AdminSystemNotification = "ADMIN_SYSTEM_NOTIFICATION";
+
+            public const string BirthdayWish = "BIRTHDAY_WISH";
+
+            public const string AnniversaryWish = "ANNIVERSARY_WISH";
+
+            public const string OccasionReminder = "OCCASION_REMINDER";
+        }
         public struct Permissions
         {
             public const string None = "None";
