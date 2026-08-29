@@ -17,6 +17,7 @@ namespace FMS_Collection.Application.Services
         ITokenService tokenService,
         IPasswordHasher passwordHasher,
         IAuditService auditService,
+        EmailService emailService,
         OtpService otpService,
         AzureBlobService blobService,
         IMemoryCache cache,
@@ -58,19 +59,34 @@ namespace FMS_Collection.Application.Services
                     //await repository.UpdatePasswordHashAsync(loginData.Id, newHash);
                     logger.LogInformation("Upgraded legacy password hash for user {UserId}", loginData.Id);
                 }
-
                 // OTP flow — don't issue tokens yet
                 if (loginData.IsOtpRequired)
                 {
-                    await otpService.SendAsync(new SendOtpRequest
-                    {
-                        EmailId = loginData.EmailAddress!,
-                        Purpose = Constants.OtpPurpose.Login
-                    });
+                    var otp = RandomGeneratorService.GenerateNumericOtp(6);
+                    SendEmailOtpRequest otpRequest = new SendEmailOtpRequest { EmailId = loginData.EmailAddress, OtpCode = otp, Purpose = "Login" };
+                    await otpService.StoreOtpAsync(otpRequest, loginData.Id);
+                    var success = await emailService.SendAsync(loginData.EmailAddress, "OTP_VERIFICATION",
+                     new Dictionary<string, string>
+                     {
+                         ["UserName"] = loginData.UserName,
+                         ["Email"] = loginData.EmailAddress,
+                         ["Otp"] = otp,
+                         ["ExpiryMinutes"] = "10",
+                         ["PurposeText"] = "login",
+                         ["Year"] = DateTime.UtcNow.Year.ToString(),
+                         ["SupportEmail"] = "farukshaikh908@gmail.com"
+                     });
 
-                    return ServiceResponse<AuthResponse>.Ok(
-                        new AuthResponse { IsOtpRequired = true, UserId = loginData.Id!.Value },
-                        "OTP sent to your registered email.");
+                    if (success)
+                    {
+                        return ServiceResponse<AuthResponse>.Ok(
+                            new AuthResponse { IsOtpRequired = true, UserId = loginData.Id!.Value, UserName = loginData.UserName, EmailAddress = loginData.EmailAddress },
+                            "OTP sent to your registered email.");
+                    }
+                    return ServiceResponse<AuthResponse>.Fail(
+                    "Failed to send OTP to your registered email.",
+                    500);
+
                 }
 
                 var authResponse = await BuildAuthResponseAsync(loginData);
@@ -156,11 +172,11 @@ namespace FMS_Collection.Application.Services
             user.Password = passwordHasher.Hash(plainPassword);
 
             var id = await repository.AddAsync(user, createdBy);
-            if (id != Guid.Empty)
-                await otpService.SendWelcomeEmailAsync(user.EmailAddress, plainPassword);
+            //if (id != Guid.Empty)
+            //    await otpService.SendWelcomeEmailAsync(user.EmailAddress, plainPassword);
 
             await auditService.LogAsync(createdBy, "UserCreated", "User", id.ToString(),
-                newValues: new { user.EmailAddress});
+                newValues: new { user.EmailAddress });
 
             return id;
         }
@@ -212,6 +228,11 @@ namespace FMS_Collection.Application.Services
                 Constants.Messages.UserPermissionsUpdatedSuccessfully);
         }
 
+
+        // ── User registration module ───────────────────────────────────────────────
+
+
+
         // ── Module list (cached) ───────────────────────────────────────────────
 
         public async Task<ServiceResponse<List<ModuleListResponse>>> GetModuleListAsync()
@@ -235,6 +256,7 @@ namespace FMS_Collection.Application.Services
                 Constants.Messages.UserPermissionsFetchedSuccessfully,
                 logger);
         }
+
 
         // ── Private helpers ────────────────────────────────────────────────────
 

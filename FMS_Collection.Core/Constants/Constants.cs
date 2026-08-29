@@ -108,6 +108,7 @@
             public const string DayDeletedSuccessfully = "Day deleted successfully";
 
             // OTP
+            public const string OtpStoredSuccessfully = "OTP stored successfully";
             public const string OtpSentSuccessfully = "OTP sent successfully";
             public const string WelcomeInviteSentSuccessfully = "Welcome invite sent successfully";
             public const string OtpVerifiedSuccessfully = "OTP verified successfully";

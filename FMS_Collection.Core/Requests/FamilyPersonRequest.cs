@@ -1,5 +1,5 @@
 // Core/Request/FamilyPersonRequest.cs
-namespace FMS_Collection.Core.Request
+namespace FMS_Collection.Core.Requests
 {
     public class FamilyPersonRequest
     {

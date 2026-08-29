@@ -13,20 +13,21 @@ namespace FMS_Collection.API.Controllers;
 [Produces("application/json")]
 public class OtpController(OtpService otpService) : ControllerBase
 {
-    [HttpPost("send")]
-    [EnableRateLimiting("login")]
-    public async Task<IActionResult> Send([FromBody] SendOtpRequest request)
-    {
-        try
-        {
-            var result = await otpService.SendAsync(request);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
-        }
-    }
+    //[HttpPost("send")]
+    //[EnableRateLimiting("login")]
+    //public async Task<IActionResult> Send([FromBody] SendEmailOtpRequest request)
+    //{
+    //    try
+    //    {
+    //        Guid createdBy = Guid.Parse("C3D0A1D1-78F3-4128-8C22-C394AD7F55E5");
+    //        var result = await otpService.SendOtpEmailAsync(request, createdBy);
+    //        return Ok(result);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+    //    }
+    //}
 
     [HttpPost("verify")]
     [EnableRateLimiting("login")]

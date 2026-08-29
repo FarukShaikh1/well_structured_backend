@@ -1,7 +1,9 @@
 ﻿using FMS_Collection.Core.Common;
 using FMS_Collection.Core.Constants;
+using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Interfaces;
 using FMS_Collection.Core.Request;
+using static System.Net.WebRequestMethods;
 
 namespace FMS_Collection.Application.Services
 {
@@ -22,57 +24,36 @@ namespace FMS_Collection.Application.Services
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<ServiceResponse<bool>> SendAsync(SendOtpRequest request)
+        public async Task<ServiceResponse<bool>> StoreOtpAsync(SendEmailOtpRequest request, Guid? createdBy)
         {
             return await ServiceExecutor.ExecuteAsync(async () =>
             {
-                // Resolve user by input (username/email/phone) using UserRepository methods
-                var user = await _userRepository.GetUserDetailsAsync(null, request.EmailId);
-
-                if (user.Id == null) throw new Exception("User not found");
-
-                var otp = RandomGeneratorService.GenerateNumericOtp(6);
-                var key = BuildKey(user.Id, user.EmailAddress ?? string.Empty, request.Purpose);
+                var key = BuildKey(request.EmailId ?? string.Empty, request.Purpose);
                 var expiresOn = DateTime.Now.AddMinutes(30);
-                await _otpRepository.SetAsync(key, otp, request.Purpose, expiresOn, user.Id);
+                await _otpRepository.SetAsync(key, request.OtpCode, request.Purpose, expiresOn, createdBy);
+            }, Constants.Messages.OtpStoredSuccessfully);
+        }
 
-                // ---------- EMAIL ----------
-                if (!string.IsNullOrWhiteSpace(user.EmailAddress))
-                {
-                    var templateValues = new Dictionary<string, string>
-                    {
-                        { "EmailAddress", user.EmailAddress ?? "Your Email Address" },
-                        { "UserName", user.FirstName ?? "User" },
-                        { "Otp", otp },
-                        { "Purpose", request.Purpose },
-                        { "AppUrl", AppSettings.SiteLiveUrl },
-                        { "ExpiryMinutes", "30" },
-                        { "Year", DateTime.Now.Year.ToString() }
-                    };
-                    string subject = "Your OTP From FMS Collection";
+        public async Task<ServiceResponse<bool>> SendMobileOtpAsync(SendMobileOtpRequest request, Guid? createdBy)
+        {
+            return await ServiceExecutor.ExecuteAsync(async () =>
+            {
 
-                    var htmlBody = await _sender.GetTemplateAsync(
-                        "OtpEmail.html",
-                        templateValues
-                    );
-
-                    await _sender.SendEmailAsync(
-                        user.EmailAddress,
-                        subject,
-                        htmlBody,
-                        isBodyHtml: true
-                    );
-                }
+                var key = BuildKey(request.MobileNumber ?? string.Empty, request.Purpose);
+                var expiresOn = DateTime.Now.AddMinutes(30);
+                await _otpRepository.SetAsync(key, request.OtpCode, request.Purpose, expiresOn, createdBy);
 
                 // ---------- SMS ----------
-                if (!string.IsNullOrWhiteSpace(user.MobileNumber))
+                if (!string.IsNullOrWhiteSpace(request.MobileNumber))
                 {
-                    var smsMessage = $"Your OTP is {otp}. It is valid for 30 minutes.";
-                    await _sender.SendSmsAsync(user.MobileNumber, smsMessage);
+                    var smsMessage = $"Your OTP is {request.OtpCode}. It is valid for 30 minutes.";
+                    await _sender.SendSmsAsync(request.MobileNumber, smsMessage);
                 }
+
                 return true;
             }, Constants.Messages.OtpSentSuccessfully);
         }
+
 
         public async Task<ServiceResponse<bool>> SendWelcomeEmailAsync(string emailAddress, string planePassword)
         {
@@ -87,7 +68,7 @@ namespace FMS_Collection.Application.Services
 
                     string purpose = "Welcome new user";
                     // Build OTP key
-                    var key = BuildKey(user.Id.Value, user.EmailAddress ?? "", purpose);
+                    var key = BuildKey(user.EmailAddress ?? "", purpose);
 
                     // OTP expiration (optional)
                     DateTime expiresOn = DateTime.Now.AddMinutes(24000);
@@ -129,7 +110,7 @@ namespace FMS_Collection.Application.Services
             var user = await _userRepository.GetUserDetailsAsync(null, request.EmailId);
 
             if (user == null) throw new Exception("User not found");
-            var key = BuildKey(user.Id, user.EmailAddress ?? string.Empty, request.Purpose);
+            var key = BuildKey(request.EmailId ?? string.Empty, request.Purpose);
             var entry = await _otpRepository.GetAsync(key);
             if (!entry.Exists || !string.Equals(entry.OtpCode, request.OtpCode, StringComparison.Ordinal))
             {
@@ -182,9 +163,9 @@ namespace FMS_Collection.Application.Services
             }, Constants.Messages.PasswordResetSuccessful);
         }
 
-        private static string BuildKey(Guid? userId, string emailId, string purpose)
+        private static string BuildKey(string emailId, string purpose)
         {
-            return $"otp:{userId}:{purpose}:{emailId.ToLowerInvariant()}";
+            return $"otp:{emailId.ToLowerInvariant()}:{purpose}";
         }
     }
 }

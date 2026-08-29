@@ -15,6 +15,7 @@ namespace FMS_Collection.Core.Interfaces
         Task<bool> DeleteAsync(Guid userId);
         Task<bool> UpdateUserPermissionAsync(UserPermissionRequest userPermission, Guid userId);
         Task<LoginResponse> GetLoginDetails(LoginRequest user);
+        Task<LoginResponse> GetLoginDetailsByEmail(string email);
         Task<List<ModuleListResponse>> GetModuleListAsync();
         Task<List<UserPermissionResponse>> GetUserPermissionListAsync(Guid UserId);
         Task<bool> UpdatePasswordHashAsync(Guid? userId, string newPasswordHash);

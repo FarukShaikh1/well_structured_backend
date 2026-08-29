@@ -10,7 +10,6 @@ using System.Security.Claims;
 namespace FMS_Collection.API.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class UserController(UserService service) : ControllerBase
@@ -18,6 +17,7 @@ public class UserController(UserService service) : ControllerBase
     private Guid CurrentUserId =>
         Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
+    [Authorize]
     [HttpGet("list")]
     [RequirePermission("User.View")]
     public async Task<IActionResult> GetList()
@@ -33,6 +33,7 @@ public class UserController(UserService service) : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("{userId:guid}")]
     [RequirePermission("User.View")]
     public async Task<IActionResult> GetDetails(Guid userId)
@@ -48,6 +49,21 @@ public class UserController(UserService service) : ControllerBase
         }
     }
 
+    [HttpGet("GetDetailsByEmail")]
+    public async Task<IActionResult> GetDetailsByEmail(string email)
+    {
+        try
+        {
+            var result = await service.GetUserDetailsAsync(null,email);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
+    }
+
+    [Authorize]
     [HttpPost]
     [RequirePermission("User.Create")]
     public async Task<IActionResult> Add([FromBody] UserRequest user)
@@ -63,6 +79,7 @@ public class UserController(UserService service) : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPut]
     [RequirePermission("User.Update")]
     public async Task<IActionResult> Update([FromBody] UserRequest user)
@@ -78,6 +95,7 @@ public class UserController(UserService service) : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpDelete("{userId:guid}")]
     [RequirePermission("User.Delete")]
     public async Task<IActionResult> Delete(Guid userId)
@@ -93,6 +111,7 @@ public class UserController(UserService service) : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpGet("permissions/{userId:guid}")]
     //[RequirePermission("User.View")]
     public async Task<IActionResult> GetUserPermission(Guid userId)
@@ -108,6 +127,7 @@ public class UserController(UserService service) : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpGet("permissionsForMenu/{userId:guid}")]
     public async Task<IActionResult> GetUserPermissionForMenu(Guid userId)
     {
@@ -122,6 +142,7 @@ public class UserController(UserService service) : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("permissions")]
     [RequirePermission("User.Update")]
     public async Task<IActionResult> UpdateUserPermission([FromBody] UserPermissionRequest userPermission)
@@ -137,6 +158,7 @@ public class UserController(UserService service) : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("change-password")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePassword request)
     {
@@ -198,6 +220,7 @@ public class UserController(UserService service) : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpGet("modules")]
     public async Task<IActionResult> GetModuleList()
     {

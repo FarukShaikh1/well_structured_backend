@@ -158,52 +158,87 @@ namespace FMS_Collection.Infrastructure.Repositories
 
         public async Task<LoginResponse> GetLoginDetails(LoginRequest user)
         {
-            var result = new LoginResponse();
+            return await GetLoginDetailsAsync(user.UserName);
+        }
+
+        public async Task<LoginResponse> GetLoginDetailsByEmail(string email)
+        {
+            return await GetLoginDetailsAsync(email);
+        }
+
+        private async Task<LoginResponse> GetLoginDetailsAsync(string userName)
+        {
             try
             {
                 using var conn = _dbFactory.CreateConnection();
+
                 using var cmd = new SqlCommand("UserLogin_Details_Get", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-                cmd.Parameters.Add(new SqlParameter("@in_UserName", SqlDbType.VarChar) { Value = user.UserName });
+
+                cmd.Parameters.Add(
+                    new SqlParameter("@in_UserName", SqlDbType.VarChar)
+                    {
+                        Value = userName
+                    });
 
                 await conn.OpenAsync();
+
                 using var reader = await cmd.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
+
+                if (!await reader.ReadAsync())
                 {
-                    result = new LoginResponse
-                    {
-                        Id = reader["Id"] != DBNull.Value ? (Guid?)reader["Id"] : null,
-                        FirstName = reader["FirstName"] != DBNull.Value ? reader["FirstName"].ToString() : null,
-                        LastName = reader["LastName"] != DBNull.Value ? reader["LastName"].ToString() : null,
-                        UserName = reader["UserName"] != DBNull.Value ? reader["UserName"].ToString() : null,
-                        EmailAddress = reader["EmailAddress"] != DBNull.Value ? reader["EmailAddress"].ToString() : null,
-                        MobileNumber = reader["MobileNumber"] != DBNull.Value ? reader["MobileNumber"].ToString() : null,
-                        Password = reader["Password"] != DBNull.Value ? reader["Password"].ToString() : null,
-                        PasswordLastChangeDate = reader["PasswordLastChangeDate"] != DBNull.Value ? (DateTime?)reader["PasswordLastChangeDate"] : null,
-                        FailedLoginCount = reader["FailedLoginCount"] != DBNull.Value ? (int?)reader["FailedLoginCount"] : null,
-                        LockExpiryDate = reader["LockExpiryDate"] != DBNull.Value ? (DateTime?)reader["LockExpiryDate"] : null,
-                        SpecialOccasionDate = reader["SpecialOccasionDate"] != DBNull.Value ? (DateTime?)reader["SpecialOccasionDate"] : null,
-                        IsOtpRequired = reader["IsOtpRequired"] != DBNull.Value && Convert.ToBoolean(reader["IsOtpRequired"]),
-                        IsDeleted = reader["IsDeleted"] != DBNull.Value && Convert.ToBoolean(reader["IsDeleted"]),
-                        IsLocked = reader["IsLocked"] != DBNull.Value && Convert.ToBoolean(reader["IsLocked"]),
-                        RoleId = reader["RoleId"] != DBNull.Value ? (Guid?)reader["RoleId"] : null,
-                        RoleName = reader["RoleName"] != DBNull.Value ? reader["RoleName"].ToString() : null,
-                        ImagePath = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : null,
-                        ThumbnailPath = reader["ThumbnailPath"] != DBNull.Value ? reader["ThumbnailPath"].ToString() : null,
-                        IsSuperAdmin = reader["IsSuperAdmin"] != DBNull.Value && Convert.ToBoolean(reader["IsSuperAdmin"])
-                    };
+                    return new LoginResponse();
                 }
+
+                return MapLoginResponse(reader);
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format(FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual, ex), ex);
+                throw new Exception(
+                    string.Format(
+                        FMS_Collection.Core.Constants.Constants.Messages.GenericErrorWithActual,
+                        ex),
+                    ex);
             }
-
-            return result;
         }
 
+        private static LoginResponse MapLoginResponse(SqlDataReader reader)
+        {
+            return new LoginResponse
+            {
+                Id = GetValue<Guid?>(reader, "Id"),
+                FirstName = GetValue<string>(reader, "FirstName"),
+                LastName = GetValue<string>(reader, "LastName"),
+                UserName = GetValue<string>(reader, "UserName"),
+                EmailAddress = GetValue<string>(reader, "EmailAddress"),
+                MobileNumber = GetValue<string>(reader, "MobileNumber"),
+                Password = GetValue<string>(reader, "Password"),
+                PasswordLastChangeDate = GetValue<DateTime?>(reader, "PasswordLastChangeDate"),
+                FailedLoginCount = GetValue<int?>(reader, "FailedLoginCount"),
+                LockExpiryDate = GetValue<DateTime?>(reader, "LockExpiryDate"),
+                SpecialOccasionDate = GetValue<DateTime?>(reader, "SpecialOccasionDate"),
+                IsOtpRequired = GetValue<bool>(reader, "IsOtpRequired"),
+                IsDeleted = GetValue<bool>(reader, "IsDeleted"),
+                IsLocked = GetValue<bool>(reader, "IsLocked"),
+                RoleId = GetValue<Guid?>(reader, "RoleId"),
+                RoleName = GetValue<string>(reader, "RoleName"),
+                ImagePath = GetValue<string>(reader, "ImagePath"),
+                ThumbnailPath = GetValue<string>(reader, "ThumbnailPath"),
+                IsSuperAdmin = GetValue<bool>(reader, "IsSuperAdmin")
+            };
+        }
+
+        private static T GetValue<T>(SqlDataReader reader, string columnName)
+        {
+            var value = reader[columnName];
+
+            if (value == DBNull.Value)
+                return default;
+
+            return (T)Convert.ChangeType(value, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T));
+        }
         /// <summary>Loads login-style user data by userId — used during JWT refresh token rotation.</summary>
         public async Task<LoginResponse?> GetUserLoginDataAsync(Guid userId)
         {

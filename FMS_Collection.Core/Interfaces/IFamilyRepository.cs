@@ -1,7 +1,7 @@
 // Core/Interfaces/IFamilyRepository.cs
 using FMS_Collection.Core.Entities;
-using FMS_Collection.Core.Request;
-using FMS_Collection.Core.Response;
+using FMS_Collection.Core.Requests;
+using FMS_Collection.Core.Responses;
 
 namespace FMS_Collection.Core.Interfaces
 {

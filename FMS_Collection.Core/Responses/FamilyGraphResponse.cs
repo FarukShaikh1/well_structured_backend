@@ -1,5 +1,5 @@
 // Core/Response/FamilyGraphResponse.cs
-namespace FMS_Collection.Core.Response
+namespace FMS_Collection.Core.Responses
 {
     /// <summary>A single node (person) in the graph.</summary>
     public class FamilyGraphNode

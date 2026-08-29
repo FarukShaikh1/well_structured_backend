@@ -1,8 +1,8 @@
 // Infrastructure/Repositories/FamilyRepository.cs
 using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Interfaces;
-using FMS_Collection.Core.Request;
-using FMS_Collection.Core.Response;
+using FMS_Collection.Core.Requests;
+using FMS_Collection.Core.Responses;
 using FMS_Collection.Infrastructure.Data;
 using Microsoft.Data.SqlClient;
 using System.Data;

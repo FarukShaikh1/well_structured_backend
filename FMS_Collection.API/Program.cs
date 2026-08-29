@@ -232,12 +232,13 @@ try
     builder.Services.AddScoped<IRoutineRepository, RoutineRepository>();
     builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
     builder.Services.AddScoped<IFoodMenuRepository, FoodMenuRepository>();
+    builder.Services.AddScoped<IUserRegistrationRepository, UserRegistrationRepository>();
     builder.Services.AddScoped<ICredentialRepository, CredentialRepository>();
     builder.Services.AddScoped<INotificationSender, NotificationSender>();
     builder.Services.AddSingleton<IOtpRepository, OtpRepository>();
     builder.Services.AddSingleton<IErrorRepository, ErrorRepository>();
     builder.Services.AddScoped<IFamilyRepository, FamilyRepository>();
-
+    builder.Services.AddScoped<IEmailRepository, EmailRepository>();
     // ── Security services ─────────────────────────────────────────────────────
     builder.Services.AddScoped<ITokenService, TokenService>();
     builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
@@ -258,6 +259,7 @@ try
     builder.Services.AddScoped<AzureBlobService>();
     builder.Services.AddScoped<AdminService>();
     builder.Services.AddScoped<FamilyService>();
+    builder.Services.AddScoped<EmailService>();
 
     // ── Build app ─────────────────────────────────────────────────────────────
     var app = builder.Build();
@@ -273,7 +275,7 @@ try
     });
 
     app.UseResponseCompression();
-    
+
     //if (app.Environment.IsDevelopment())
     //{
     app.UseSwagger();

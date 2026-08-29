@@ -1,7 +1,7 @@
 // API/Controllers/FamilyController.cs
 using FMS_Collection.API.Authorization;
 using FMS_Collection.Application.Services;
-using FMS_Collection.Core.Request;
+using FMS_Collection.Core.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
