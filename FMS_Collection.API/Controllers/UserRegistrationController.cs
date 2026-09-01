@@ -4,12 +4,10 @@ using FMS_Collection.Core.Common;
 using FMS_Collection.Core.Entities;
 using FMS_Collection.Core.Interfaces;
 using FMS_Collection.Core.Request;
-using FMS_Collection.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
+using static FMS_Collection.Core.Constants.Constants;
 
 namespace FMS_Collection.API.Controllers;
 
@@ -17,7 +15,9 @@ namespace FMS_Collection.API.Controllers;
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class UserRegistrationController(
-    IUserRegistrationRepository registrationRepository, OtpService otpService)
+    IUserRegistrationRepository registrationRepository, OtpService otpService,
+        EmailService emailService
+    )
     : ControllerBase
 {
     private Guid CurrentUserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -84,7 +84,9 @@ public class UserRegistrationController(
             // GENERATE OTP
             // =========================
 
-            var otp = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
+            var otp = RandomGeneratorService.GenerateNumericOtp(6);
+            SendEmailOtpRequest otpRequest = new SendEmailOtpRequest { EmailId = email, OtpCode = otp, Purpose = "Registration" };
+            await otpService.StoreOtpAsync(otpRequest, null);
 
             // =========================
             // HASH OTP
@@ -131,10 +133,213 @@ public class UserRegistrationController(
             // =========================
             // SEND OTP EMAIL
             // =========================
+            // 1. OTP Verification should sent to new registered user
+            await emailService.SendAsync(
+                email,
+                EmailTemplateCodes.OtpVerification,
+                new Dictionary<string, string>
+                {
+                    ["UserName"] = email,
+                    ["Email"] = email,
+                    ["Otp"] = otp,
+                    ["ExpiryMinutes"] = "10",
+                    ["PurposeText"] = "Login",
+                    ["Year"] = DateTime.UtcNow.Year.ToString(),
+                    ["SupportEmail"] = AppSettings.OwnerEmail
+                });
 
-            SendEmailOtpRequest otpRequest = new SendEmailOtpRequest { EmailId = email, Purpose = "verification" };
 
-            await otpService.StoreOtpAsync(otpRequest, null);
+            //// 2. Registration Submitted should sent to user after registration otp verification
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.RegistrationSubmitted,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email,
+            //        ["Email"] = email
+            //    });
+
+
+            //// 3. Email Verified should sent to user after admin approved request
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.EmailVerified,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email,
+            //        ["Email"] = email,
+            //        ["AppUrl"] = AppSettings.SiteLiveUrl
+            //    });
+
+
+            //// 4. New Registration should sent to admin as notification for new user
+            //await emailService.SendAsync(
+            //    AppSettings.OwnerEmail,
+            //    EmailTemplateCodes.NewRegistrationAdmin,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email,
+            //        ["Email"] = email,
+            //        ["DateOfAction"] = DateTime.Now.ToString("dd MMM yyyy hh:mm tt"),
+            //        ["AdminUrl"] = AppSettings.SiteLiveUrl
+            //    });
+
+
+            //// 5. Registration Approved should sent to user abo
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.RegistrationApproved,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email,
+            //        ["AppUrl"] = AppSettings.SiteLiveUrl
+            //    });
+
+
+            //// 6. Registration Rejected
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.RegistrationRejected,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email,
+            //        ["Reason"] = "rejectionReason"
+            //    });
+
+
+            //// 7. Password Reset OTP
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.PasswordResetOtp,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email,
+            //        ["Otp"] = otp,
+            //        ["ExpiryMinutes"] = "10",
+            //        ["Year"] = DateTime.UtcNow.Year.ToString(),
+            //        ["SupportEmail"] = AppSettings.OwnerEmail
+            //    });
+
+
+            //// 8. Password Changed
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.PasswordChanged,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email
+            //    });
+
+
+            //// 9. Account Locked
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.AccountLocked,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email
+            //    });
+
+
+            //// 10. Login Alert
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.LoginAlert,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email,
+            //        ["LoginDateTime"] = DateTime.Now.ToString("dd MMM yyyy hh:mm tt"),
+            //        ["IpAddress"] = "ipAddress"
+            //    });
+
+
+            //// 11. Account Activated
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.AccountActivated,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email,
+            //        ["AppUrl"] = AppSettings.SiteLiveUrl
+            //    });
+
+
+            //// 12. Account Deactivated
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.AccountDeactivated,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email,
+            //        ["Reason"] = "reason"
+            //    });
+
+
+            //// 13. Role Changed
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.RoleChanged,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email,
+            //        ["RoleName"] = "roleName"
+            //    });
+
+
+            //// 14. New User Created
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.NewUserCreated,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email,
+            //        ["Email"] = email,
+            //        ["AppUrl"] = AppSettings.SiteLiveUrl
+            //    });
+
+
+            //// 15. Admin System Notification
+            //await emailService.SendAsync(
+            //    AppSettings.OwnerEmail,
+            //    EmailTemplateCodes.AdminSystemNotification,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = AppSettings.OwnerEmail,
+            //        ["NotificationTitle"] = "notificationTitle",
+            //        ["NotificationMessage"] = "notificationMessage"
+            //    });
+
+
+            //// 16. Birthday Wish
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.BirthdayWish,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email
+            //    });
+
+
+            //// 17. Anniversary Wish
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.AnniversaryWish,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email
+            //    });
+
+
+            //// 18. Occasion Reminder
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.OccasionReminder,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email,
+            //        ["OccasionName"] = "occasionName",
+            //        ["DateOfAction"] = DateTime.Now.ToString("dd MMM yyyy")
+            //    });
 
             return Ok(new
             {
@@ -144,13 +349,7 @@ public class UserRegistrationController(
         }
         catch (Exception ex)
         {
-            return StatusCode(
-                500,
-                new
-                {
-                    error = ex.Message,
-                    stackTrace = ex.StackTrace
-                });
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
         }
     }
 
@@ -201,7 +400,7 @@ public class UserRegistrationController(
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new{error = ex.Message,stackTrace = ex.StackTrace});
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
         }
     }
 
