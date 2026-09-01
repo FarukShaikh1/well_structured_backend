@@ -377,8 +377,8 @@ public class UserRegistrationController(
             {
                 return BadRequest(new { error = "OTP must be 6 digits." });
             }
-
-            var verified = await registrationRepository.VerifyEmailAsync(request.RegistrationId, request.Otp.Trim());
+            var otpHash = EncryptDecryptAlgorithm.Encrypt(request.Otp.Trim());
+            var verified = await registrationRepository.VerifyEmailAsync(request.RegistrationId, otpHash);
 
             if (!verified)
             {

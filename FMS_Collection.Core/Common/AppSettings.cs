@@ -31,14 +31,6 @@ namespace FMS_Collection.Core.Common
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-
-#if DEBUG
-            builder.AddJsonFile(
-                "appsettings.Development.json",
-                optional: true,
-                reloadOnChange: true);
-#endif
-
             builder.AddEnvironmentVariables();
 
             var config = builder.Build();
@@ -56,10 +48,6 @@ namespace FMS_Collection.Core.Common
             SmtpPort = Convert.ToInt32(config["MailConfig:SmtpPort"]);
             SenderEmail = Environment.GetEnvironmentVariable("MailConfigSenderEmail") ?? "";
             EmailPassword = Environment.GetEnvironmentVariable("MailConfigEmailPassword") ?? "";
-#if DEBUG
-            SenderEmail = "farukshaikh908@gmail.com";
-            EmailPassword = "wqdc guum pjgp yckh";
-#endif
             AzureVision_Endpoint = Environment.GetEnvironmentVariable("AzureVisionEndpoint") ?? "";
             AzureVision_Key = Environment.GetEnvironmentVariable("AzureVisionKey") ?? "";
             AzureStorageConnectionString = Environment.GetEnvironmentVariable("AzureStorageConnectionString") ?? "";
