@@ -44,7 +44,7 @@ namespace FMS_Collection.Infrastructure.Repositories
 
         // -------------------- GET BY USER --------------------
 
-        public async Task<List<FoodMenuResponse>> GetByUserAsync(Guid userId)
+        public async Task<List<FoodMenuResponse>> GetByUserAsync(Guid userId, bool isNonveg)
         {
             var result = new List<FoodMenuResponse>();
 
@@ -56,6 +56,7 @@ namespace FMS_Collection.Infrastructure.Repositories
             };
 
             cmd.Parameters.AddWithValue("@in_UserId", userId);
+            cmd.Parameters.AddWithValue("@in_IsNonveg", isNonveg);
 
             await conn.OpenAsync();
 

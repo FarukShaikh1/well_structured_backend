@@ -16,7 +16,7 @@ namespace FMS_Collection.API.Controllers;
 [Produces("application/json")]
 public class UserRegistrationController(
     IUserRegistrationRepository registrationRepository, OtpService otpService,
-        EmailService emailService
+        EmailService emailService, UserService userService
     )
     : ControllerBase
 {
@@ -130,23 +130,34 @@ public class UserRegistrationController(
             };
             var registrationId = await registrationRepository.AddAsync(registration);
 
+            await emailService.SendAsync(
+                request.Email,
+                EmailTemplateCodes.VerifyEmail,
+                new Dictionary<string, string>
+                {
+                    ["UserName"] = request.Name,
+                    ["Email"] = request.Email,
+                    ["VerificationCode"] = otp,
+                    ["VerificationLink"] = AppSettings.SiteLiveUrl + "email-verification?registrationId=" + registrationId + "&verificationOtp=" + otp
+                });
+
             // =========================
             // SEND OTP EMAIL
             // =========================
             // 1. OTP Verification should sent to new registered user
-            await emailService.SendAsync(
-                email,
-                EmailTemplateCodes.OtpVerification,
-                new Dictionary<string, string>
-                {
-                    ["UserName"] = email,
-                    ["Email"] = email,
-                    ["Otp"] = otp,
-                    ["ExpiryMinutes"] = "10",
-                    ["PurposeText"] = "Login",
-                    ["Year"] = DateTime.UtcNow.Year.ToString(),
-                    ["SupportEmail"] = AppSettings.OwnerEmail
-                });
+            //await emailService.SendAsync(
+            //    email,
+            //    EmailTemplateCodes.OtpVerification,
+            //    new Dictionary<string, string>
+            //    {
+            //        ["UserName"] = email,
+            //        ["Email"] = email,
+            //        ["Otp"] = otp,
+            //        ["ExpiryMinutes"] = "10",
+            //        ["PurposeText"] = "Login",
+            //        ["Year"] = DateTime.UtcNow.Year.ToString(),
+            //        ["SupportEmail"] = AppSettings.OwnerEmail
+            //    });
 
 
             //// 2. Registration Submitted should sent to user after registration otp verification
@@ -221,14 +232,6 @@ public class UserRegistrationController(
             //    });
 
 
-            //// 8. Password Changed
-            //await emailService.SendAsync(
-            //    email,
-            //    EmailTemplateCodes.PasswordChanged,
-            //    new Dictionary<string, string>
-            //    {
-            //        ["UserName"] = email
-            //    });
 
 
             //// 9. Account Locked
@@ -384,13 +387,30 @@ public class UserRegistrationController(
             {
                 return BadRequest(new { error = "Invalid or expired OTP." });
             }
+            var requesterDetails = await registrationRepository.GetDetailsAsync(request.RegistrationId);
 
-            // Email successfully verified.
-            // Registration status should now be:
-            // PendingApproval
+            await emailService.SendAsync(
+                requesterDetails.Email,
+                EmailTemplateCodes.RegistrationSubmitted,
+                new Dictionary<string, string>
+                {
+                    ["UserName"] = requesterDetails.Name,
+                    ["Email"] = requesterDetails.Email,
+                    ["DateOfAction"] = DateTime.Now.ToString("dd MMM yyyy hh:mm tt"),
+                    ["AdminUrl"] = AppSettings.SiteLiveUrl
+                });
 
-            // TODO:
-            // Create notification for Super Admin
+            // 4. New Registration should sent to admin as notification for new user
+            await emailService.SendAsync(
+                AppSettings.OwnerEmail,
+                EmailTemplateCodes.NewRegistrationAdmin,
+                new Dictionary<string, string>
+                {
+                    ["UserName"] = requesterDetails.Name,
+                    ["Email"] = requesterDetails.Email,
+                    ["DateOfAction"] = DateTime.Now.ToString("dd MMM yyyy hh:mm tt"),
+                    ["AdminUrl"] = AppSettings.SiteLiveUrl + "home/users"
+                });
 
             return Ok(new
             {
@@ -463,20 +483,23 @@ public class UserRegistrationController(
     {
         try
         {
-            var success = await registrationRepository.ApproveAsync(registrationId, CurrentUserId);
+            var userId = await registrationRepository.ApproveAsync(registrationId, CurrentUserId);
 
-            if (!success)
+            if (!userId.HasValue)
             {
                 return BadRequest(new
                 {
-                    error = "Unable to approve this registration. " + "It may not exist or may already be processed."
+                    error = "Unable to approve this registration. It may not exist or may already be processed."
                 });
             }
+            var requesterDetails = await registrationRepository.GetDetailsAsync(registrationId);
+
+            userService.ForgotPassword(requesterDetails.Email);
 
             return Ok(new
             {
                 success = true,
-                message = "User approved successfully."
+                message = "User approved successfully. and password sent to user registered email"
             });
         }
         catch (Exception ex)

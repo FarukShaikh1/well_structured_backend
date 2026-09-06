@@ -297,9 +297,11 @@ namespace FMS_Collection.Infrastructure.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
 
-                cmd.Parameters.Add(new SqlParameter("@in_PersonId", SqlDbType.UniqueIdentifier) { Value = request.SpecialOccasionId });
+                cmd.Parameters.Add(new SqlParameter("@in_FirstName", SqlDbType.NVarChar,50) { Value = request.FirstName });
+                cmd.Parameters.Add(new SqlParameter("@in_LastName", SqlDbType.NVarChar,50) { Value = request.LastName });
                 cmd.Parameters.Add(new SqlParameter("@in_Email", SqlDbType.NVarChar, 100) { Value = request.EmailAddress });
-                cmd.Parameters.Add(new SqlParameter("@in_Password", SqlDbType.VarChar, 100) { Value = request.Password });
+                cmd.Parameters.Add(new SqlParameter("@in_MobileNumber", SqlDbType.NVarChar, 20) { Value = request.MobileNumber });
+                cmd.Parameters.Add(new SqlParameter("@in_Password", SqlDbType.NVarChar, 2000) { Value = request.Password });
                 cmd.Parameters.Add(new SqlParameter("@in_CreatedBy", SqlDbType.UniqueIdentifier) { Value = userId });
 
                 var outIdParam = new SqlParameter("@out_Id", SqlDbType.UniqueIdentifier)
@@ -475,12 +477,12 @@ namespace FMS_Collection.Infrastructure.Repositories
             try
             {
                 using var conn = _dbFactory.CreateConnection();
-                using var cmd = new SqlCommand("Update_Password", conn)
+                using var cmd = new SqlCommand("User_Update_Password", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.Parameters.AddWithValue("@in_UserId", (object?)userId ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@in_NewPassword", newPasswordHash ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@In_NewPasswordHash", newPasswordHash ?? (object)DBNull.Value);
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();

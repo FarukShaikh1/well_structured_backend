@@ -166,7 +166,21 @@ public class UserController(UserService service) : ControllerBase
         {
             // Extract userId from JWT — never trust request body for identity
             var response = await service.ChangePassword(request.OldPassword, request.NewPassword, CurrentUserId, CurrentUserId);
-            return Ok(new { response.Data.IsSuccess, response.Data.Message });
+            return Ok(new { response.Data.Success, response.Data.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+        }
+    }
+
+    [HttpPost("forgotpassword")]
+    public async Task<IActionResult> ForgotPassword(string email)
+    {
+        try
+        {
+            var response = await service.ForgotPassword(email);
+            return Ok(new { response.Data.Success, response.Data.Message });
         }
         catch (Exception ex)
         {

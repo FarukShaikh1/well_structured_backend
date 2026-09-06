@@ -167,7 +167,7 @@ namespace FMS_Collection.Infrastructure.Repositories
 
                 EmailVerified =
                     reader.GetBoolean(
-                        reader.GetOrdinal("EmailVerified")),
+                        reader.GetOrdinal("VerifyEmail")),
 
                 Status =
                     reader.GetString(
@@ -424,11 +424,19 @@ namespace FMS_Collection.Infrastructure.Repositories
 
             using var reader =
                 await cmd.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
+            try
             {
-                result.Add(
-                    MapRegistrationResponse(reader));
+                while (await reader.ReadAsync())
+                {
+                    result.Add(
+                        MapRegistrationResponse(reader));
+                }
+
+            }
+            catch (Exception es)
+            {
+
+                throw;
             }
 
             return result;
@@ -569,44 +577,24 @@ namespace FMS_Collection.Infrastructure.Repositories
         // APPROVE
         // =====================================================
 
-        public async Task<bool> ApproveAsync(
-            Guid registrationId,
-            Guid approvedBy)
+        public async Task<Guid?> ApproveAsync(Guid registrationId, Guid approvedBy)
         {
-            using var conn =
-                _dbFactory.CreateConnection();
+            using var conn = _dbFactory.CreateConnection();
+            using var cmd = new SqlCommand("UserRegistration_Approve", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
 
-            using var cmd =
-                new SqlCommand(
-                    "UserRegistration_Approve",
-                    conn)
-                {
-                    CommandType =
-                        CommandType.StoredProcedure
-                };
-
-            cmd.Parameters.AddWithValue(
-                "@in_RegistrationId",
-                registrationId);
-
-            cmd.Parameters.AddWithValue(
-                "@in_ApprovedBy",
-                approvedBy);
+            cmd.Parameters.AddWithValue("@in_RegistrationId", registrationId);
+            cmd.Parameters.AddWithValue("@in_ApprovedBy", approvedBy);
 
             await conn.OpenAsync();
-            try
-            {
-                var rowsAffected =
-                    await cmd.ExecuteNonQueryAsync();
+            var result = await cmd.ExecuteScalarAsync();
 
-                return rowsAffected > 0;
-            }
-            catch (Exception ex)
-            {
+            if (result == null || result == DBNull.Value)
+                return null;
 
-                throw;
-            }
-
+            return (Guid)result;
         }
 
 
@@ -698,7 +686,7 @@ namespace FMS_Collection.Infrastructure.Repositories
 
                 EmailVerified =
                     reader.GetBoolean(
-                        reader.GetOrdinal("EmailVerified")),
+                        reader.GetOrdinal("VerifyEmail")),
 
                 Status =
                     reader.GetString(

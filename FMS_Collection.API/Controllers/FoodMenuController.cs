@@ -20,13 +20,13 @@ public class FoodMenuController(IFoodMenuRepository foodMenuRepository) : Contro
 
     [HttpGet]
     [RequirePermission("FoodMenu.View")]
-    public async Task<IActionResult> GetList()
+    public async Task<IActionResult> GetList(bool isNonveg)
     {
         try
         {
             var result =
                 await foodMenuRepository.GetByUserAsync(
-                    CurrentUserId);
+                    CurrentUserId,isNonveg);
 
             return Ok(result);
         }

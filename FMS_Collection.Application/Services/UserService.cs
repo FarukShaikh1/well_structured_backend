@@ -7,6 +7,7 @@ using FMS_Collection.Core.Request;
 using FMS_Collection.Core.Response;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using static FMS_Collection.Core.Constants.Constants;
 
 namespace FMS_Collection.Application.Services
 {
@@ -56,7 +57,7 @@ namespace FMS_Collection.Application.Services
                 if (loginData.Password != null && passwordHasher.VerifyLegacySha1(request.Password, loginData.Password))
                 {
                     var newHash = passwordHasher.Hash(request.Password);
-                    //await repository.UpdatePasswordHashAsync(loginData.Id, newHash);
+                    await repository.UpdatePasswordHashAsync(loginData.Id, newHash);
                     logger.LogInformation("Upgraded legacy password hash for user {UserId}", loginData.Id);
                 }
                 // OTP flow — don't issue tokens yet
@@ -203,14 +204,14 @@ namespace FMS_Collection.Application.Services
                 logger);
         }
 
-        public async Task<ServiceResponse<(bool IsSuccess, string Message)>> ChangePassword(
-            string oldPassword, string newPassword, Guid? userId, Guid? modifiedBy)
+        public async Task<ServiceResponse<(bool Success, string Message)>> ChangePassword(string oldPassword, string newPassword, Guid? userId, Guid? modifiedBy)
         {
             var loginData = await repository.GetUserLoginDataAsync(userId!.Value);
             if (loginData == null)
                 return ServiceResponse<(bool, string)>.Fail("User not found.", 404);
 
-            bool oldValid = loginData.Password != null && (
+            bool oldValid = loginData.Password != null
+                && (
                 passwordHasher.Verify(oldPassword, loginData.Password) ||
                 passwordHasher.VerifyLegacySha1(oldPassword, loginData.Password));
 
@@ -223,16 +224,45 @@ namespace FMS_Collection.Application.Services
             await repository.UpdatePasswordHashAsync(userId, newHash);
             await auditService.LogAsync(modifiedBy, "PasswordChanged", "User", userId.ToString());
 
+
+            await emailService.SendAsync(loginData.EmailAddress, EmailTemplateCodes.PasswordChanged, new Dictionary<string, string>
+            {
+                ["UserName"] = loginData.UserName
+            });
             return ServiceResponse<(bool, string)>.Ok(
-                (true, "Password changed successfully."),
+                (true, "Password changed successfully. Please login again."),
                 Constants.Messages.UserPermissionsUpdatedSuccessfully);
         }
 
+        public async Task<ServiceResponse<(bool Success, string Message)>> ForgotPassword(string email)
+        {
+            var loginData = await repository.GetUserDetailsAsync(null,email);
+            if (loginData == null)
+                return ServiceResponse<(bool, string)>.Fail("User not found.", 404);
+            await UpdatePasswordAndSendEmail(loginData);
+            return ServiceResponse<(bool, string)>.Ok(
+                (true, "Password changed successfully. Please login again."),
+                Constants.Messages.UserPermissionsUpdatedSuccessfully);
+        }
 
-        // ── User registration module ───────────────────────────────────────────────
+        private async Task  UpdatePasswordAndSendEmail(UserDetailsResponse loginData)
+        {
+            string newPassword = RandomGeneratorService.GeneratePassword(10, true);
 
+            string newHash = passwordHasher.Hash(newPassword);
+            await repository.UpdatePasswordHashAsync(loginData.Id, newHash);
+            await auditService.LogAsync(loginData.Id, "PasswordReset", "User", loginData.Id.ToString());
 
+            await emailService.SendAsync(loginData.EmailAddress, EmailTemplateCodes.PasswordResetMail, new Dictionary<string, string>
+            {
+                ["UserName"] = loginData.FirstName,
+                ["Email"] = loginData.EmailAddress,
+                ["Password"] = newPassword,
+                ["AppUrl"] = AppSettings.SiteLiveUrl,
+                ["Year"] = DateTime.Now.Year.ToString()
+            });
 
+        }
         // ── Module list (cached) ───────────────────────────────────────────────
 
         public async Task<ServiceResponse<List<ModuleListResponse>>> GetModuleListAsync()

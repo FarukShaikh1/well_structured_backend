@@ -138,11 +138,12 @@
         {
             public const string OtpVerification = "OTP_VERIFICATION";
             public const string RegistrationSubmitted = "REGISTRATION_SUBMITTED";
-            public const string EmailVerified = "EMAIL_VERIFIED";
+            public const string VerifyEmail = "VERIFY_EMAIL";
             public const string NewRegistrationAdmin = "NEW_REGISTRATION_ADMIN";
             public const string RegistrationApproved = "REGISTRATION_APPROVED";
             public const string RegistrationRejected = "REGISTRATION_REJECTED";
             public const string PasswordResetOtp = "PASSWORD_RESET_OTP";
+            public const string PasswordResetMail = "PASSWORD_RESET_MAIL";
             public const string PasswordChanged = "PASSWORD_CHANGED";
             public const string AccountLocked = "ACCOUNT_LOCKED";
             public const string LoginAlert = "LOGIN_ALERT";

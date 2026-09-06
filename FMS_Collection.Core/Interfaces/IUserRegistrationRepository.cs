@@ -15,7 +15,7 @@ namespace FMS_Collection.Core.Interfaces
         Task<UserRegistrationResponse?> GetByIdAsync(Guid registrationId);
         Task<UserRegistrationResponse?> GetByEmailAsync(string email);
         Task<List<UserRegistrationResponse>> GetPendingAsync();
-        Task<bool> ApproveAsync(Guid registrationId, Guid approvedBy);
+        Task<Guid?> ApproveAsync(Guid registrationId, Guid approvedBy);
         Task<bool> RejectAsync(Guid registrationId, string reason, Guid rejectedBy);
     }
 }

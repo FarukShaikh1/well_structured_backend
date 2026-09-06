@@ -7,7 +7,7 @@ namespace FMS_Collection.Core.Interfaces
     {
         Task<List<FoodMenuResponse>> GetAllAsync();
 
-        Task<List<FoodMenuResponse>> GetByUserAsync(Guid userId);
+        Task<List<FoodMenuResponse>> GetByUserAsync(Guid userId, bool isNonveg);
 
         Task<FoodMenuResponse?> GetDetailsAsync(Guid foodMenuId);
 

@@ -37,10 +37,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="EmailTemplates\**\*">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        </Content>
         <Content Include="StaticFiles\**\*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
