@@ -409,7 +409,7 @@ public class UserRegistrationController(
                     ["UserName"] = requesterDetails.Name,
                     ["Email"] = requesterDetails.Email,
                     ["DateOfAction"] = DateTime.Now.ToString("dd MMM yyyy hh:mm tt"),
-                    ["AdminUrl"] = AppSettings.SiteLiveUrl + "home/users"
+                    ["AdminUrl"] = AppSettings.SiteLiveUrl + "home/manage-users"
                 });
 
             return Ok(new
