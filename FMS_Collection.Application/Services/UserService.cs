@@ -237,7 +237,7 @@ namespace FMS_Collection.Application.Services
         public async Task<ServiceResponse<(bool Success, string Message)>> ForgotPassword(string email)
         {
             var loginData = await repository.GetUserDetailsAsync(null,email);
-            if (loginData == null)
+            if (loginData == null || loginData.EmailAddress == null)
                 return ServiceResponse<(bool, string)>.Fail("User not found.", 404);
             await UpdatePasswordAndSendEmail(loginData);
             return ServiceResponse<(bool, string)>.Ok(
