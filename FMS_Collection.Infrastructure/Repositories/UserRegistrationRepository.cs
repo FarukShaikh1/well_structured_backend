@@ -686,7 +686,7 @@ namespace FMS_Collection.Infrastructure.Repositories
 
                 EmailVerified =
                     reader.GetBoolean(
-                        reader.GetOrdinal("VerifyEmail")),
+                        reader.GetOrdinal("EmailVerified")),
 
                 Status =
                     reader.GetString(
