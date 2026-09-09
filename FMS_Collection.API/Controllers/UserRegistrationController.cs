@@ -71,11 +71,18 @@ public class UserRegistrationController(
                         message = "An account already exists with this email address."
                     });
                 }
-                if (existing.Status == "PendingEmailVerification" || existing.Status == "PendingApproval")
+                if (existing.Status == "PendingEmailVerification")
                 {
                     return BadRequest(new
                     {
-                        message = "A registration already exists for this email address."
+                        message = "A registration already exists for this email address with status PendingEmailVerification. Go to your email and follow the instructions for next steps."
+                    });
+                }
+                if (existing.Status == "PendingApproval")
+                {
+                    return BadRequest(new
+                    {
+                        message = "A registration already exists for this email address with status PendingApproval from super admin."
                     });
                 }
             }
